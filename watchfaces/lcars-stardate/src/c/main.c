@@ -1,13 +1,21 @@
-// stardate-emery entry point: wires services to the ui shell
+/**
+ * @file main.c
+ * @brief stardate-emery entry point: wires services to the ui shell.
+ */
 #include <pebble.h>
 
 #include "appmessage/appmessage.h"
+#include "battery/battery.h"
 #include "health/health.h"
+#include "layout.h"
 #include "settings/settings.h"
+#include "settings_schema.h"
 #include "shell/shell.h"
 #include "units/units.h"
 
-// pull fresh health readings into the ui (driven by health events, not polled)
+/**
+ * @brief Pull fresh health readings into the ui (driven by health events, not polled).
+ */
 static void update_health(void)
 {
     int hr = health_get_current_hr();
@@ -27,14 +35,20 @@ static AppTimer *s_beats_timer;
 // refresh going while MINUTE_UNIT is unsubscribed
 static time_t s_last_weather;
 
-// redraw the time slot and re-arm for the next beat boundary. also keeps the 30-min
-// weather poll alive, since the minute ticker that owns it is off in .beats mode
+/**
+ * @brief Redraw the time slot and re-arm for the next beat boundary.
+ *
+ * Also keeps the 30-min weather poll alive, since the minute ticker that
+ * owns it is off in .beats mode.
+ *
+ * @param data The timer context (unused).
+ */
 static void beats_timer_handler(void *data)
 {
     time_t now = time(NULL);
 
     // real tm: shell_update_time still draws the date line
-    shell_update_time(localtime(&now));  
+    shell_update_time(localtime(&now));
 
     if (now - s_last_weather >= 30 * 60)
     {
@@ -45,19 +59,23 @@ static void beats_timer_handler(void *data)
     s_beats_timer = app_timer_register(units_ms_until_next_beat(), beats_timer_handler, NULL);
 }
 
-// run exactly one ticker for the active format: the beats AppTimer in .beats mode,
-// MINUTE_UNIT otherwise. Duplicate calls are harmless, so it's safe to call on init and every settings save.
+/**
+ * @brief Run exactly one ticker for the active format.
+ *
+ * The beats AppTimer in .beats mode, MINUTE_UNIT otherwise. Duplicate calls
+ * are harmless, so it's safe to call on init and every settings save.
+ */
 static void update_refresh_mode(void)
 {
-    if (g_settings.TimeFormat == 3)
+    if (settings_u8(SETTING_TIME_FORMAT) == 3)
     {
         if (!s_beats_timer)
         {
             // hand the cadence to the beats timer
-            tick_timer_service_unsubscribe();  
+            tick_timer_service_unsubscribe();
 
             // defer the first poll a full interval
-            s_last_weather = time(NULL);       
+            s_last_weather = time(NULL);
             s_beats_timer = app_timer_register(units_ms_until_next_beat(), beats_timer_handler, NULL);
         }
     }
@@ -67,15 +85,19 @@ static void update_refresh_mode(void)
         s_beats_timer = NULL;
 
         // resume the minute ticker
-        tick_timer_service_subscribe(MINUTE_UNIT, tick_handler);  
+        tick_timer_service_subscribe(MINUTE_UNIT, tick_handler);
     }
 }
 
-// redraw after a settings change, re-rendering the clock when the time/date format changed
+/**
+ * @brief Redraw after a settings change, re-rendering the clock when the time/date format changed.
+ *
+ * @param time_or_date_changed True if the time or date format changed.
+ */
 static void on_settings_changed(bool time_or_date_changed)
 {
     shell_update_display();
-    
+
     if (time_or_date_changed)
     {
         time_t now = time(NULL);
@@ -83,11 +105,18 @@ static void on_settings_changed(bool time_or_date_changed)
     }
 
     // swap to the right ticker if TimeFormat changed
-    update_refresh_mode(); 
+    update_refresh_mode();
 }
 
-// per-minute: redraw the time (and .beats at minute resolution), poll weather
-// every 30 min. health is refreshed from health events, not polled here
+/**
+ * @brief Per-minute: redraw the time (and .beats at minute resolution), poll weather
+ * every 30 min.
+ *
+ * Health is refreshed from health events, not polled here.
+ *
+ * @param tick_time The current time.
+ * @param units_changed The units that changed.
+ */
 static void tick_handler(struct tm *tick_time, TimeUnits units_changed)
 {
     shell_update_time(tick_time);
@@ -98,7 +127,12 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed)
     }
 }
 
-// refresh health readouts only when the health service reports new data
+/**
+ * @brief Refresh health readouts only when the health service reports new data.
+ *
+ * @param event The health event type.
+ * @param context Context (unused).
+ */
 static void health_handler(HealthEventType event, void *context)
 {
     if (event == HealthEventHeartRateUpdate || event == HealthEventMovementUpdate ||
@@ -108,17 +142,23 @@ static void health_handler(HealthEventType event, void *context)
     }
 }
 
-// redraw the battery gauge when the charge level changes
+/**
+ * @brief Redraw the battery gauge when the charge level changes.
+ *
+ * @param state The new battery state.
+ */
 static void battery_callback(BatteryChargeState state)
 {
     shell_set_battery(state.charge_percent);
 }
 
-// initialize sub-systems, seed the first render, and subscribe to services
+/**
+ * @brief Initialize sub-systems, seed the first render, and subscribe to services.
+ */
 static void init(void)
 {
-    settings_init();
-    shell_init();
+    settings_init(lcars_settings_schema());
+    shell_init(stardate_emery_face());
 
     // wire the appmessage transport to the shell (the transport stays shell-agnostic)
     appmessage_init((AppMessageHandlers){
@@ -126,7 +166,7 @@ static void init(void)
         .on_coords = shell_set_coords,
         .on_settings_changed = on_settings_changed,
     });
-    
+
     health_init(health_handler);
 
     // seed the initial time/date render before the first tick
@@ -136,8 +176,7 @@ static void init(void)
 
     // services and callbacks
     tick_timer_service_subscribe(MINUTE_UNIT, tick_handler);
-    battery_state_service_subscribe(battery_callback);
-    battery_callback(battery_state_service_peek());
+    battery_init(battery_callback);
 
     // seed the health readouts before the first health event
     update_health();
@@ -146,7 +185,9 @@ static void init(void)
     update_refresh_mode();
 }
 
-// tear down the ui shell
+/**
+ * @brief Tear down the ui shell.
+ */
 static void deinit(void)
 {
     shell_deinit();

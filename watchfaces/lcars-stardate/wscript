@@ -7,6 +7,13 @@
 # bundles the final executables for all target platforms.
 # ==============================================================================
 import os.path
+import sys
+from waflib.Tools import c_preproc
+
+# let waf's preprocessor scanner trace through absolute include paths (the shared
+# lib/ lives two levels up) so it discovers the transitive pebble.h include and
+# the SDK can inject the resource_ids.auto.h dependency before compilation starts
+c_preproc.go_absolute = True
 
 top = '.'
 out = 'build'
@@ -24,33 +31,43 @@ def build(ctx):
     ctx.load('pebble_sdk')
 
     # --- Path Resolution ---
-    # the shared library lives at <repo>/shared, two levels up from this face dir
-    shared_dir = ctx.path.parent.parent.find_dir('shared')
-    if not shared_dir:
-        ctx.fatal('Could not find the "shared" directory two levels up.')
-
-    shared_c = shared_dir.find_dir('c')
-    shared_js = shared_dir.find_dir('pkjs')
+    # lib = all code shared by ALL watchfaces, two levels up at the repo root
+    # (watchfaces/<face>/ -> repo). lib/c/ is pure (SDK-free, host-testable);
+    # lib/c/pebble/ needs the SDK; lib/js/ is PebbleKit JS.
+    lib_dir = ctx.path.parent.parent.find_dir('lib')
+    if not lib_dir:
+        ctx.fatal('Could not find the "lib" directory two levels up.')
+    lib_c = lib_dir.find_dir('c')
+    lib_c_pebble = lib_c.find_dir('pebble')
+    lib_js = lib_dir.find_dir('js')
+    # this face's own sources, including the LCARS skin code (in widgets.c)
     local_c = ctx.path.find_dir('src/c')
 
     # --- Source & Include Collection ---
     include_paths = [
-        shared_c.abspath(),
-        shared_c.find_dir('appmessage').abspath(),
-        shared_c.find_dir('settings').abspath(),
-        shared_c.find_dir('weather').abspath(),
-        shared_c.find_dir('units').abspath(),
-        shared_c.find_dir('draw').abspath(),
-        shared_c.find_dir('health').abspath(),
-        shared_c.find_dir('shell').abspath(),
+        lib_c.abspath(),
+        lib_c.find_dir('clock').abspath(),
+        lib_c.find_dir('units').abspath(),
+        lib_c.find_dir('text').abspath(),
+        lib_c_pebble.abspath(),
+        lib_c_pebble.find_dir('appmessage').abspath(),
+        lib_c_pebble.find_dir('settings').abspath(),
+        lib_c_pebble.find_dir('weather').abspath(),
+        lib_c_pebble.find_dir('units').abspath(),
+        lib_c_pebble.find_dir('health').abspath(),
+        lib_c_pebble.find_dir('shell').abspath(),
+        lib_c_pebble.find_dir('ui').abspath(),
         local_c.abspath()
     ]
 
-    c_sources = ctx.path.ant_glob('src/c/**/*.c') + shared_c.ant_glob('**/*.c')
-    
+    # src/c/ holds this face's sources (including the LCARS skin in widgets.c); one glob
+    # recurses into both lib/c/ (pure) and lib/c/pebble/ (SDK)
+    c_sources = ctx.path.ant_glob('src/c/**/*.c') + lib_c.ant_glob('**/*.c')
+
     js_sources = ctx.path.ant_glob(['src/pkjs/**/*.js', 'src/pkjs/**/*.json'])
-    if shared_js:
-        js_sources += shared_js.ant_glob('**/*.js')
+    if lib_js:
+        # exclude *.spec.js - test files, never imported by index.js, not shipped
+        js_sources += lib_js.ant_glob('**/*.js', excl=['**/*.spec.js'])
 
     # --- Platform Build Loop ---
     build_worker = os.path.exists('worker_src')
@@ -95,3 +112,11 @@ def build(ctx):
         js=js_sources,
         js_entry_file='src/pkjs/index.js'
     )
+
+    # load shared waf helpers to attach the post-build archiving hook
+    lib_path = os.path.join(ctx.path.parent.parent.abspath(), 'lib', 'py')
+    if lib_path not in sys.path:
+        sys.path.insert(0, lib_path)
+    import waf_helpers
+    
+    ctx.add_post_fun(waf_helpers.copy_current_pbw)

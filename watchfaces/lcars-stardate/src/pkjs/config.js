@@ -34,6 +34,48 @@ module.exports = [
     "items": [
       {
         "type": "heading",
+        "defaultValue": "Bluetooth"
+      },
+      {
+        "type": "toggle",
+        "messageKey": "BLUETOOTH_ICON",
+        "label": "Show Connection Icon",
+        "description": "Display a bluetooth glyph showing whether the watch is connected to your phone.",
+        "defaultValue": true
+      },
+      {
+        "type": "select",
+        "messageKey": "BLUETOOTH_VIBE_CONNECT",
+        "label": "Vibrate on Connect",
+        "description": "Buzz the watch when the phone reconnects.",
+        "defaultValue": 0,
+        "options": [
+          { "label": "None", "value": 0 },
+          { "label": "Short", "value": 1 },
+          { "label": "Long", "value": 2 },
+          { "label": "Double", "value": 3 }
+        ]
+      },
+      {
+        "type": "select",
+        "messageKey": "BLUETOOTH_VIBE_DISCONNECT",
+        "label": "Vibrate on Disconnect",
+        "description": "Buzz the watch when the phone disconnects.",
+        "defaultValue": 0,
+        "options": [
+          { "label": "None", "value": 0 },
+          { "label": "Short", "value": 1 },
+          { "label": "Long", "value": 2 },
+          { "label": "Double", "value": 3 }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "section",
+    "items": [
+      {
+        "type": "heading",
         "defaultValue": "Location Settings"
       },
       {
@@ -149,7 +191,7 @@ module.exports = [
       },
       {
         "type": "select",
-        "messageKey": "TRAVERSAL_MODE",
+        "messageKey": "STEPS_MODE",
         "label": "Traversal Readout",
         "description": "What the TRAVERSAL slot shows: step count, or distance walked.",
         "defaultValue": 0,

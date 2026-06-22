@@ -1,5 +1,5 @@
-/*
- * index.js - PebbleKit JS entry point.
+/**
+ * PebbleKit JS entry point.
  *
  * Reads the Clay settings, decides the location source (phone GPS or the
  * configured city), fetches the weather through the selected provider module,
@@ -10,14 +10,14 @@
 const Clay = require('@rebble/clay/src/js/index');
 const messageKeys = require('message_keys');
 const clayConfig = require('./config');
-const weather = require('../../../../shared/pkjs/weather/weather');
-const { status } = require('../../../../shared/pkjs/weather/util');
+const weather = require('../../../../lib/js/weather/weather');
+const { status } = require('../../../../lib/js/weather/util');
 
 const clay = new Clay(clayConfig);
 
 // register the location autocomplete (referenced as type "locationsearch" in
 // config.js) before the settings page is built
-clay.registerComponent(require('../../../../shared/pkjs/clay/location-component'));
+clay.registerComponent(require('../../../../lib/js/clay/location-component'));
 
 /**
  * Collects {messageKey: defaultValue} from the Clay config so the same
@@ -260,7 +260,7 @@ function getWeather() {
 /**
  * Seeds the Clay store from the watch's current settings so the config opens
  * with the real values instead of defaults. The watch persist is the source of
- * truth; the phone's clay-settings can be empty or stale after an update.
+ * truth, since the phone's clay-settings can be empty or stale after an update.
  * @param {!Object} payload
  */
 function seedConfigFromWatch(payload) {
@@ -275,11 +275,20 @@ function seedConfigFromWatch(payload) {
   if (messageKeys.THEME in payload) {
     config.THEME = String(payload[messageKeys.THEME]);
   }
-  if (messageKeys.TRAVERSAL_MODE in payload) {
-    config.TRAVERSAL_MODE = String(payload[messageKeys.TRAVERSAL_MODE]);
+  if (messageKeys.STEPS_MODE in payload) {
+    config.STEPS_MODE = String(payload[messageKeys.STEPS_MODE]);
   }
   if (messageKeys.TIME_FORMAT in payload) {
     config.TIME_FORMAT = String(payload[messageKeys.TIME_FORMAT]);
+  }
+  if (messageKeys.BLUETOOTH_ICON in payload) {
+    config.BLUETOOTH_ICON = payload[messageKeys.BLUETOOTH_ICON] === 1;
+  }
+  if (messageKeys.BLUETOOTH_VIBE_CONNECT in payload) {
+    config.BLUETOOTH_VIBE_CONNECT = String(payload[messageKeys.BLUETOOTH_VIBE_CONNECT]);
+  }
+  if (messageKeys.BLUETOOTH_VIBE_DISCONNECT in payload) {
+    config.BLUETOOTH_VIBE_DISCONNECT = String(payload[messageKeys.BLUETOOTH_VIBE_DISCONNECT]);
   }
 
   localStorage.setItem('clay-settings', JSON.stringify(config));
