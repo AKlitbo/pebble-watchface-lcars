@@ -9,7 +9,10 @@
 #pragma once
 #include "system/settings/settings.h"
 
-/** @addtogroup watchface-lcars @{ */
+/**
+ * @addtogroup watchface-lcars
+ * @{
+ */
 
 /**
  * @brief Gets the settings schema for this face.

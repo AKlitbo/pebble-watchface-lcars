@@ -9,7 +9,10 @@
 #pragma once
 #include <pebble.h>
 
-/** @addtogroup watchface-lcars @{ */
+/**
+ * @addtogroup watchface-lcars
+ * @{
+ */
 
 /** @brief Load the label font. */
 void widgets_load(void);

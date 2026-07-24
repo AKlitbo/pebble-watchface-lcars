@@ -19,7 +19,10 @@
 // smallest versioned blob accepted. fields are append-only so this never changes
 #define LCARS_SETTINGS_V1_SIZE 21
 
-/** @addtogroup watchface-lcars @{ */
+/**
+ * @addtogroup watchface-lcars
+ * @{
+ */
 
 /**
  * @brief lcars's persisted settings.
@@ -48,9 +51,12 @@ _Static_assert(offsetof(LcarsSettings, bluetooth_icon) == LCARS_SETTINGS_V1_SIZE
 static LcarsSettings s_settings;
 
 // lcars subscribes to every known setting in its frozen struct order. "%Y.%m%d" is
-// its numeric stardate-style date default.
+// its numeric stardate-style date default
 static const SettingField s_fields[] = {
-    KNOWN_TEMPERATURE_UNIT(offsetof(LcarsSettings, temperature_unit)),
+    // temperature unit is an inline SETTING_BOOL. a °F toggle on the config page
+    // the shared KNOWN_ macro does not cover it since other faces send it as a select
+    { .id = SETTING_TEMPERATURE_UNIT, .message_key = &MESSAGE_KEY_WEATHER_TEMPERATURE_UNIT,
+      .type = SETTING_BOOL, .offset = offsetof(LcarsSettings, temperature_unit), .affects_weather = true },
     KNOWN_DATE_FORMAT(offsetof(LcarsSettings, date_format), "%Y.%m%d"),
     KNOWN_THEME(offsetof(LcarsSettings, theme), 7),
     KNOWN_STEPS_MODE(offsetof(LcarsSettings, steps_mode), STEPS_MODE_COUNT),

@@ -15,6 +15,23 @@
  * @{
  */
 
+// --- Zone (text slot) ids ---
+// face-owned slot vocabulary. layout.c declares a static Zone table indexed by these
+// and the engine loops it to build the text layers
+enum
+{
+    ZONE_TIME,
+    ZONE_MERIDIEM,
+    ZONE_DATE,
+    ZONE_WEATHER,
+    ZONE_COND,
+    ZONE_HR,
+    ZONE_STEPS,
+    ZONE_LAT,
+    ZONE_LON,
+    ZONE_COUNT
+};
+
 // --- Text Slots ---
 #define SLOT_TIME GRect(53, 92, 142, 74)       // centered time box (Antonio 62)
 #define SLOT_BANNER GRect(53, 17, 142, 44)     // date below STARDATE bar (Antonio 36)

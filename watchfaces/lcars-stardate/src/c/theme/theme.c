@@ -1,6 +1,6 @@
 /**
  * @file theme.c
- * @brief Per-theme lookups: background resource ids and panel accent colors.
+ * @brief Per-theme lookups: background resource ids and panel accent colours.
  */
 #include "theme.h"
 

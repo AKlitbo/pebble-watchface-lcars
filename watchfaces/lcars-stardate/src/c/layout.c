@@ -8,6 +8,7 @@
 
 #include "ui/fonts.h"
 #include "ui/zone.h"
+#include "draw/fonts.h"
 #include "ui/readouts.h"
 #include "ui/icon_cache.h"
 #include "theme/theme.h"
@@ -17,22 +18,22 @@
 #include "system/settings/settings.h"
 #include "system/settings/setting_values.h"
 
-// --- Zone table ---
+// --- Zone Table ---
 // presentation for every slot: geometry from the SLOT_* map plus font by registry id
 // plus alignment and colour. Readouts are white on the black field. the lat/lon coordinates
 // sit on the coloured left-rail blocks so they're black like the numerals
 static const Zone s_zones[ZONE_COUNT] = {
-    [ZONE_TIME]     = {.rect = SLOT_TIME,     .font_id = FONT_TIME,  .align = GTextAlignmentCenter, .color = GColorWhite},
-    [ZONE_MERIDIEM] = {.rect = SLOT_MERIDIEM, .font_id = FONT_XS,    .align = GTextAlignmentRight,  .color = GColorWhite},
-    [ZONE_DATE]     = {.rect = SLOT_BANNER,   .font_id = FONT_DATE,  .align = GTextAlignmentCenter, .color = GColorWhite,
-                       .font_id_fallback = FONT_DATE_SM, .rect_fallback = SLOT_BANNER_SM,
-                       .font_id_fallback2 = FONT_DATE_XS, .rect_fallback2 = SLOT_BANNER_XS},
-    [ZONE_WEATHER]  = {.rect = SLOT_WEATHER,  .font_id = FONT_SM,    .align = GTextAlignmentLeft,   .color = GColorWhite},
-    [ZONE_COND]     = {.rect = SLOT_COND,     .font_id = FONT_VALUE, .align = GTextAlignmentLeft,   .color = GColorWhite},
-    [ZONE_HR]       = {.rect = SLOT_HR,       .font_id = FONT_VALUE, .align = GTextAlignmentLeft,   .color = GColorWhite},
-    [ZONE_STEPS]    = {.rect = SLOT_STEPS,    .font_id = FONT_VALUE, .align = GTextAlignmentLeft,   .color = GColorWhite},
-    [ZONE_LAT]      = {.rect = SLOT_LAT,      .font_id = FONT_COORD, .align = GTextAlignmentRight,  .color = COORD_TEXT_COLOR},
-    [ZONE_LON]      = {.rect = SLOT_LON,      .font_id = FONT_COORD, .align = GTextAlignmentRight,  .color = COORD_TEXT_COLOR},
+    [ZONE_TIME]     = {.rect = SLOT_TIME,     .font_id = FONT_ANTONIO_62, .align = GTextAlignmentCenter, .color = GColorWhite},
+    [ZONE_MERIDIEM] = {.rect = SLOT_MERIDIEM, .font_id = FONT_ANTONIO_10, .align = GTextAlignmentRight,  .color = GColorWhite},
+    [ZONE_DATE]     = {.rect = SLOT_BANNER,   .font_id = FONT_ANTONIO_36, .align = GTextAlignmentCenter, .color = GColorWhite,
+                       .font_id_fallback = FONT_ANTONIO_32, .rect_fallback = SLOT_BANNER_SM,
+                       .font_id_fallback2 = FONT_ANTONIO_28, .rect_fallback2 = SLOT_BANNER_XS},
+    [ZONE_WEATHER]  = {.rect = SLOT_WEATHER,  .font_id = FONT_ANTONIO_20, .align = GTextAlignmentLeft,   .color = GColorWhite},
+    [ZONE_COND]     = {.rect = SLOT_COND,     .font_id = FONT_ANTONIO_16, .align = GTextAlignmentLeft,   .color = GColorWhite},
+    [ZONE_HR]       = {.rect = SLOT_HR,       .font_id = FONT_ANTONIO_16, .align = GTextAlignmentLeft,   .color = GColorWhite},
+    [ZONE_STEPS]    = {.rect = SLOT_STEPS,    .font_id = FONT_ANTONIO_16, .align = GTextAlignmentLeft,   .color = GColorWhite},
+    [ZONE_LAT]      = {.rect = SLOT_LAT,      .font_id = FONT_ANTONIO_12, .align = GTextAlignmentRight,  .color = COORD_TEXT_COLOR},
+    [ZONE_LON]      = {.rect = SLOT_LON,      .font_id = FONT_ANTONIO_12, .align = GTextAlignmentRight,  .color = COORD_TEXT_COLOR},
 };
 
 /**
@@ -40,14 +41,14 @@ static const Zone s_zones[ZONE_COUNT] = {
  */
 static void load_fonts(void)
 {
-    fonts_register(FONT_TIME,    fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_ANTONIO_62)));
-    fonts_register(FONT_DATE,    fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_ANTONIO_36)));
-    fonts_register(FONT_DATE_SM, fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_ANTONIO_32)));
-    fonts_register(FONT_DATE_XS, fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_ANTONIO_28)));
-    fonts_register(FONT_SM,      fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_ANTONIO_20)));
-    fonts_register(FONT_VALUE,   fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_ANTONIO_16)));
-    fonts_register(FONT_COORD,   fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_ANTONIO_12)));
-    fonts_register(FONT_XS,      fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_ANTONIO_10)));
+    fonts_register(FONT_ANTONIO_62, fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_ANTONIO_62)));
+    fonts_register(FONT_ANTONIO_36, fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_ANTONIO_36)));
+    fonts_register(FONT_ANTONIO_32, fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_ANTONIO_32)));
+    fonts_register(FONT_ANTONIO_28, fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_ANTONIO_28)));
+    fonts_register(FONT_ANTONIO_20, fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_ANTONIO_20)));
+    fonts_register(FONT_ANTONIO_16, fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_ANTONIO_16)));
+    fonts_register(FONT_ANTONIO_12, fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_ANTONIO_12)));
+    fonts_register(FONT_ANTONIO_10, fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_ANTONIO_10)));
 }
 
 // --- Baked LCARS frame ---

@@ -19,7 +19,10 @@ static GFont s_font_label;  // Antonio 10 bar labels
 // stateless painters (ctx in and pixels out) for the chrome only LCARS faces draw:
 // the holder-box label and the segmented battery gauge
 
-/** @addtogroup watchface-lcars @{ */
+/**
+ * @addtogroup watchface-lcars
+ * @{
+ */
 
 /**
  * @brief Draw a left-aligned label inside a black LCARS holder box.
@@ -28,7 +31,7 @@ static GFont s_font_label;  // Antonio 10 bar labels
  * @param area The area to draw in.
  * @param text The label text.
  * @param font The font to use.
- * @param text_color The text color.
+ * @param text_color The text colour.
  * @param pad Padding inside the box.
  */
 static void lcars_label(GContext *ctx, GRect area, const char *text, GFont font, GColor text_color, int pad)
@@ -56,8 +59,8 @@ static void lcars_label(GContext *ctx, GRect area, const char *text, GFont font,
  * @param ctx The graphics context.
  * @param area The bounding box of the battery icon.
  * @param level Battery charge level percentage.
- * @param accent_color The outline and nub color.
- * @param fill_color The lit-segment color (already level- and theme-resolved).
+ * @param accent_color The outline and nub colour.
+ * @param fill_color The lit-segment colour (already level- and theme-resolved).
  */
 static void lcars_battery_gauge(GContext *ctx, GRect area, int level, GColor accent_color, GColor fill_color)
 {
