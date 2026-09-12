@@ -1,0 +1,33 @@
+{
+  "name": "pebble-watchface-lcars",
+  "author": "Null Syntax",
+  "version": "1.3.0",
+  "license": "PolyForm-Noncommercial-1.0.0",
+  "keywords": [
+    "pebble-app"
+  ],
+  "private": true,
+  "workspaces": [
+    "lib"
+  ],
+  "engines": {
+    "node": ">=24.2"
+  },
+  "scripts": {
+    "test": "vitest run --config lib/config/vitest.config.ts",
+    "test:watch": "vitest --config lib/config/vitest.config.ts",
+    "test:coverage": "vitest run --config lib/config/vitest.config.ts --coverage",
+    "lint": "eslint . --config lib/config/eslint.config.ts",
+    "lint:fix": "eslint . --fix --config lib/config/eslint.config.ts",
+    "typecheck": "tsc -p tsconfig.json && tsc -p lib/config/tsconfig.builder.json && tsc -p lib/config/tsconfig.tools.json && tsc -p lib/config/tsconfig.spec.json",
+    "build:pkjs": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON lib/tools/pkjs/build-pkjs.ts",
+    "build:conditions": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON lib/tools/build-conditions.ts",
+    "build:manifests": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON lib/tools/manifest/build-manifests.ts",
+    "gen:icons": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON lib/tools/icons/generate-icons.ts",
+    "gen:frame": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON lib/tools/frame/generate-frame.ts",
+    "gen:lcars": "npm run gen:lcars:clay && npm run gen:lcars:thumbnails",
+    "gen:lcars:clay": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON lib/tools/clay-components/generate-components.ts lcars-stardate",
+    "gen:lcars:thumbnails": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON lib/tools/thumbnails/embed-thumbnails.ts lcars-stardate",
+    "dev:clay": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON lib/tools/dev/clay-preview.ts"
+  }
+}

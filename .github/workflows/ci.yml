@@ -1,0 +1,123 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - '**.md'
+  pull_request:
+    paths-ignore:
+      - '**.md'
+
+jobs:
+  # build each watchface (regenerates the manifest, compiles the TS pkjs, runs pebble build).
+  # one job per face so a failing face does not block the others' artifacts
+  pebble:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        face: [lcars-stardate]
+    steps:
+      - uses: actions/checkout@v7
+
+      # the engine is a submodule at lib/. a full submodule clone carries the engine's tags, which
+      # the release check reads
+      - name: Checkout Engine
+        run: git submodule update --init
+
+      - uses: ./lib/.github/actions/setup-pebble
+
+      # tee'd because the SDK's memory report is printed during the link and is the only place
+      # the heap figure exists. shell: bash for pipefail, or a failed build would pass as long as
+      # tee succeeded
+      - name: Build Watchface
+        shell: bash
+        run: bash lib/build.sh ${{ matrix.face }} | tee build-${{ matrix.face }}.log
+
+      - name: Collect Memory Usage
+        if: always()
+        run: bash lib/tools/ci/report-memory.sh build-${{ matrix.face }}.log ${{ matrix.face }} mem-${{ matrix.face }}.tsv
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: mem-${{ matrix.face }}
+          path: mem-${{ matrix.face }}.tsv
+          if-no-files-found: warn
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: pbw-${{ matrix.face }}
+          path: |
+            targets/${{ matrix.face }}*/build/*.pbw
+          if-no-files-found: error
+
+  memory:
+    runs-on: ubuntu-latest
+    needs: pebble
+    if: always()
+    steps:
+      - uses: actions/checkout@v7
+
+      # the engine is a submodule at lib/. a full submodule clone carries the engine's tags, which
+      # the release check reads
+      - name: Checkout Engine
+        run: git submodule update --init
+
+      - uses: actions/download-artifact@v7
+        with:
+          pattern: mem-*
+          path: mem
+          merge-multiple: true
+
+      - name: Memory Summary
+        run: bash lib/tools/ci/render-memory.sh mem
+
+  vitest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      # the engine is a submodule at lib/. a full submodule clone carries the engine's tags, which
+      # the release check reads
+      - name: Checkout Engine
+        run: git submodule update --init
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm test
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      # the engine is a submodule at lib/. a full submodule clone carries the engine's tags, which
+      # the release check reads
+      - name: Checkout Engine
+        run: git submodule update --init
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+
+  typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      # the engine is a submodule at lib/. a full submodule clone carries the engine's tags, which
+      # the release check reads
+      - name: Checkout Engine
+        run: git submodule update --init
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
