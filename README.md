@@ -54,7 +54,7 @@ same correction, so a hand-edited setting cannot smuggle one into the right colu
 
 Download the `.pbw` from [Releases](https://github.com/AKlitbo/pebble-watchface-lcars/releases) and open it with the Pebble app on your phone.
 
-Releases are tagged `lcars-stardate-v<version>`, and the notes are that version's `CHANGELOG.md` entry. The asset names its platform, so `lcars-stardate-emery-1.7.0.pbw` is Emery only. Every release since 1.0.0 is here. Releases up to 1.11.0 were first published from [pebble-watchfaces](https://github.com/AKlitbo/pebble-watchfaces/releases), so their dates on this page are when they were copied over, and each note opens with the original release date.
+Releases are tagged `lcars-stardate-v<version>`, and the notes are that version's `CHANGELOG.md` entry. The asset names its platform, so `lcars-stardate-emery-1.7.0.pbw` is Emery only. Every release since 1.0.0 is here. Releases up to 1.11.0 were first published from the pebble-watchfaces repository, so their dates on this page are when they were copied over, and each note opens with the original release date.
 
 ## Project Structure
 
