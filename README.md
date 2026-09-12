@@ -4,7 +4,51 @@ An LCARS-inspired watchface for the Pebble Time 2 (**Emery**). It shows the time
 
 | Watchface | Preview |
 | :--- | :--- |
-| **LCARS Stardate**<br>[readouts](watchfaces/lcars-stardate/MODULES.md) · [changelog](watchfaces/lcars-stardate/CHANGELOG.md) | <img src=".github/images/lcars-stardate/theme_classic.png" width="75" title="Classic"> <img src=".github/images/lcars-stardate/theme_nemesis-blue.png" width="75" title="Nemesis Blue"> <img src=".github/images/lcars-stardate/theme_mono.png" width="75" title="Classic Mono"> <img src=".github/images/lcars-stardate/theme_voyager.png" width="75" title="Voyager"> <img src=".github/images/lcars-stardate/theme_voyager-mono.png" width="75" title="Voyager Mono"> <img src=".github/images/lcars-stardate/theme_lower-decks.png" width="75" title="Lower Decks"> <img src=".github/images/lcars-stardate/theme_lower-decks-mono.png" width="75" title="Lower Decks Mono"> <img src=".github/images/lcars-stardate/theme_lower-decks-padd.png" width="75" title="Lower Decks PADD"> <img src=".github/images/lcars-stardate/theme_lower-decks-padd-mono.png" width="75" title="Lower Decks PADD Mono"> |
+| **LCARS Stardate**<br>[readouts](#readouts) · [changelog](CHANGELOG.md) | <img src=".github/images/lcars-stardate/theme_classic.png" width="75" title="Classic"> <img src=".github/images/lcars-stardate/theme_nemesis-blue.png" width="75" title="Nemesis Blue"> <img src=".github/images/lcars-stardate/theme_mono.png" width="75" title="Classic Mono"> <img src=".github/images/lcars-stardate/theme_voyager.png" width="75" title="Voyager"> <img src=".github/images/lcars-stardate/theme_voyager-mono.png" width="75" title="Voyager Mono"> <img src=".github/images/lcars-stardate/theme_lower-decks.png" width="75" title="Lower Decks"> <img src=".github/images/lcars-stardate/theme_lower-decks-mono.png" width="75" title="Lower Decks Mono"> <img src=".github/images/lcars-stardate/theme_lower-decks-padd.png" width="75" title="Lower Decks PADD"> <img src=".github/images/lcars-stardate/theme_lower-decks-padd-mono.png" width="75" title="Lower Decks PADD Mono"> |
+
+## Readouts
+
+Every readout the four ops slots can show, at each size it supports.
+
+The face has four pickable slots, two per column, under a fixed clock and stardate banner. A slot
+carries no fixed reading. What it shows comes from the catalogue below, and its bar word and glyph
+follow the pick, so changing a slot needs no new artwork for any theme.
+
+
+### Arrangements
+
+Six ways the same four slots read. Each is a picked set rather than a mode, so any readout can go
+in any slot and you can mix them however you like.
+
+<img src=".github/images/lcars-stardate/ops_body.png" width="105" title="Body"> <img src=".github/images/lcars-stardate/ops_weather.png" width="105" title="Weather"> <img src=".github/images/lcars-stardate/ops_sun.png" width="105" title="Sun"> <img src=".github/images/lcars-stardate/ops_moon.png" width="105" title="Moon"> <img src=".github/images/lcars-stardate/ops_calendar.png" width="105" title="Calendar"> <img src=".github/images/lcars-stardate/ops_alt-time.png" width="105" title="Alternate Time">
+
+### Slot
+
+The ordinary size, and what all four slots take.
+
+| | | | | | | |
+|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
+| **Heart Rate**<br>![](resources/thumbnails/heart-slot.png) | **Steps / Distance**<br>![](resources/thumbnails/steps-slot.png) | **Battery**<br>![](resources/thumbnails/battery-slot.png) | **Calories**<br>![](resources/thumbnails/calories-slot.png) | **Sleep**<br>![](resources/thumbnails/sleep-slot.png) | **Active Minutes**<br>![](resources/thumbnails/active-slot.png) | **Moon Phase %**<br>![](resources/thumbnails/moon-pct-slot.png) |
+| **Moon Phase Name**<br>![](resources/thumbnails/moon-phase-slot.png) | **Next Full / New Moon**<br>![](resources/thumbnails/moon-next-slot.png) | **Sunrise**<br>![](resources/thumbnails/sunrise-slot.png) | **Sunset**<br>![](resources/thumbnails/sunset-slot.png) | **Length of Day**<br>![](resources/thumbnails/daylight-slot.png) | **Next Sun Event**<br>![](resources/thumbnails/sun-next-slot.png) | **Humidity**<br>![](resources/thumbnails/humidity-slot.png) |
+| **Wind**<br>![](resources/thumbnails/wind-slot.png) | **UV Index**<br>![](resources/thumbnails/uv-slot.png) | **High / Low**<br>![](resources/thumbnails/hilo-slot.png) | **Julian Date**<br>![](resources/thumbnails/julian-slot.png) | **Day of Year**<br>![](resources/thumbnails/day-of-year-slot.png) | **Week Number**<br>![](resources/thumbnails/week-slot.png) | **Temperature**<br>![](resources/thumbnails/temp-slot.png) |
+| **Conditions**<br>![](resources/thumbnails/conditions-slot.png) | **Epoch Clock**<br>![](resources/thumbnails/epoch-slot.png) | **Swatch Beats**<br>![](resources/thumbnails/beats-slot.png) | **Alternate Time Zone**<br>![](resources/thumbnails/zone1-slot.png) | **Next Alarm**<br>![](resources/thumbnails/alarm-slot.png) | | |
+
+Epoch takes no glyph on purpose. Ten digits only fit once the row hands its icon space back to the
+value, which any readout with no glyph gets. The alternate zone names its own bar from the city you
+search for, so a slot set to London reads LONDON.
+
+### Tall
+
+One readout fills a whole column instead of a slot: the condition glyph over a large temperature,
+at a size the ordinary rows cannot give it.
+
+| |
+|:--:|
+| **Sensors Block**<br>![](resources/thumbnails/sensors-tall.png) |
+
+It only goes in the upper left, which is the one column the face draws it in, and it takes the lower
+left slot with it. The builder will not let you drop it anywhere else, and the firmware makes the
+same correction, so a hand-edited setting cannot smuggle one into the right column.
 
 ## Install
 
@@ -14,7 +58,11 @@ Releases are tagged `lcars-stardate-v<version>`, and the notes are that version'
 
 ## Project Structure
 
-* **`watchfaces/lcars-stardate/`**: the face. `config/` holds its identity (uuid, version, message keys, resources), `src/c/` the device code, `src/pkjs/` the Clay config page and phone-side bridge, `resources/` its fonts and PNGs, `frame/` the HTML the backgrounds are baked from, and `CHANGELOG.md` its release history.
+* **`config/`**: the face's identity (uuid, version, message keys, resources).
+* **`src/`**: `src/c/` the device code, `src/pkjs/` the Clay config page and phone-side bridge, and `src/data/` the slot presets both share.
+* **`resources/`**: the fonts, icons, baked backgrounds and Clay thumbnails.
+* **`frame/`**: the HTML the backgrounds are baked from.
+* **`CHANGELOG.md`**: the release history.
 * **`lib/`**: the shared engine, a git submodule of [the engine repo](https://github.com/AKlitbo/pebble-watchface-engine). It holds the device engine, the PebbleKit JS runtime, the waf helpers, the build tooling under `tools/`, the shared tsconfig/eslint/vitest setup under `config/`, and `build.sh`.
 * **`targets/<target>/`**: the build sandbox waf runs in, generated and gitignored.
 * **`vendor/`**: third-party source SVGs and the LCARS template (gitignored, see [Third-Party Assets](#third-party-assets)).
@@ -23,10 +71,10 @@ Anything with a `.g.` in the name is generated and should not be hand-edited: re
 
 ## Releasing
 
-Pushing a `lcars-stardate-v<version>` tag is the whole process. [release.yml](.github/workflows/release.yml) builds the face, takes its notes from the matching `CHANGELOG.md` section, and publishes the `.pbw`.
+A release starts when a `lcars-stardate-v<version>` tag is pushed. [release.yml](.github/workflows/release.yml) then builds the face, takes its notes from the matching [CHANGELOG.md](CHANGELOG.md) section, and publishes the `.pbw`.
 
 ```sh
-# date the [1.12.0] heading in watchfaces/lcars-stardate/CHANGELOG.md first, then
+# date the [1.12.0] heading in CHANGELOG.md first, then
 git tag lcars-stardate-v1.12.0
 git push origin lcars-stardate-v1.12.0
 ```

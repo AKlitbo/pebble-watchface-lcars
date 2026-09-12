@@ -16,7 +16,7 @@
  * clear action rather than as something to drag.
  */
 
-import type { ModuleMeta } from '../../../../../lib/ts/clay/types';
+import type { ModuleMeta } from '../../../lib/ts/clay/types';
 
 const moduleMeta: Record<string, ModuleMeta> = {
   'Heart Rate (VITALS)':            { icon: '❤️', blockColor: '#e74c3c', slug: 'heart' },

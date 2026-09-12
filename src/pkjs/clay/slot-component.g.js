@@ -1,4 +1,4 @@
-// generated from watchfaces/lcars-stardate/src/pkjs/clay/builder/slots.manifest.ts by tools/clay-components/generate-components.ts
+// generated from src/pkjs/clay/builder/slots.manifest.ts by tools/clay-components/generate-components.ts
 // do not edit by hand: run `npm run gen:clay` after changing the sources
 /**
  * Clay custom component for the drag and drop ops slot builder.
@@ -66,7 +66,7 @@ module.exports = {
       };
       var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-      // watchfaces/lcars-stardate/src/pkjs/clay/builder/ts/slots/geometry.ts
+      // src/pkjs/clay/builder/ts/slots/geometry.ts
       var geometry_exports = {};
       __export(geometry_exports, {
         DEFAULT_SLOTS: () => DEFAULT_SLOTS,
@@ -100,7 +100,7 @@ module.exports = {
       }
       var SLOT_LT, SLOT_LB, SLOT_RT, SLOT_RB, SLOT_COUNT, ID_HEART, ID_STEPS, ID_EMPTY, ID_SENSORS, DEFAULT_SLOTS, SLOT_KEYS, SLOT_STORE_CLASS;
       var init_geometry = __esm({
-        "watchfaces/lcars-stardate/src/pkjs/clay/builder/ts/slots/geometry.ts"() {
+        "src/pkjs/clay/builder/ts/slots/geometry.ts"() {
           SLOT_LT = 0;
           SLOT_LB = 1;
           SLOT_RT = 2;
@@ -121,7 +121,7 @@ module.exports = {
         }
       });
 
-      // watchfaces/lcars-stardate/src/pkjs/clay/builder/ts/slots/codec.ts
+      // src/pkjs/clay/builder/ts/slots/codec.ts
       var codec_exports = {};
       __export(codec_exports, {
         defaults: () => defaults,
@@ -181,35 +181,35 @@ module.exports = {
         return DEFAULT_SLOTS.slice();
       }
       var init_codec = __esm({
-        "watchfaces/lcars-stardate/src/pkjs/clay/builder/ts/slots/codec.ts"() {
+        "src/pkjs/clay/builder/ts/slots/codec.ts"() {
           init_geometry();
         }
       });
 
-      // watchfaces/lcars-stardate/src/data/slot-presets.json
+      // src/data/slot-presets.json
       var slot_presets_default;
       var init_slot_presets = __esm({
-        "watchfaces/lcars-stardate/src/data/slot-presets.json"() {
+        "src/data/slot-presets.json"() {
           slot_presets_default = {
             default: [23, 20, 0, 1]
           };
         }
       });
 
-      // watchfaces/lcars-stardate/src/pkjs/clay/builder/ts/slots/presets.ts
+      // src/pkjs/clay/builder/ts/slots/presets.ts
       var presets_exports = {};
       __export(presets_exports, {
         SLOT_PRESETS: () => SLOT_PRESETS
       });
       var SLOT_PRESETS;
       var init_presets = __esm({
-        "watchfaces/lcars-stardate/src/pkjs/clay/builder/ts/slots/presets.ts"() {
+        "src/pkjs/clay/builder/ts/slots/presets.ts"() {
           init_slot_presets();
           SLOT_PRESETS = slot_presets_default;
         }
       });
 
-      // watchfaces/lcars-stardate/src/pkjs/clay/builder/ts/slots/visuals.ts
+      // src/pkjs/clay/builder/ts/slots/visuals.ts
       var visuals_exports = {};
       __export(visuals_exports, {
         buildReadoutList: () => buildReadoutList,
@@ -281,7 +281,7 @@ module.exports = {
         return null;
       }
       var init_visuals = __esm({
-        "watchfaces/lcars-stardate/src/pkjs/clay/builder/ts/slots/visuals.ts"() {
+        "src/pkjs/clay/builder/ts/slots/visuals.ts"() {
           init_geometry();
         }
       });
@@ -381,7 +381,7 @@ module.exports = {
         }
       });
 
-      // watchfaces/lcars-stardate/src/pkjs/clay/builder/ts/slots/drag.ts
+      // src/pkjs/clay/builder/ts/slots/drag.ts
       var drag_exports = {};
       __export(drag_exports, {
         installDrag: () => installDrag,
@@ -466,14 +466,14 @@ module.exports = {
         };
       }
       var init_drag2 = __esm({
-        "watchfaces/lcars-stardate/src/pkjs/clay/builder/ts/slots/drag.ts"() {
+        "src/pkjs/clay/builder/ts/slots/drag.ts"() {
           init_geometry();
           init_visuals();
           init_drag();
         }
       });
 
-      // watchfaces/lcars-stardate/src/pkjs/clay/builder/ts/slots/init.ts
+      // src/pkjs/clay/builder/ts/slots/init.ts
       var init_exports = {};
       __export(init_exports, {
         init: () => init
@@ -576,7 +576,7 @@ module.exports = {
         }, 0);
       }
       var init_init = __esm({
-        "watchfaces/lcars-stardate/src/pkjs/clay/builder/ts/slots/init.ts"() {
+        "src/pkjs/clay/builder/ts/slots/init.ts"() {
           init_geometry();
           init_codec();
           init_presets();
@@ -585,9 +585,9 @@ module.exports = {
         }
       });
 
-      // watchfaces/lcars-stardate/src/pkjs/clay/builder/component-entry.js
+      // src/pkjs/clay/builder/component-entry.js
       var require_component_entry = __commonJS({
-        "watchfaces/lcars-stardate/src/pkjs/clay/builder/component-entry.js"(exports, module) {
+        "src/pkjs/clay/builder/component-entry.js"(exports, module) {
           init_geometry();
           init_codec();
           init_presets();

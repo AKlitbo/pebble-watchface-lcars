@@ -10,7 +10,7 @@
 import { SLOT_COUNT, ID_EMPTY, canPlace, isTall, swallowedBy } from './geometry';
 import { fillVisual, readoutById } from './visuals';
 import type { Readout, Thumbs } from './visuals';
-import { createDrag } from '../../../../../../../../lib/ts/clay/builder/ts/drag';
+import { createDrag } from '../../../../../../lib/ts/clay/builder/ts/drag';
 
 /** What the drag needs from the component around it. */
 export interface DragEnv {

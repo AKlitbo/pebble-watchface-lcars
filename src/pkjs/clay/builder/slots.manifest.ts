@@ -6,10 +6,10 @@
  * assembled initialize, so order never changes behaviour.
  *
  * Every piece is face-local. This face belongs to no family, so the generator's core overlay
- * never fires, and a piece reaching for watchfaces/mosaic/core would not resolve.
+ * never fires, and a piece reaching for a family core would not resolve.
  */
 
-import type { Manifest } from '../../../../../../lib/tools/clay-components/generate-components.ts';
+import type { Manifest } from '../../../../lib/tools/clay-components/generate-components.ts';
 
 export default {
   name: 'slotBuilder',

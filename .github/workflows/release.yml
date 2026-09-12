@@ -44,10 +44,11 @@ jobs:
           tag="$GITHUB_REF_NAME"
           version="${tag##*-v}"
           face="${tag%-v$version}"
-          appinfo=$(find watchfaces -mindepth 3 -maxdepth 4 -path "*/$face/config/pebble.appinfo.json" | head -1)
+          # this repo holds one face, at the root
+          appinfo=config/pebble.appinfo.json
 
-          if [ ! -f "$appinfo" ]; then
-            echo "tag $tag names face '$face', which has no appinfo under watchfaces/" >&2
+          if [ "$(jq -r .name "$appinfo")" != "$face" ]; then
+            echo "tag $tag names face '$face', but this repo's face is $(jq -r .name "$appinfo")" >&2
             exit 1
           fi
 

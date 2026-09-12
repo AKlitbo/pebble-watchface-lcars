@@ -1,4 +1,4 @@
-# Third-party notices
+# Third-Party Notices
 
 LCARS Stardate is under the PolyForm Noncommercial License, see [LICENSE](LICENSE). The shared
 engine it builds on (`lib/`) is used under the PolyForm option of its dual licence. The face bundles
@@ -28,14 +28,14 @@ and is what section 1.7 asks of a larger work.
 
 ## Fonts
 
-The face bundles its `.ttf` files under `watchfaces/lcars-stardate/resources/fonts/`, and the build
+The face bundles its `.ttf` files under `resources/fonts/`, and the build
 converts them into the watch's own font format, so both this repository and the built watchface
 carry them.
 
 - **[Antonio](https://fonts.google.com/specimen/Antonio)**: Copyright The Antonio Project Authors,
   with Reserved Font Name "Antonio". SIL Open Font License 1.1, published at
   <https://openfontlicense.org>. Licence text in
-  [OFL.txt](watchfaces/lcars-stardate/resources/fonts/OFL.txt)
+  [OFL.txt](resources/fonts/OFL.txt)
 
 ## Icons
 

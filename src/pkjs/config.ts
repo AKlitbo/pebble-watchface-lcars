@@ -4,7 +4,7 @@
  * Built from the shared template (see lib/ts/pkjs/config-builder.ts), tuned with the
  * LCARS theme list and the two ops slots this face lets you fill.
  */
-import buildConfig from '../../../../lib/ts/pkjs/config-builder';
+import buildConfig from '../../lib/ts/pkjs/config-builder';
 import moduleThumbnails from './clay/module-thumbnails.g';
 import moduleMeta from './clay/module-meta';
 

@@ -5,7 +5,7 @@ build/
 # Waf-compiled resource artifacts (sources are versioned)
 *.reso
 
-# staged build folders (sources live under watchfaces/<face>/)
+# staged build folders (sources live in src/ and resources/)
 targets/*/package.json
 targets/*/tsconfig.pkjs.json
 targets/*/wscript

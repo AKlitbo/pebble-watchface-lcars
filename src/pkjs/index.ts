@@ -5,9 +5,9 @@
  * formats coordinates in LCARS dash style into separate latitude/longitude
  * keys. Everything else is shared.
  */
-import app from '../../../../lib/ts/pkjs/app';
-import type { WeatherResult } from '../../../../lib/ts/weather/util';
-import hiddenStoreComponent from '../../../../lib/ts/clay/hidden-store-component';
+import app from '../../lib/ts/pkjs/app';
+import type { WeatherResult } from '../../lib/ts/weather/util';
+import hiddenStoreComponent from '../../lib/ts/clay/hidden-store-component';
 import clayConfig from './config';
 import slotComponent from './clay/slot-component.g';
 

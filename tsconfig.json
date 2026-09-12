@@ -1,10 +1,10 @@
 {
   "extends": "./lib/tsconfig.json",
-  "include": ["watchfaces/**/src/pkjs/**/*.ts", "lib/ts/**/*.ts"],
+  "include": ["src/pkjs/**/*.ts", "lib/ts/**/*.ts"],
   "exclude": [
     "node_modules",
     "targets",
-    "watchfaces/**/src/pkjs/clay/builder/**",
+    "src/pkjs/clay/builder/**",
     "lib/ts/clay/builder/**",
     "**/*.spec.ts"
   ]
