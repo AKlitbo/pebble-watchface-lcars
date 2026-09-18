@@ -141,7 +141,8 @@ static void init(void)
         time_store_init(time_cfg(), NULL);
         weather_store_init((WeatherConfig){.enabled = true, .live = true, .poll_min = WEATHER_POLL_MIN,
                                            .persist_key = WEATHER_STORE_KEY}, NULL);
-        location_store_init((LocationConfig){.enabled = true, .live = true}, NULL);
+        location_store_init((LocationConfig){.enabled = true, .live = true,
+                                             .persist_key = LOCATION_STORE_KEY}, NULL);
     }
 
     s_window = window_create();

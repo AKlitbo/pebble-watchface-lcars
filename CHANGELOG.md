@@ -2,8 +2,25 @@
 
 All notable changes to the LCARS Stardate watchface are documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [1.11.1] - 2026-09-17
+
+### Changed
+
+- Made the weather arrive sooner on OpenWeatherMap, which is now asked for the reading and the extra readouts together rather than one after the other.
+
+### Fixed
+
+- Fixed a second clock drifting an hour when the clocks changed. Its offset was fixed when you picked the city, so a London picked in winter ran an hour behind all summer. Pick the city again in settings to take up the fix, which the settings page now prompts you to do.
+- Fixed the weather sticking on an old reading, or staying blank, until the phone app was restarted. A reading that failed to reach the watch is now sent again, and the watch asking repeatedly while it waits no longer spends a weather lookup each time.
+- Fixed drizzle showing the N/A icon on OpenWeatherMap.
+- Fixed saving settings always fetching the weather again. Changing a colour or a vibration no longer spends one of your provider's daily lookups.
+- Fixed the settings page opening with the wrong values when the watchface had a lot of settings to send back. The watch now sends the whole lot or none of it.
+
+### Notes
+
+- This release clears the saved weather once. The weather readouts show dashes until the next refresh rather than the reading from before the update, and nothing needs doing to bring them back.
 
 ## [1.11.0] - 2026-09-07
 

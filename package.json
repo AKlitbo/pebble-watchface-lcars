@@ -25,9 +25,8 @@
     "build:manifests": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON lib/tools/manifest/build-manifests.ts",
     "gen:icons": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON lib/tools/icons/generate-icons.ts",
     "gen:frame": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON lib/tools/frame/generate-frame.ts",
-    "gen:lcars": "npm run gen:lcars:clay && npm run gen:lcars:thumbnails",
-    "gen:lcars:clay": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON lib/tools/clay-components/generate-components.ts lcars-stardate",
-    "gen:lcars:thumbnails": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON lib/tools/thumbnails/embed-thumbnails.ts lcars-stardate",
+    "gen:clay": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON lib/tools/clay-components/generate-components.ts",
+    "gen:thumbnails": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON lib/tools/thumbnails/embed-thumbnails.ts",
     "dev:clay": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON lib/tools/dev/clay-preview.ts"
   }
 }

@@ -55,4 +55,8 @@ const moduleMeta: Record<string, ModuleMeta> = {
   'Sensors Block (weather + temperature)': { icon: '🌤', blockColor: '#1e88e5', slug: 'sensors' },
 };
 
+// the panel shapes this face's thumbnails come in: one ops slot, or the tall block filling the
+// whole left column. embed-thumbnails.ts refuses a png in any other size
+export const thumbnailSizes = ['slot', 'tall'];
+
 export default moduleMeta;

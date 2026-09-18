@@ -10,15 +10,12 @@ An LCARS-inspired watchface for the Pebble Time 2 (**Emery**). It shows the time
 
 Every readout the four ops slots can show, at each size it supports.
 
-The face has four pickable slots, two per column, under a fixed clock and stardate banner. A slot
-carries no fixed reading. What it shows comes from the catalogue below, and its bar word and glyph
-follow the pick, so changing a slot needs no new artwork for any theme.
+The face has four pickable slots, two per column, under a fixed clock and stardate banner. A slot carries no fixed reading. What it shows comes from the catalogue below, and its bar word and glyph follow the pick, so changing a slot needs no new artwork for any theme.
 
 
 ### Arrangements
 
-Six ways the same four slots read. Each is a picked set rather than a mode, so any readout can go
-in any slot and you can mix them however you like.
+Six ways the same four slots read. Each is a picked set rather than a mode, so any readout can go in any slot and you can mix them however you like.
 
 <img src=".github/images/lcars-stardate/ops_body.png" width="105" title="Body"> <img src=".github/images/lcars-stardate/ops_weather.png" width="105" title="Weather"> <img src=".github/images/lcars-stardate/ops_sun.png" width="105" title="Sun"> <img src=".github/images/lcars-stardate/ops_moon.png" width="105" title="Moon"> <img src=".github/images/lcars-stardate/ops_calendar.png" width="105" title="Calendar"> <img src=".github/images/lcars-stardate/ops_alt-time.png" width="105" title="Alternate Time">
 
@@ -33,22 +30,17 @@ The ordinary size, and what all four slots take.
 | **Wind**<br>![](resources/thumbnails/wind-slot.png) | **UV Index**<br>![](resources/thumbnails/uv-slot.png) | **High / Low**<br>![](resources/thumbnails/hilo-slot.png) | **Julian Date**<br>![](resources/thumbnails/julian-slot.png) | **Day of Year**<br>![](resources/thumbnails/day-of-year-slot.png) | **Week Number**<br>![](resources/thumbnails/week-slot.png) | **Temperature**<br>![](resources/thumbnails/temp-slot.png) |
 | **Conditions**<br>![](resources/thumbnails/conditions-slot.png) | **Epoch Clock**<br>![](resources/thumbnails/epoch-slot.png) | **Swatch Beats**<br>![](resources/thumbnails/beats-slot.png) | **Alternate Time Zone**<br>![](resources/thumbnails/zone1-slot.png) | **Next Alarm**<br>![](resources/thumbnails/alarm-slot.png) | | |
 
-Epoch takes no glyph on purpose. Ten digits only fit once the row hands its icon space back to the
-value, which any readout with no glyph gets. The alternate zone names its own bar from the city you
-search for, so a slot set to London reads LONDON.
+Epoch takes no glyph on purpose. Ten digits only fit once the row hands its icon space back to the value, which any readout with no glyph gets. The alternate zone names its own bar from the city you search for, so a slot set to London reads LONDON.
 
 ### Tall
 
-One readout fills a whole column instead of a slot: the condition glyph over a large temperature,
-at a size the ordinary rows cannot give it.
+One readout fills a whole column instead of a slot: the condition glyph over a large temperature, at a size the ordinary rows cannot give it.
 
 | |
 |:--:|
 | **Sensors Block**<br>![](resources/thumbnails/sensors-tall.png) |
 
-It only goes in the upper left, which is the one column the face draws it in, and it takes the lower
-left slot with it. The builder will not let you drop it anywhere else, and the firmware makes the
-same correction, so a hand-edited setting cannot smuggle one into the right column.
+It only goes in the upper left, which is the one column the face draws it in, and it takes the lower left slot with it. The builder will not let you drop it anywhere else, and the firmware makes the same correction, so a hand-edited setting cannot smuggle one into the right column.
 
 ## Install
 
