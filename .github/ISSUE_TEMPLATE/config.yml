@@ -1,0 +1,6 @@
+# this face is built here, but every face is tracked in one place so a report is not split across repos
+blank_issues_enabled: false
+contact_links:
+  - name: Report a Bug or Request a Feature
+    url: https://github.com/AKlitbo/pebble-watchfaces/issues/new
+    about: Issues for every face, LCARS Stardate included, are tracked in the pebble-watchfaces repository.

@@ -4,14 +4,23 @@ An LCARS-inspired watchface for the Pebble Time 2 (**Emery**). It shows the time
 
 | Watchface | Preview |
 | :--- | :--- |
-| **LCARS Stardate**<br>[readouts](#readouts) · [changelog](CHANGELOG.md) | <img src=".github/images/lcars-stardate/theme_classic.png" width="75" title="Classic"> <img src=".github/images/lcars-stardate/theme_nemesis-blue.png" width="75" title="Nemesis Blue"> <img src=".github/images/lcars-stardate/theme_mono.png" width="75" title="Classic Mono"> <img src=".github/images/lcars-stardate/theme_voyager.png" width="75" title="Voyager"> <img src=".github/images/lcars-stardate/theme_voyager-mono.png" width="75" title="Voyager Mono"> <img src=".github/images/lcars-stardate/theme_lower-decks.png" width="75" title="Lower Decks"> <img src=".github/images/lcars-stardate/theme_lower-decks-mono.png" width="75" title="Lower Decks Mono"> <img src=".github/images/lcars-stardate/theme_lower-decks-padd.png" width="75" title="Lower Decks PADD"> <img src=".github/images/lcars-stardate/theme_lower-decks-padd-mono.png" width="75" title="Lower Decks PADD Mono"> |
+| **LCARS Stardate**<br>[changelog](CHANGELOG.md) | <img src=".github/images/lcars-stardate/theme_classic.png" width="75" title="Classic"> <img src=".github/images/lcars-stardate/theme_nemesis-blue.png" width="75" title="Nemesis Blue"> <img src=".github/images/lcars-stardate/theme_mono.png" width="75" title="Classic Mono"> <img src=".github/images/lcars-stardate/theme_voyager.png" width="75" title="Voyager"> <img src=".github/images/lcars-stardate/theme_voyager-mono.png" width="75" title="Voyager Mono"> <img src=".github/images/lcars-stardate/theme_lower-decks.png" width="75" title="Lower Decks"> <img src=".github/images/lcars-stardate/theme_lower-decks-mono.png" width="75" title="Lower Decks Mono"> <img src=".github/images/lcars-stardate/theme_lower-decks-padd.png" width="75" title="Lower Decks PADD"> <img src=".github/images/lcars-stardate/theme_lower-decks-padd-mono.png" width="75" title="Lower Decks PADD Mono"> |
+
+## Install
+
+Download the `.pbw` from [Releases](https://github.com/AKlitbo/pebble-watchface-lcars/releases) and open it with the Pebble app on your phone.
+
+Releases are tagged `lcars-stardate-v<version>`, and the notes are that version's `CHANGELOG.md` entry. The asset names its platform, so `lcars-stardate-emery-1.7.0.pbw` is Emery only. Every release since 1.0.0 is here. Releases up to 1.11.0 were first published from the pebble-watchfaces repository, so their dates on this page are when they were copied over, and each note opens with the original release date.
+
+## Bugs and Requests
+
+Issues for this face are tracked alongside every other face in the [pebble-watchfaces](https://github.com/AKlitbo/pebble-watchfaces/issues) repository. Please open them there, even though the code lives here.
 
 ## Readouts
 
 Every readout the four ops slots can show, at each size it supports.
 
 The face has four pickable slots, two per column, under a fixed clock and stardate banner. A slot carries no fixed reading. What it shows comes from the catalogue below, and its bar word and glyph follow the pick, so changing a slot needs no new artwork for any theme.
-
 
 ### Arrangements
 
@@ -30,7 +39,7 @@ The ordinary size, and what all four slots take.
 | **Wind**<br>![](resources/thumbnails/wind-slot.png) | **UV Index**<br>![](resources/thumbnails/uv-slot.png) | **High / Low**<br>![](resources/thumbnails/hilo-slot.png) | **Julian Date**<br>![](resources/thumbnails/julian-slot.png) | **Day of Year**<br>![](resources/thumbnails/day-of-year-slot.png) | **Week Number**<br>![](resources/thumbnails/week-slot.png) | **Temperature**<br>![](resources/thumbnails/temp-slot.png) |
 | **Conditions**<br>![](resources/thumbnails/conditions-slot.png) | **Epoch Clock**<br>![](resources/thumbnails/epoch-slot.png) | **Swatch Beats**<br>![](resources/thumbnails/beats-slot.png) | **Alternate Time Zone**<br>![](resources/thumbnails/zone1-slot.png) | **Next Alarm**<br>![](resources/thumbnails/alarm-slot.png) | | |
 
-Epoch takes no glyph on purpose. Ten digits only fit once the row hands its icon space back to the value, which any readout with no glyph gets. The alternate zone names its own bar from the city you search for, so a slot set to London reads LONDON.
+Epoch's ten digits only fit once the row hands its icon space back to the value, which any readout with no glyph gets. The alternate zone names its own bar from the city you search for, so a slot set to London reads LONDON.
 
 ### Tall
 
@@ -41,12 +50,6 @@ One readout fills a whole column instead of a slot: the condition glyph over a l
 | **Sensors Block**<br>![](resources/thumbnails/sensors-tall.png) |
 
 It only goes in the upper left, which is the one column the face draws it in, and it takes the lower left slot with it. The builder will not let you drop it anywhere else, and the firmware makes the same correction, so a hand-edited setting cannot smuggle one into the right column.
-
-## Install
-
-Download the `.pbw` from [Releases](https://github.com/AKlitbo/pebble-watchface-lcars/releases) and open it with the Pebble app on your phone.
-
-Releases are tagged `lcars-stardate-v<version>`, and the notes are that version's `CHANGELOG.md` entry. The asset names its platform, so `lcars-stardate-emery-1.7.0.pbw` is Emery only. Every release since 1.0.0 is here. Releases up to 1.11.0 were first published from the pebble-watchfaces repository, so their dates on this page are when they were copied over, and each note opens with the original release date.
 
 ## Project Structure
 
@@ -82,6 +85,8 @@ git config core.hooksPath lib/.githooks   # once: runs lint + typecheck before e
 bash lib/build.sh lcars-stardate          # the .pbw, from WSL with the Pebble SDK installed
 ```
 
+The engine's tooling is shared with the other faces, so every command still takes the face name:
+
 ```sh
 bash lib/build.sh lcars-stardate [--clean]        # build a .pbw into targets/lcars-stardate/build/
 npm run build:pkjs -- lcars-stardate              # compile src/pkjs + lib/ts into targets/lcars-stardate/emit/
@@ -106,7 +111,7 @@ Selectable in Settings:
 - **WeatherAPI**: free tier, needs an account and API key.
 - **OpenWeatherMap**: free tier, needs an account and API key.
 
-All cover the basics: temperature, conditions, wind, humidity, pressure, feels like, and sunrise/sunset. OpenWeatherMap's free tier leaves out UV index, dew point, today's high/low, and chance of rain, so those are backfilled from Open-Meteo.
+All cover what this face reads: temperature, conditions, wind, humidity, and sunrise and sunset. OpenWeatherMap's free tier leaves out UV index, today's high and low, and chance of rain, so those are backfilled from Open-Meteo.
 
 ---
 
