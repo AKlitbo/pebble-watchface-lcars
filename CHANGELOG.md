@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - Added time zones to the Alternate Time Zone picker, so UTC, a zone name such as Europe/London, or an offset like UTC+05:30 can be picked as well as a city.
 
+### Changed
+
+- Changed the Alternate Time Zone sample picture in the drag-and-drop readout list to read ZONE 1 rather than LONDON. The pictures are only there to show a readout's shape, and this one made the slot look like it was fixed to London rather than naming whichever zone you pick.
+
 ## [1.11.1] - 2026-09-17
 
 ### Changed

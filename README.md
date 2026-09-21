@@ -39,7 +39,7 @@ The ordinary size, and what all four slots take.
 | **Wind**<br>![](resources/thumbnails/wind-slot.png) | **UV Index**<br>![](resources/thumbnails/uv-slot.png) | **High / Low**<br>![](resources/thumbnails/hilo-slot.png) | **Julian Date**<br>![](resources/thumbnails/julian-slot.png) | **Day of Year**<br>![](resources/thumbnails/day-of-year-slot.png) | **Week Number**<br>![](resources/thumbnails/week-slot.png) | **Temperature**<br>![](resources/thumbnails/temp-slot.png) |
 | **Conditions**<br>![](resources/thumbnails/conditions-slot.png) | **Epoch Clock**<br>![](resources/thumbnails/epoch-slot.png) | **Swatch Beats**<br>![](resources/thumbnails/beats-slot.png) | **Alternate Time Zone**<br>![](resources/thumbnails/zone1-slot.png) | **Next Alarm**<br>![](resources/thumbnails/alarm-slot.png) | | |
 
-Epoch's ten digits only fit once the row hands its icon space back to the value, which any readout with no glyph gets. The alternate zone names its own bar after the zone you pick, so a slot set to London reads LONDON.
+Epoch's ten digits only fit once the row hands its icon space back to the value, which any readout with no glyph gets. The alternate zone names its own bar after the zone you pick, so a slot set to London reads LONDON. Until you pick one it reads ZONE 1, which is what the picture above shows.
 
 ### Tall
 
