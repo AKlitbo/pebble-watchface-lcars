@@ -105,7 +105,7 @@ static const SettingField s_fields[] = {
     { .id = SETTING_COUNT, .message_key = &MESSAGE_KEY_CLOCK_TIMEZONE_1, .type = SETTING_CSTRING,
       .offset = offsetof(LcarsSettings, time_zone_offset_1),
       .size = sizeof(s_settings.time_zone_offset_1),
-      .default_str = "60,London, England, GB" },
+      .default_str = "" },
 };
 
 /**
