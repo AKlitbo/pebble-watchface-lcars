@@ -58,7 +58,7 @@ It only goes in the upper left, which is the one column the face draws it in, an
 * **`resources/`**: the fonts, icons, baked backgrounds and Clay thumbnails.
 * **`frame/`**: the HTML the backgrounds are baked from.
 * **`CHANGELOG.md`**: the release history.
-* **`lib/`**: the shared engine, a git submodule of [the engine repo](https://github.com/AKlitbo/pebble-watchface-engine). It holds the device engine, the PebbleKit JS runtime, the waf helpers, the build tooling under `tools/`, the shared tsconfig/eslint/vitest setup under `config/`, and `build.sh`.
+* **`lib/`**: the shared framework, a git submodule of [the framework repo](https://github.com/AKlitbo/pebble-app-framework). It holds the device code, the PebbleKit JS runtime, the waf helpers, the build tooling under `tools/`, the shared tsconfig/eslint/vitest setup under `config/`, and `build.sh`.
 * **`targets/<target>/`**: the build sandbox waf runs in, generated and gitignored.
 * **`vendor/`**: third-party source SVGs and the LCARS template (gitignored, see [Third-Party Assets](#third-party-assets)).
 
@@ -79,13 +79,13 @@ The tag version must match `version` in `config/pebble.appinfo.json`, the change
 ## Development
 
 ```sh
-git submodule update --init               # once: fetches the shared engine into lib/
+git submodule update --init               # once: fetches the shared framework into lib/
 npm ci
 git config core.hooksPath lib/.githooks   # once: runs lint + typecheck before each commit
 bash lib/build.sh lcars-stardate          # the .pbw, from WSL with the Pebble SDK installed
 ```
 
-The engine's tooling is shared with the other faces, so every command still takes the face name:
+The framework's tooling is shared with the other faces, so every command still takes the face name:
 
 ```sh
 bash lib/build.sh lcars-stardate [--clean]        # build a .pbw into targets/lcars-stardate/build/
@@ -131,7 +131,7 @@ This repository bundles the face's fonts, its generated icon PNGs, and its baked
 
 ## License
 
-**Source Code:** © 2026 Andrew Klitbo (Null Syntax), licensed under the [PolyForm Noncommercial License 1.0.0](LICENSE). This license keeps the project aligned with the noncommercial nature of the LCARS-inspired assets and *Star Trek* fan-project guidelines. The shared engine in `lib/` is dual-licensed, and this face uses it under the PolyForm option.
+**Source Code:** © 2026 Andrew Klitbo (Null Syntax), licensed under the [PolyForm Noncommercial License 1.0.0](LICENSE). This license keeps the project aligned with the noncommercial nature of the LCARS-inspired assets and *Star Trek* fan-project guidelines. The shared framework in `lib/` is dual-licensed, and this face uses it under the PolyForm option.
 
 You may use, modify, fork, and share it freely for any **noncommercial** purpose, personal use, hobby projects, study, and the like. See [LICENSE](LICENSE) for the full terms.
 
