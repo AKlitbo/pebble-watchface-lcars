@@ -153,3 +153,36 @@ body .sb-btn {
   letter-spacing: 1px;
   text-transform: uppercase;
 }
+
+/* the locationsearch component carries its own callout for the "pick this city again" prompt, in
+   Clay's stock orange with a round outlined badge. dressed here as a small LCARS panel instead,
+   wearing the left rail and rounded right corners a section wears, with the badge as a filled
+   holder box in amber on black the way a real bar reads */
+body .loc-search .loc-note {
+  background: #16161c !important;
+  border-left: 6px solid #ffaa55 !important;
+  border-radius: 0 8px 8px 0 !important;
+  margin: 10px 0 2px !important;
+  padding: 8px 12px 8px 38px !important;
+  color: #ffcc88 !important;
+  font-family: 'LcarsAntonio', 'Arial Narrow', sans-serif !important;
+  font-size: 14px !important;
+  letter-spacing: 0.8px !important;
+  line-height: 1.35 !important;
+  text-transform: uppercase !important;
+}
+
+body .loc-search .loc-note:before {
+  top: 8px !important;
+  left: 14px !important;
+  width: 16px !important;
+  height: 16px !important;
+  background: #ffaa55 !important;
+  border: none !important;
+  border-radius: 2px !important;
+  color: #000 !important;
+  font-family: 'LcarsAntonio', 'Arial Narrow', sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  line-height: 16px !important;
+}
