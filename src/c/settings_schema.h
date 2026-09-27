@@ -54,6 +54,15 @@ uint8_t lcars_slot_rt(void);
 uint8_t lcars_slot_rb(void);
 
 /**
+ * @brief Whether the first alternate time zone is picked at all.
+ *
+ * The setting is empty until the wearer picks a zone, and empty again once they clear the picker.
+ *
+ * @return True when a zone is set.
+ */
+bool lcars_zone_1_is_set(void);
+
+/**
  * @brief How far the first alternate time zone runs from UTC.
  *
  * The setting arrives from Clay's location search as "offset,City, Region, CC", so this is the

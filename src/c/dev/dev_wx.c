@@ -47,7 +47,7 @@ static void apply_condition(uint8_t index)
     WeatherSeed wx = WEATHER_SEED_EMPTY;
     wx.temp = 21;
     wx.cond = s_conditions[index % ARRAY_LENGTH(s_conditions)];
-    weather_store_init((WeatherConfig){.enabled = true, .live = false, .poll_min = 0}, &wx);
+    weather_store_init((WeatherConfig){.live = false, .poll_min = 0}, &wx);
 }
 
 /**
@@ -70,20 +70,20 @@ void dev_wx_seed_stores(int hour, int min)
     pinned.tm_hour = hour;
     pinned.tm_min = min;
     pinned.tm_sec = 0;
-    time_store_init((TimeConfig){.enabled = true, .live = false, .minute_tick = false, .beats = false}, &pinned);
+    time_store_init((TimeConfig){.live = false, .minute_tick = false, .beats = false}, &pinned);
 
     apply_condition(0);
 
     HealthSeed health = {.hr = 72, .steps = 8431, .calories = 420, .sleep_min = 431,
                          .active_min = 52, .distance_m = 5300};
-    health_store_init((HealthConfig){.enabled = true, .live = false, .sleep = true,
+    health_store_init((HealthConfig){.live = false, .sleep = true,
                                      .active = true, .calories = true}, &health);
 
     SystemSeed system = {.battery = 64, .charging = false, .bluetooth = true};
-    system_store_init((SystemConfig){.enabled = true, .live = false, .vibe = NULL}, &system);
+    system_store_init((SystemConfig){.live = false, .vibe = NULL}, &system);
 
     LocationSeed location = {.lat = "33-44", .lon = "-112-07"};
-    location_store_init((LocationConfig){.enabled = true, .live = false}, &location);
+    location_store_init((LocationConfig){.live = false}, &location);
 }
 
 void dev_wx_init(void (*apply_theme)(void))

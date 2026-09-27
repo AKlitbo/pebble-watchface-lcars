@@ -57,6 +57,8 @@ const BUILDER_OPTIONS = [SENSORS_BLOCK, ...OPS_OPTIONS].map(function (option) {
 });
 
 export default buildConfig({
+  // the framework's default intro leaves weather out, and this face has it
+  intro: 'Personalize your layout, dial in your weather preferences, and make this watchface your own.',
   theme: {
     label: 'Frame Theme',
     description: 'LCARS color scheme for the watch frame.',
@@ -117,7 +119,8 @@ export default buildConfig({
   ],
   // the date line runs through readout_date, so it can end in a .beats reading
   date: { beats: true },
-  location: { gpsDefault: false, timeZone: true },
+  location: { gpsDefault: false },
+  clock: { timeZone: true },
   weather: {},
   temperature: {},
   quietTime: {},

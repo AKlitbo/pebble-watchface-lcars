@@ -4,6 +4,38 @@ All notable changes to the LCARS Stardate watchface are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- Moved the Alternate Time Zone setting from Location Settings to the Clock section of the settings page. The city you picked is kept.
+
+### Fixed
+
+- Fixed the temperature showing the old number with the new unit, such as 23F for 23°C, after switching units while the phone was offline, when a refresh already under way finished just after, on the first save after installing, or after the Pebble app's data was cleared.
+- Fixed your settings sometimes not coming back after an update, leaving the defaults until the Pebble app restarted. Going back to an older version could leave the defaults for good.
+- Fixed rain chance and UV showing 0 where the weather service had no reading for them. They show a dash instead.
+- Fixed the sun readouts when sunset falls after midnight, as in a northern summer. Daylight read as night, and the countdown to dawn showed hours that were already daylight.
+- Fixed the moon countdown jumping to 29 days partway through the night of a new or full moon. The moon now reads as now for that whole night.
+- Fixed the Alternate Time Zone list on the settings page opening again after you picked a zone, where a stray tap could change your pick.
+- Fixed the UTC offset shown for a zone on the settings page sometimes reading a minute short. Typing an offset such as UTC+5 also showed a name that read as UTC-5.
+- Fixed a second finger on the screen moving or dropping the readout you were dragging in the slot builder.
+- Fixed the settings page opening on the default for a choice such as the temperature unit, rather than what the watch was set to.
+- Fixed a city typed on the settings page and saved without tapping one of the suggestions being lost. The settings page now asks you to pick a place from the list.
+- Fixed clearing the alternate time zone on the settings page leaving the old city on the watch. The ZONE 1 readout now shows dashes whenever no zone is picked.
+- Fixed the wind reading 0 km/h rather than a dash when OpenWeatherMap had no wind reading.
+- Fixed the weather showing clear skies when Open-Meteo, the default weather provider, had no reading for the current conditions.
+- Fixed the steps showing -1 just after the watchface opened, or 0 with Health turned off, and the Stats Readout set to distance reading 0.0 all day. It shows dashes until there is a reading.
+- Fixed sunrise and sunset, and what follows them, showing hours off when the weather location is in another time zone. Today's high, low, and rain chance could also come from the day before or after.
+- Fixed yesterday's high, low, UV, and rain chance staying on the watch as today's when part of the weather refresh kept failing.
+- Fixed a weather key that ran out of calls showing API ERROR and using up more calls on retries. It now shows RATE LIMIT until the next refresh.
+- Fixed the weather being fetched twice on every refresh, which used up a weather key's calls twice as fast.
+- Fixed the weather readouts sometimes staying on dashes for up to half an hour after the watchface started.
+
+### Notes
+
+- This release clears the saved weather once. The weather readouts show dashes until the first refresh after the update, and nothing needs doing to bring them back.
+
 ## [1.12.1] - 2026-09-22
 
 ### Changed

@@ -11,6 +11,7 @@
 #include "ops/ops.h"
 #include "system/settings/settings_catalog.h"
 #include "system/settings/setting_values.h"
+#include "clock/zone_setting.h"
 #include "persist_keys.h"
 
 #include <stddef.h>
@@ -185,15 +186,19 @@ uint8_t lcars_slot_rb(void)
     return s_settings.slot_rb;
 }
 
+bool lcars_zone_1_is_set(void)
+{
+    return zone_setting_is_set(s_settings.time_zone_offset_1);
+}
+
 int16_t lcars_zone_1_offset_minutes(void)
 {
-    return (int16_t)atoi(s_settings.time_zone_offset_1);
+    return zone_setting_offset(s_settings.time_zone_offset_1);
 }
 
 const char *lcars_zone_1_name(void)
 {
-    const char *comma = strchr(s_settings.time_zone_offset_1, ',');
-    return comma ? comma + 1 : "";
+    return zone_setting_label(s_settings.time_zone_offset_1);
 }
 
 /** @} */

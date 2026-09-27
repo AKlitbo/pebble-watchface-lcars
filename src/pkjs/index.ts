@@ -2,10 +2,11 @@
  * PebbleKit JS entry point.
  *
  * Thin wrapper over the shared bootstrap (see lib/ts/pkjs/app.ts). This face
- * formats coordinates in LCARS dash style into separate latitude/longitude
- * keys. Everything else is shared.
+ * opts into weather with coordinates, formatted in LCARS dash style into separate
+ * latitude/longitude keys. Everything else is shared.
  */
 import app from '../../lib/ts/pkjs/app';
+import weather from '../../lib/ts/weather/feature';
 import type { WeatherResult } from '../../lib/ts/weather/util';
 import hiddenStoreComponent from '../../lib/ts/clay/hidden-store-component';
 import clayConfig from './config';
@@ -29,8 +30,10 @@ app.startPebbleApp({
   // the slot builder plus the hidden stores holding the three panels it does not own
   components: [slotComponent, hiddenStoreComponent],
   // dash style into two keys. fmtCoord yields '' for a missing coordinate
-  formatCoords: (messageKeys: Record<string, number>, result: WeatherResult) => ({
-    [messageKeys.LOCATION_LATITUDE]: fmtCoord(result.lat),
-    [messageKeys.LOCATION_LONGITUDE]: fmtCoord(result.lon),
-  }),
+  features: [
+    weather.withCoords((messageKeys: Record<string, number>, result: WeatherResult) => ({
+      [messageKeys.LOCATION_LATITUDE]: fmtCoord(result.lat),
+      [messageKeys.LOCATION_LONGITUDE]: fmtCoord(result.lon),
+    })),
+  ],
 });

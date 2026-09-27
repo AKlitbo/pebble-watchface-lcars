@@ -291,6 +291,7 @@ module.exports = {
         const threshold = spec.threshold === void 0 ? DEFAULT_THRESHOLD : spec.threshold;
         let armed = null;
         let active = null;
+        let owner;
         function place(ghost, x, y) {
           if (spec.anchor === "pointer") {
             ghost.style.left = x + "px";
@@ -300,6 +301,9 @@ module.exports = {
           const box = ghost.getBoundingClientRect();
           ghost.style.left = x - box.width / 2 + "px";
           ghost.style.top = y - box.height / 2 + "px";
+        }
+        function foreign(event) {
+          return (armed !== null || active !== null) && event.pointerId !== owner;
         }
         function begin(payload, x, y) {
           const ghost = spec.ghost(payload);
@@ -325,7 +329,25 @@ module.exports = {
           armed = null;
           spec.highlight(null, null, false);
         }
+        function abandon() {
+          if (!armed && !active) {
+            return;
+          }
+          const payload = active && active.payload;
+          end();
+          if (payload === null || payload === void 0) {
+            return;
+          }
+          if (spec.cancel) {
+            spec.cancel(payload);
+            return;
+          }
+          spec.dropOutside(payload);
+        }
         doc.addEventListener("pointermove", (event) => {
+          if (foreign(event)) {
+            return;
+          }
           if (armed) {
             const moved = Math.abs(event.clientX - armed.x) > threshold || Math.abs(event.clientY - armed.y) > threshold;
             if (moved) {
@@ -343,6 +365,9 @@ module.exports = {
           }
         });
         doc.addEventListener("pointerup", (event) => {
+          if (foreign(event)) {
+            return;
+          }
           if (!active) {
             armed = null;
             return;
@@ -356,24 +381,22 @@ module.exports = {
           }
           spec.dropOutside(payload);
         });
-        doc.addEventListener("pointercancel", () => {
-          const payload = active && active.payload;
-          end();
-          if (payload === null || payload === void 0) {
+        doc.addEventListener("pointercancel", (event) => {
+          if (foreign(event)) {
             return;
           }
-          if (spec.cancel) {
-            spec.cancel(payload);
-            return;
-          }
-          spec.dropOutside(payload);
+          abandon();
         });
         return {
           start(payload, event) {
+            abandon();
+            owner = event.pointerId;
             begin(payload, event.clientX, event.clientY);
             event.preventDefault();
           },
           arm(payload, event) {
+            abandon();
+            owner = event.pointerId;
             armed = { payload, x: event.clientX, y: event.clientY };
             event.preventDefault();
           }

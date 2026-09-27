@@ -58,7 +58,7 @@ It only goes in the upper left, which is the one column the face draws it in, an
 * **`resources/`**: the fonts, icons, baked backgrounds and Clay thumbnails.
 * **`frame/`**: the HTML the backgrounds are baked from.
 * **`CHANGELOG.md`**: the release history.
-* **`lib/`**: the shared framework, a git submodule of [the framework repo](https://github.com/AKlitbo/pebble-app-framework). It holds the device code, the PebbleKit JS runtime, the waf helpers, the build tooling under `tools/`, the shared tsconfig/eslint/vitest setup under `config/`, and `build.sh`.
+* **`lib/`**: the shared [framework](https://github.com/AKlitbo/pebble-app-framework), filled by [paf](https://github.com/AKlitbo/pebble-app-framework-cli) from the tag in `paf.json` and gitignored. It holds the device code, the PebbleKit JS runtime, the waf helpers, the build tooling under `tools/`, the shared tsconfig/eslint/vitest setup under `config/`, and `build.sh`.
 * **`targets/<target>/`**: the build sandbox waf runs in, generated and gitignored.
 * **`vendor/`**: third-party source SVGs and the LCARS template (gitignored, see [Third-Party Assets](#third-party-assets)).
 
@@ -79,11 +79,11 @@ The tag version must match `version` in `config/pebble.appinfo.json`, the change
 ## Development
 
 ```sh
-git submodule update --init               # once: fetches the shared framework into lib/
-npm ci
-git config core.hooksPath lib/.githooks   # once: runs lint + typecheck before each commit
-bash lib/build.sh lcars-stardate          # the .pbw, from WSL with the Pebble SDK installed
+paf sync                                  # fills lib/ from the framework tag in paf.json and installs node_modules
+paf build lcars-stardate                  # the .pbw, from WSL with the Pebble SDK installed
 ```
+
+`paf pin pebble-watchface-lcars <tag>` moves the face to another framework release, and prints the framework's changelog between the two.
 
 The framework's tooling is shared with the other faces, so every command still takes the face name:
 
@@ -91,7 +91,7 @@ The framework's tooling is shared with the other faces, so every command still t
 bash lib/build.sh lcars-stardate [--clean]        # build a .pbw into targets/lcars-stardate/build/
 npm run build:pkjs -- lcars-stardate              # compile src/pkjs + lib/ts into targets/lcars-stardate/emit/
 npm run gen:icons -- lcars-stardate               # rasterize vendored SVGs to resources/icons/*.png
-npm run gen:frame -- lcars-stardate [theme]       # re-bake a background from frame/<name>.html
+npm run gen:frame -- lcars-stardate [theme]       # re-bake each platform's background from frame/<name>~<platform>.html
 npm run gen:lcars                                 # regenerate the Clay components and thumbnails
 ```
 

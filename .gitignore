@@ -5,16 +5,12 @@ build/
 # Waf-compiled resource artifacts (sources are versioned)
 *.reso
 
-# staged build folders (sources live in src/ and resources/)
-targets/*/package.json
-targets/*/tsconfig.pkjs.json
-targets/*/wscript
-targets/*/.source-face
-targets/*/src/
-targets/*/lib/
-targets/*/family/
-targets/*/resources/
-targets/*/emit/
+# the build sandboxes and paf's build records, all generated
+/targets/
+
+# the framework, filled by paf sync from the tag in paf.json
+/lib/
+/lib.paf-*/
 
 # Python
 __pycache__/

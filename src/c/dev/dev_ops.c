@@ -45,7 +45,7 @@ static void apply_clock(uint8_t index)
     pinned.tm_hour = minutes / 60;
     pinned.tm_min = minutes % 60;
     pinned.tm_sec = 0;
-    time_store_init((TimeConfig){.enabled = true, .live = false, .minute_tick = false, .beats = false}, &pinned);
+    time_store_init((TimeConfig){.live = false, .minute_tick = false, .beats = false}, &pinned);
 }
 
 uint8_t dev_ops_walk_pick(int slot)
@@ -83,17 +83,17 @@ void dev_ops_seed_stores(void)
     wx.humidity = 62;
     wx.wind_kmh = 12;
     wx.wind_dir = "NW";
-    wx.sunrise = "06:31";
-    wx.sunset = "20:14";
+    wx.sunrise = 6 * 60 + 31;
+    wx.sunset = 20 * 60 + 14;
     wx.uv = 7;
     wx.temp_max = 28;
     wx.temp_min = 17;
     wx.precip_chance = 20;
-    weather_store_init((WeatherConfig){.enabled = true, .live = false, .poll_min = 0}, &wx);
+    weather_store_init((WeatherConfig){.live = false, .poll_min = 0}, &wx);
 
     HealthSeed health = {.hr = 72, .steps = 8431, .calories = 420, .sleep_min = 431,
                          .active_min = 52, .distance_m = 5300};
-    health_store_init((HealthConfig){.enabled = true, .live = false, .sleep = true,
+    health_store_init((HealthConfig){.live = false, .sleep = true,
                                      .active = true, .calories = true}, &health);
 
     // an absolute wake time rather than an offset from now, so the shot always reads 06:30
@@ -106,10 +106,10 @@ void dev_ops_seed_stores(void)
 
     SystemSeed system = {.battery = 64, .charging = false, .bluetooth = true,
                          .next_alarm = mktime(&alarm_tm)};
-    system_store_init((SystemConfig){.enabled = true, .live = false, .vibe = NULL}, &system);
+    system_store_init((SystemConfig){.live = false, .vibe = NULL}, &system);
 
     LocationSeed location = {.lat = "33-44", .lon = "-112-07"};
-    location_store_init((LocationConfig){.enabled = true, .live = false}, &location);
+    location_store_init((LocationConfig){.live = false}, &location);
 }
 
 void dev_ops_init(void (*apply_theme)(void))

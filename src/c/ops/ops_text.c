@@ -12,7 +12,6 @@
 #include <time.h>
 
 #include "clock/astro.h"
-#include "clock/clockstr.h"
 #include "clock/date.h"
 #include "clock/duration.h"
 #include "clock/moon.h"
@@ -64,8 +63,7 @@ static void write_duration(char *out, size_t n, int minutes)
 /**
  * @brief Today's sunrise and sunset as minutes past midnight.
  *
- * The phone sends them as "HH:MM" strings, so this is the seam where they become numbers the
- * solar math can use.
+ * The phone sends them as minutes past the phone's midnight, which is the clock the watch keeps.
  *
  * @param rise Receives sunrise, or -1 when there is no reading.
  * @param set Receives sunset, or -1 when there is no reading.
@@ -73,8 +71,8 @@ static void write_duration(char *out, size_t n, int minutes)
  */
 static bool sun_minutes(int *rise, int *set)
 {
-    *rise = clockstr_minutes(weather_store_sunrise());
-    *set = clockstr_minutes(weather_store_sunset());
+    *rise = weather_store_sunrise();
+    *set = weather_store_sunset();
     return *rise >= 0 && *set >= 0;
 }
 
@@ -201,16 +199,32 @@ const char *ops_moon_next_label(void)
 
 // --- sun ---
 
+/**
+ * @brief A time of day as 24 hour HH:MM, matching the other sun readouts.
+ *
+ * @param out Output buffer.
+ * @param n Buffer size.
+ * @param minutes Minutes past midnight, or -1 for none.
+ */
+static void sun_time(char *out, size_t n, int minutes)
+{
+    if (minutes < 0)
+    {
+        no_data(out, n);
+        return;
+    }
+
+    snprintf(out, n, "%02d:%02d", minutes / 60, minutes % 60);
+}
+
 void ops_text_sunrise(char *out, size_t n)
 {
-    const char *at = weather_store_sunrise();
-    snprintf(out, n, "%s", at[0] ? at : "--");
+    sun_time(out, n, weather_store_sunrise());
 }
 
 void ops_text_sunset(char *out, size_t n)
 {
-    const char *at = weather_store_sunset();
-    snprintf(out, n, "%s", at[0] ? at : "--");
+    sun_time(out, n, weather_store_sunset());
 }
 
 void ops_text_daylight(char *out, size_t n)
@@ -454,6 +468,13 @@ void ops_text_beats(char *out, size_t n)
 
 void ops_text_zone_1(char *out, size_t n)
 {
+    // no zone picked yet, or the picker was cleared, so there is no clock to show
+    if (!lcars_zone_1_is_set())
+    {
+        no_data(out, n);
+        return;
+    }
+
     // off the time store like the rest of the face, so it tracks the same tick and freezes with
     // the dev clock. mktime turns the local reading back into UTC, then the offset and gmtime
     // give the other zone's wall clock rather than this one's

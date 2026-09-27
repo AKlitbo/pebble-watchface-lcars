@@ -19,7 +19,7 @@
     "test:coverage": "vitest run --config lib/config/vitest.config.ts --coverage",
     "lint": "eslint . --config lib/config/eslint.config.ts",
     "lint:fix": "eslint . --fix --config lib/config/eslint.config.ts",
-    "typecheck": "tsc -p tsconfig.json && tsc -p lib/config/tsconfig.builder.json && tsc -p lib/config/tsconfig.tools.json && tsc -p lib/config/tsconfig.spec.json",
+    "typecheck": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON lib/tools/typecheck.ts",
     "build:pkjs": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON lib/tools/pkjs/build-pkjs.ts",
     "build:conditions": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON lib/tools/build-conditions.ts",
     "build:manifests": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON lib/tools/manifest/build-manifests.ts",
@@ -28,5 +28,8 @@
     "gen:clay": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON lib/tools/clay-components/generate-components.ts",
     "gen:thumbnails": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON lib/tools/thumbnails/embed-thumbnails.ts",
     "dev:clay": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON lib/tools/dev/clay-preview.ts"
+  },
+  "framework": {
+    "iconSources": "vendor"
   }
 }
