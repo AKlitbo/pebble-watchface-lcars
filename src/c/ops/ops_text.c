@@ -306,7 +306,7 @@ uint32_t ops_sun_next_icon(void)
 // small set is a second cut of the same art
 //
 // it mirrors the generated table in ui/weather/icons_table.g.h. that one is built
-// from lib/ts/weather/conditions.ts and only knows the 24px names
+// from paf/ts/weather/conditions.ts and only knows the 24px names
 // a new condition added over there needs a row here too. otherwise it falls
 // through to the NA glyph
 uint32_t ops_wx_icon(void)

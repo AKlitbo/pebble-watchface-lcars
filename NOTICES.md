@@ -1,6 +1,6 @@
 # Third-Party Notices
 
-LCARS Stardate is under the PolyForm Noncommercial License, see [LICENSE](LICENSE). The shared engine it builds on (`lib/`) is used under the PolyForm option of its dual licence. The face bundles the third-party work below, each of which keeps its own licence. This file is how those licences are passed on to anyone the watchface or this repository is given to.
+LCARS Stardate is under the PolyForm Noncommercial License, see [LICENSE](LICENSE). The shared framework it builds on (`paf/`) is used under the PolyForm option of its dual licence. The face bundles the third-party work below, each of which keeps its own licence. This file is how those licences are passed on to anyone the watchface or this repository is given to.
 
 For who made these and what they are used for, see the Credits section of the [README](README.md).
 

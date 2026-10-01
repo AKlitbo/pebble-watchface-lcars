@@ -4,7 +4,7 @@
  * moves with the reading. Each formatter matches the engine's text-slot signature, so the
  * catalog table binds straight to one.
  *
- * The shared lib already formats the heart rate and the step count, so those are not repeated
+ * The framework already formats the heart rate and the step count, so those are not repeated
  * here. Everything below is a reading no other face on this frame shows.
  *
  * @ingroup watchface-lcars

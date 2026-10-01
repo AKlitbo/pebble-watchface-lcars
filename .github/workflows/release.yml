@@ -20,24 +20,24 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      # paf fills lib/ from the framework tag in paf.json and installs node_modules from the committed lock
-      - uses: AKlitbo/pebble-app-framework-cli/.github/actions/sync@v1.0.0
+      # paf fills paf/ from the framework tag in paf.config.json and installs node_modules from the committed lock
+      - uses: AKlitbo/pebble-app-framework-cli/.github/actions/sync@v2.0.0
 
       # every check that can stop a release runs here, before the SDK install and the build, so a
       # mistyped tag or an undated changelog costs seconds
       - name: Prepare Release
         id: release
-        uses: AKlitbo/pebble-app-framework/.github/actions/prepare-release@v3.0.0
+        uses: AKlitbo/pebble-app-framework/.github/actions/prepare-release@v4.0.0
 
-      - uses: AKlitbo/pebble-app-framework/.github/actions/setup-pebble@v3.0.0
+      - uses: AKlitbo/pebble-app-framework/.github/actions/setup-pebble@v4.0.0
         with:
           face: ${{ steps.release.outputs.face }}
 
       - name: Build Watchface
-        run: bash lib/build.sh ${{ steps.release.outputs.face }}
+        run: paf build ${{ steps.release.outputs.face }}
 
       - name: Publish Release
-        uses: AKlitbo/pebble-app-framework/.github/actions/publish-release@v3.0.0
+        uses: AKlitbo/pebble-app-framework/.github/actions/publish-release@v4.0.0
         with:
           face: ${{ steps.release.outputs.face }}
           version: ${{ steps.release.outputs.version }}

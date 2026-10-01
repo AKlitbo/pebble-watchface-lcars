@@ -1,14 +1,14 @@
 /**
  * PebbleKit JS entry point.
  *
- * Thin wrapper over the shared bootstrap (see lib/ts/pkjs/app.ts). This face
+ * Thin wrapper over the shared bootstrap (see paf/ts/pkjs/app.ts). This face
  * opts into weather with coordinates, formatted in LCARS dash style into separate
  * latitude/longitude keys. Everything else is shared.
  */
-import app from '../../lib/ts/pkjs/app';
-import weather from '../../lib/ts/weather/feature';
-import type { WeatherResult } from '../../lib/ts/weather/util';
-import hiddenStoreComponent from '../../lib/ts/clay/hidden-store-component';
+import app from '../../paf/ts/pkjs/app';
+import weather from '../../paf/ts/weather/feature';
+import type { WeatherResult } from '../../paf/ts/weather/util';
+import hiddenStoreComponent from '../../paf/ts/clay/hidden-store-component';
 import clayConfig from './config';
 import slotComponent from './clay/slot-component.g';
 

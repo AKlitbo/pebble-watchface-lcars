@@ -3,8 +3,9 @@
  * @brief Per-face dev-walk switches. Keep DEV_MODE 0 for any build you ship. Flip it (plus one
  * walk toggle) to boot the face into a fixed fixture and tap-walk it for screenshots.
  *
- * Two walks: the shared theme walk in lib `dev/dev_walk`, and this face's ops-slot walk in
- * `dev/dev_ops`. Pick one. This file only holds the switches.
+ * Two walks: the shared theme walk in the dev plugin's `dev/dev_walk`, and this face's ops-slot walk
+ * in `dev/dev_ops`. Pick one. The shared walk builds only with `dev` listed under plugins in
+ * paf.config.json. This file only holds the switches.
  *
  * @ingroup watchface-lcars
  */

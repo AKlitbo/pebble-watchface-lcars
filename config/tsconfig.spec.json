@@ -1,0 +1,6 @@
+// typechecks the face's specs, which run under Vitest
+{
+  "extends": "../paf/tsconfig.spec.json",
+  "include": ["../src/**/*.spec.ts"],
+  "exclude": ["../node_modules", "../targets"]
+}

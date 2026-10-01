@@ -1,5 +1,5 @@
-// generated from src/pkjs/clay/builder/slots.manifest.ts by tools/clay-components/generate-components.ts
-// do not edit by hand: run `npm run gen:clay` after changing the sources
+// generated from src/pkjs/clay/builder/slots.manifest.ts by the Clay generator
+// do not edit by hand: run `paf gen <face> clay` after changing the sources
 /**
  * Clay custom component for the drag and drop ops slot builder.
  *
@@ -286,7 +286,7 @@ module.exports = {
         }
       });
 
-      // lib/ts/clay/builder/ts/drag.ts
+      // paf/ts/clay/builder/ts/drag.ts
       function createDrag(spec, doc = document) {
         const threshold = spec.threshold === void 0 ? DEFAULT_THRESHOLD : spec.threshold;
         let armed = null;
@@ -404,7 +404,7 @@ module.exports = {
       }
       var DEFAULT_THRESHOLD;
       var init_drag = __esm({
-        "lib/ts/clay/builder/ts/drag.ts"() {
+        "paf/ts/clay/builder/ts/drag.ts"() {
           DEFAULT_THRESHOLD = 10;
         }
       });

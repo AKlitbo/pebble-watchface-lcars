@@ -1,0 +1,12 @@
+{
+  "plugins": {
+    "icons": {
+      "sources": "vendor"
+    },
+    "thumbnails": {},
+    "frame": {},
+    "dev": {}
+  },
+  "framework": "v4.0.0",
+  "commit": "400253928ca9a73316ebb33082258be9ca9df5a2"
+}

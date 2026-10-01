@@ -2,7 +2,7 @@
  * @file fonts.h
  * @brief LCARS Stardate font slots, one per Antonio size the face loads, named by the size.
  *
- * These are the ids passed to the lib font registry (ui/fonts.h): layout.c load_fonts
+ * These are the ids passed to the framework's font registry (ui/fonts.h): layout.c load_fonts
  * registers a handle under each and the zone table names the slot from here. Every slot is
  * a fixed Antonio custom font, so all use concrete FONT_ANTONIO_<size> names.
  *

@@ -9,7 +9,7 @@
  * never fires, and a piece reaching for a family core would not resolve.
  */
 
-import type { Manifest } from '../../../../lib/tools/clay-components/generate-components.ts';
+import type { Manifest } from '../../../../paf/tools/clay-components/generate-components.ts';
 
 export default {
   name: 'slotBuilder',

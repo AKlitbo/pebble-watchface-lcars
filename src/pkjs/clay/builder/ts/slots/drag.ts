@@ -2,7 +2,7 @@
  * This face's answers for the shared drag engine: what a panel drag carries, where it may land,
  * and what happens when it gets there.
  *
- * The pointer handling itself lives in lib. All that is here is the four-panel shape: hit testing
+ * The pointer handling itself lives in the framework. All that is here is the four-panel shape: hit testing
  * four boxes rather than mapping a pointer onto a grid pitch, and swapping two panels rather than
  * placing a block into free space.
  */
@@ -10,7 +10,7 @@
 import { SLOT_COUNT, ID_EMPTY, canPlace, isTall, swallowedBy } from './geometry';
 import { fillVisual, readoutById } from './visuals';
 import type { Readout, Thumbs } from './visuals';
-import { createDrag } from '../../../../../../lib/ts/clay/builder/ts/drag';
+import { createDrag } from '../../../../../../paf/ts/clay/builder/ts/drag';
 
 /** What the drag needs from the component around it. */
 export interface DragEnv {

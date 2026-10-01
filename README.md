@@ -53,16 +53,19 @@ It only goes in the upper left, which is the one column the face draws it in, an
 
 ## Project Structure
 
-* **`config/`**: the face's identity (uuid, version, message keys, resources).
+* **`pebble.appinfo.json`**: the face's identity (uuid, version, message keys, resources).
+* **`config/`**: the face's own lint, test, and typecheck setup in `eslint.config.ts`, `vitest.config.ts`, and the `tsconfig*.json` files.
 * **`src/`**: `src/c/` the device code, `src/pkjs/` the Clay config page and phone-side bridge, and `src/data/` the slot presets both share.
 * **`resources/`**: the fonts, icons, baked backgrounds and Clay thumbnails.
 * **`frame/`**: the HTML the backgrounds are baked from.
 * **`CHANGELOG.md`**: the release history.
-* **`lib/`**: the shared [framework](https://github.com/AKlitbo/pebble-app-framework), filled by [paf](https://github.com/AKlitbo/pebble-app-framework-cli) from the tag in `paf.json` and gitignored. It holds the device code, the PebbleKit JS runtime, the waf helpers, the build tooling under `tools/`, the shared tsconfig/eslint/vitest setup under `config/`, and `build.sh`.
+* **`paf/`**: the shared [framework](https://github.com/AKlitbo/pebble-app-framework), filled by [paf](https://github.com/AKlitbo/pebble-app-framework-cli) from the tag in `paf.config.json` and gitignored. It holds the device code, the PebbleKit JS runtime, the waf helpers, the build and generator tooling, and the `icons`, `thumbnails`, `frame`, and `dev` plugins this face lists.
+* **`paf.config.json`**: the framework tag, and the plugins the face uses with their settings.
 * **`targets/<target>/`**: the build sandbox waf runs in, generated and gitignored.
+* **`tsconfig.json`**: points an editor at the projects in `config/`, since it only looks for a `tsconfig.json` above the file it opens. It checks no files of its own.
 * **`vendor/`**: third-party source SVGs and the LCARS template (gitignored, see [Third-Party Assets](#third-party-assets)).
 
-Anything with a `.g.` in the name is generated and should not be hand-edited: rerun the matching `npm run gen:*`. CI checks that the committed output still matches.
+Anything with a `.g.` in the name is generated and should not be hand-edited. Rerun the matching `paf gen lcars-stardate <kind>`, and `paf check` says which is out of date. CI checks that the committed output still matches.
 
 ## Releasing
 
@@ -74,13 +77,13 @@ git tag lcars-stardate-v1.12.0
 git push origin lcars-stardate-v1.12.0
 ```
 
-The tag version must match `version` in `config/pebble.appinfo.json`, the changelog entry must be dated, and the tag must not already be released. The workflow checks all three before it spends time on a build.
+The tag version must match `version` in `pebble.appinfo.json`, the changelog entry must be dated, and the tag must not already be released. The workflow checks all three before it spends time on a build.
 
 ## Development
 
 ```sh
-paf sync                                  # fills lib/ from the framework tag in paf.json and installs node_modules
-paf build lcars-stardate                  # the .pbw, from WSL with the Pebble SDK installed
+paf sync                                  # fills paf/ from the framework tag in paf.config.json and installs node_modules
+paf build lcars-stardate [--clean]        # the .pbw, from WSL with the Pebble SDK installed
 ```
 
 `paf pin pebble-watchface-lcars <tag>` moves the face to another framework release, and prints the framework's changelog between the two.
@@ -88,19 +91,23 @@ paf build lcars-stardate                  # the .pbw, from WSL with the Pebble S
 The framework's tooling is shared with the other faces, so every command still takes the face name:
 
 ```sh
-bash lib/build.sh lcars-stardate [--clean]        # build a .pbw into targets/lcars-stardate/build/
-npm run build:pkjs -- lcars-stardate              # compile src/pkjs + lib/ts into targets/lcars-stardate/emit/
-npm run gen:icons -- lcars-stardate               # rasterize vendored SVGs to resources/icons/*.png
-npm run gen:frame -- lcars-stardate [theme]       # re-bake each platform's background from frame/<name>~<platform>.html
-npm run gen:lcars                                 # regenerate the Clay components and thumbnails
+paf gen lcars-stardate all                          # every generator: the Clay components, icons, thumbnails, and backgrounds
+paf gen lcars-stardate clay                         # the Clay components
+paf gen lcars-stardate icons                        # rasterize vendored SVGs to resources/icons/*.png
+paf gen lcars-stardate thumbnails                   # the Clay thumbnails
+paf gen lcars-stardate background --frame <frame>   # re-bake one background, such as voyager, from frame/<frame>~<platform>.html
+paf gen lcars-stardate background --frame all       # re-bake every background
+paf tool lcars-stardate clay-preview                # the settings page in a browser, from the dev plugin
+paf tool lcars-stardate tap-walk                    # screenshot every state of the dev walk, from WSL
 ```
 
-Repo-wide checks cover `lib/` and the face:
+The checks, each run against the face's own config:
 
 ```sh
-npm test
-npm run lint
-npm run typecheck
+paf test
+paf lint
+paf typecheck
+paf check                                 # the generated files are still current
 ```
 
 ## Weather Providers
@@ -131,7 +138,7 @@ This repository bundles the face's fonts, its generated icon PNGs, and its baked
 
 ## License
 
-**Source Code:** © 2026 Andrew Klitbo (Null Syntax), licensed under the [PolyForm Noncommercial License 1.0.0](LICENSE). This license keeps the project aligned with the noncommercial nature of the LCARS-inspired assets and *Star Trek* fan-project guidelines. The shared framework in `lib/` is dual-licensed, and this face uses it under the PolyForm option.
+**Source Code:** © 2026 Andrew Klitbo (Null Syntax), licensed under the [PolyForm Noncommercial License 1.0.0](LICENSE). This license keeps the project aligned with the noncommercial nature of the LCARS-inspired assets and *Star Trek* fan-project guidelines. The shared framework in `paf/` is dual-licensed, and this face uses it under the PolyForm option.
 
 You may use, modify, fork, and share it freely for any **noncommercial** purpose, personal use, hobby projects, study, and the like. See [LICENSE](LICENSE) for the full terms.
 

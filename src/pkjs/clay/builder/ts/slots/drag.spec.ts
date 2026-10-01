@@ -1,7 +1,7 @@
 /**
  * Specs for what a panel drag is allowed to do.
  *
- * The pointer handling lives in lib and jsdom cannot exercise it, since every
+ * The pointer handling lives in the framework and jsdom cannot exercise it, since every
  * rect is zeros and no drop would ever hit a panel. What is this face's own is
  * tryPlace, which decides the whole arrangement rather than just the panel
  * under the pointer, because a swap can push the tall block somewhere it does

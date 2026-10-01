@@ -1,10 +1,10 @@
 /**
  * The Clay settings page for this face.
  *
- * Built from the shared template (see lib/ts/pkjs/config-builder.ts), tuned with the
+ * Built from the shared template (see paf/ts/pkjs/config-builder.ts), tuned with the
  * LCARS theme list and the two ops slots this face lets you fill.
  */
-import buildConfig from '../../lib/ts/pkjs/config-builder';
+import buildConfig from '../../paf/ts/pkjs/config-builder';
 import moduleThumbnails from './clay/module-thumbnails.g';
 import moduleMeta from './clay/module-meta';
 
