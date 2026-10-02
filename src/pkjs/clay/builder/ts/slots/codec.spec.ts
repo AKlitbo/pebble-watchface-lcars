@@ -22,12 +22,14 @@ function mountStores(values: Record<string, string>): HTMLElement {
 
   Object.keys(values).forEach((cls) => {
     const input = document.createElement('input');
+
     input.className = 'gl-store ' + cls;
     input.value = values[cls];
     document.body.appendChild(input);
   });
 
   const root = document.createElement('div');
+
   document.body.appendChild(root);
   return root;
 }
@@ -140,6 +142,7 @@ describe('writeStores', () => {
   test('writes the three stores and fires a change on each', () => {
     const root = mountStores({ 'sb-lb': '20', 'sb-rt': '20', 'sb-rb': '20' });
     const changed: string[] = [];
+
     document.querySelectorAll('.gl-store').forEach((store) => {
       store.addEventListener('change', () => changed.push((store as HTMLInputElement).value));
     });
@@ -155,6 +158,7 @@ describe('writeStores', () => {
   test('leaves an unchanged store alone rather than firing a change', () => {
     const root = mountStores({ 'sb-lb': '20', 'sb-rt': '0', 'sb-rb': '1' });
     let fired = 0;
+
     document.querySelectorAll('.gl-store').forEach((store) => {
       store.addEventListener('change', () => { fired += 1; });
     });
@@ -199,6 +203,7 @@ describe('defaults', () => {
   /** Handing back the shared table would let the first edit after a reset rewrite what reset means for the rest of the session. */
   test('hands back a fresh copy each time', () => {
     const first = defaults();
+
     first[0] = 99;
 
     const result = defaults();

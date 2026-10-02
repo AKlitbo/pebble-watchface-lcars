@@ -22,6 +22,7 @@ function fmtCoord(v: number | undefined): string {
   }
 
   const prefix = v < 0 ? '-' : '';
+
   return prefix + Math.abs(v).toFixed(3).replace('.', '-');
 }
 

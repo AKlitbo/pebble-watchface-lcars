@@ -69,6 +69,7 @@ export function thumbFor(thumbs: Thumbs, readout: Readout | null): string | null
   }
 
   const byLabel = thumbs[readout.label];
+
   return (byLabel && byLabel[sizeFor(readout.value)]) || null;
 }
 
@@ -88,6 +89,7 @@ export function fillVisual(el: HTMLElement, readout: Readout | null, thumbs: Thu
 
   if (!readout) {
     const empty = el.ownerDocument.createElement('span');
+
     empty.className = 'sb-slot-empty';
     empty.textContent = 'Empty';
     el.appendChild(empty);
@@ -98,6 +100,7 @@ export function fillVisual(el: HTMLElement, readout: Readout | null, thumbs: Thu
 
   if (thumb) {
     const img = el.ownerDocument.createElement('img');
+
     img.className = el.classList.contains('sb-pal') ? 'sb-pal-img' : 'sb-slot-img';
     img.src = thumb;
     img.alt = readout.label;
@@ -109,12 +112,14 @@ export function fillVisual(el: HTMLElement, readout: Readout | null, thumbs: Thu
   el.style.background = readout.color;
 
   const icon = el.ownerDocument.createElement('span');
+
   icon.className = 'sb-pal-icon';
   icon.textContent = readout.icon;
   el.appendChild(icon);
 
   if (withName) {
     const name = el.ownerDocument.createElement('span');
+
     name.textContent = readout.label;
     el.appendChild(name);
   }

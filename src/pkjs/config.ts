@@ -52,6 +52,7 @@ const SENSORS_BLOCK = { label: 'Sensors Block (weather + temperature)', value: 2
 // rides on the page item
 const BUILDER_OPTIONS = [SENSORS_BLOCK, ...OPS_OPTIONS].map(function (option) {
   const merged: Record<string, unknown> = {};
+
   Object.assign(merged, option, moduleMeta[option.label]);
   return merged;
 });

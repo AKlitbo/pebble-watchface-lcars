@@ -127,6 +127,7 @@ describe('fillVisual', () => {
   /** A panel is repainted every time the slots change, and leaving the old contents stacks a second image on top of the first. */
   test('clears whatever the box held before', () => {
     const box = document.createElement('div');
+
     fillVisual(box, HEART, THUMBS, false);
 
     fillVisual(box, SENSORS, THUMBS, false);
@@ -147,6 +148,7 @@ describe('fillVisual', () => {
   /** The palette and the panels size their images differently, so the wrong class draws a tile at the other one's scale. */
   test('classes the image by whether the box is a palette tile', () => {
     const tile = document.createElement('div');
+
     tile.className = 'sb-pal';
     const slot = document.createElement('div');
 
@@ -183,6 +185,7 @@ describe('fillVisual', () => {
   /** A box that fell back once and is later given a shot would keep the tint behind its image. */
   test('drops the fallback styling when a later readout has a shot', () => {
     const box = document.createElement('div');
+
     fillVisual(box, UNSHOT, THUMBS, false);
 
     fillVisual(box, HEART, THUMBS, false);

@@ -35,6 +35,7 @@ export function init(this: ClayContext): void {
   const palette = root.querySelector('.sb-palette') as HTMLElement;
 
   const slotEls: HTMLElement[] = [];
+
   for (let slot = 0; slot < SLOT_COUNT; slot++) {
     slotEls.push(root.querySelector('.sb-slot[data-slot="' + slot + '"]') as HTMLElement);
   }
@@ -48,6 +49,7 @@ export function init(this: ClayContext): void {
 
     for (let slot = 0; slot < SLOT_COUNT; slot++) {
       const readout = slots[slot] === ID_EMPTY ? null : readoutById(READOUTS, slots[slot]);
+
       fillVisual(slotEls[slot], readout, THUMBS, false);
       slotEls[slot].classList.toggle('filled', Boolean(readout));
     }
@@ -99,6 +101,7 @@ export function init(this: ClayContext): void {
 
   READOUTS.forEach(function (readout) {
     const cell = root.ownerDocument.createElement('div');
+
     cell.className = 'sb-pal' + (isTall(readout.value) ? ' tall' : '');
     cell.title = readout.label;
     fillVisual(cell, readout, THUMBS, true);
@@ -113,9 +116,11 @@ export function init(this: ClayContext): void {
   // --- actions ---
 
   const presetBtns = root.querySelectorAll('.sb-preset');
+
   for (let i = 0; i < presetBtns.length; i++) {
     presetBtns[i].addEventListener('click', function (event) {
       const id = (event.currentTarget as HTMLElement).getAttribute('data-preset') || '';
+
       if (SLOT_PRESETS[id]) {
         setSlots(SLOT_PRESETS[id]);
       }
@@ -123,6 +128,7 @@ export function init(this: ClayContext): void {
   }
 
   const clear = root.querySelector('.sb-btn-clear');
+
   if (clear) {
     clear.addEventListener('click', function () {
       setSlots([ID_EMPTY, ID_EMPTY, ID_EMPTY, ID_EMPTY]);

@@ -52,6 +52,7 @@ export function tryPlace(slots: number[], id: number, from: number, to: number):
 
   // a tall pick fills its column so whatever was under it is gone rather than pushed aside
   const swallowed = swallowedBy(id, to);
+
   if (swallowed >= 0) {
     next[swallowed] = ID_EMPTY;
   }
@@ -78,6 +79,7 @@ export function installDrag(env: DragEnv) {
   function slotAt(x: number, y: number): number | null {
     for (let slot = 0; slot < SLOT_COUNT; slot++) {
       const box = env.slotEls[slot].getBoundingClientRect();
+
       if (box.width && x >= box.left && x <= box.right && y >= box.top && y <= box.bottom) {
         return slot;
       }
@@ -91,6 +93,7 @@ export function installDrag(env: DragEnv) {
 
     ghost(dragged) {
       const ghost = doc.createElement('div');
+
       ghost.className = 'sb-ghost' + (isTall(dragged.id) ? ' tall' : '');
       fillVisual(ghost, readoutById(env.readouts, dragged.id), env.thumbs, false);
       return ghost;
@@ -114,6 +117,7 @@ export function installDrag(env: DragEnv) {
 
     drop(dragged, slot) {
       const next = tryPlace(env.getSlots(), dragged.id, dragged.from, slot);
+
       if (next) {
         env.setSlots(next);
       }
@@ -126,6 +130,7 @@ export function installDrag(env: DragEnv) {
       }
 
       const cleared = env.getSlots().slice();
+
       cleared[dragged.from] = ID_EMPTY;
       env.setSlots(cleared);
     },
@@ -141,6 +146,7 @@ export function installDrag(env: DragEnv) {
     // armed rather than started, so a tap on a panel is not mistaken for picking it up
     fromSlot(slot: number, event: PointerEvent) {
       const id = env.getSlots()[slot];
+
       if (id !== ID_EMPTY) {
         drag.arm({ id: id, from: slot }, event);
       }

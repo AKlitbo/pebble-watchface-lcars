@@ -12,6 +12,7 @@ import { DEFAULT_SLOTS, ID_EMPTY, SLOT_COUNT, SLOT_STORE_CLASS, canPlace } from 
 /** Read a slot id out of a hidden input's text, falling back to empty. */
 export function parseId(text: string | null | undefined): number {
   const n = parseInt(text || '', 10);
+
   return isNaN(n) || n < 0 ? ID_EMPTY : n;
 }
 
@@ -32,11 +33,13 @@ export function formatId(id: number): string {
  */
 export function storeFor(root: HTMLElement, slot: number): HTMLInputElement | null {
   const cls = SLOT_STORE_CLASS[slot];
+
   if (!cls) {
     return null;
   }
 
   const doc = root.ownerDocument || document;
+
   return doc.querySelector('.' + cls) as HTMLInputElement | null;
 }
 
@@ -51,6 +54,7 @@ export function readSlots(root: HTMLElement, ownValue: string): number[] {
 
   for (let slot = 0; slot < SLOT_COUNT; slot++) {
     const store = storeFor(root, slot);
+
     slots.push(parseId(store ? store.value : ownValue));
   }
 
