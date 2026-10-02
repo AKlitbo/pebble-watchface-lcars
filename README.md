@@ -54,12 +54,12 @@ It only goes in the upper left, which is the one column the face draws it in, an
 ## Project Structure
 
 * **`pebble.appinfo.json`**: the face's identity (uuid, version, message keys, resources).
-* **`config/`**: the face's own lint, test, and typecheck setup in `eslint.config.ts`, `vitest.config.ts`, and the `tsconfig*.json` files.
+* **`config/`**: the face's own test and typecheck setup in `vitest.config.ts` and the `tsconfig*.json` files. The lint comes from the framework's `code-style` plugin, so there is no ESLint config here.
 * **`src/`**: `src/c/` the device code, `src/pkjs/` the Clay config page and phone-side bridge, and `src/data/` the slot presets both share.
 * **`resources/`**: the fonts, icons, baked backgrounds and Clay thumbnails.
 * **`frame/`**: the HTML the backgrounds are baked from.
 * **`CHANGELOG.md`**: the release history.
-* **`paf/`**: the shared [framework](https://github.com/AKlitbo/pebble-app-framework), filled by [paf](https://github.com/AKlitbo/pebble-app-framework-cli) from the tag in `paf.config.json` and gitignored. It holds the device code, the PebbleKit JS runtime, the waf helpers, the build and generator tooling, and the `icons`, `thumbnails`, `frame`, and `dev` plugins this face lists.
+* **`paf/`**: the shared [framework](https://github.com/AKlitbo/pebble-app-framework), filled by [paf](https://github.com/AKlitbo/pebble-app-framework-cli) from the tag in `paf.config.json` and gitignored. It holds the device code, the PebbleKit JS runtime, the waf helpers, the build and generator tooling, and the `icons`, `thumbnails`, `frame`, `dev`, and `code-style` plugins this face lists.
 * **`paf.config.json`**: the framework tag, and the plugins the face uses with their settings.
 * **`targets/<target>/`**: the build sandbox waf runs in, generated and gitignored.
 * **`tsconfig.json`**: points an editor at the projects in `config/`, since it only looks for a `tsconfig.json` above the file it opens. It checks no files of its own.
@@ -101,11 +101,11 @@ paf tool lcars-stardate clay-preview                # the settings page in a bro
 paf tool lcars-stardate tap-walk                    # screenshot every state of the dev walk, from WSL
 ```
 
-The checks, each run against the face's own config:
+The checks:
 
 ```sh
 paf test
-paf lint
+paf lint [--fix]                          # the house style, from the code-style plugin
 paf typecheck
 paf check                                 # the generated files are still current
 ```

@@ -1,5 +1,5 @@
 // typechecks what runs under node: the builder manifest the Clay generator reads, and the face's
-// own lint and test configs
+// own test config
 {
   "extends": "../paf/tsconfig.tools.json",
   "include": ["../src/pkjs/clay/builder/*.manifest.ts", "*.config.ts"],
