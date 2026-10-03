@@ -5,11 +5,11 @@
 */
 :root {
   --african-violet: var(--GColorWhite);
-  --bluey:          var(--GColorLightGray);
+  --bluey: var(--GColorLightGray);
   --moonlit-violet: var(--GColorDarkGray);
-  --orange:         var(--GColorDarkGray);
-  --golden-orange:  var(--GColorLightGray);
-  --red:            var(--GColorWhite);
-  --butterscotch:   var(--GColorDarkGray);
-  --banner-color:   var(--bluey);
+  --orange: var(--GColorDarkGray);
+  --golden-orange: var(--GColorLightGray);
+  --red: var(--GColorWhite);
+  --butterscotch: var(--GColorDarkGray);
+  --banner-color: var(--bluey);
 }

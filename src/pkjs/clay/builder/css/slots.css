@@ -66,8 +66,12 @@
   border-radius: 2px;
 }
 
-.sb-rail-1 { background: #ff5500; }
-.sb-rail-2 { background: #ffaa55; }
+.sb-rail-1 {
+  background: #ff5500;
+}
+.sb-rail-2 {
+  background: #ffaa55;
+}
 
 /* --- the four panels --- */
 
@@ -94,14 +98,26 @@
   justify-content: center;
 }
 
-.sb-slot[data-slot="0"] { grid-area: 1 / 1; }
-.sb-slot[data-slot="1"] { grid-area: 2 / 1; }
-.sb-slot[data-slot="2"] { grid-area: 1 / 2; }
-.sb-slot[data-slot="3"] { grid-area: 2 / 2; }
+.sb-slot[data-slot='0'] {
+  grid-area: 1 / 1;
+}
+.sb-slot[data-slot='1'] {
+  grid-area: 2 / 1;
+}
+.sb-slot[data-slot='2'] {
+  grid-area: 1 / 2;
+}
+.sb-slot[data-slot='3'] {
+  grid-area: 2 / 2;
+}
 
 /* the sensors block fills the left column, so its lower neighbour goes away entirely */
-.sb-slots.tall .sb-slot[data-slot="0"] { grid-area: 1 / 1 / span 2 / span 1; }
-.sb-slots.tall .sb-slot[data-slot="1"] { display: none; }
+.sb-slots.tall .sb-slot[data-slot='0'] {
+  grid-area: 1 / 1 / span 2 / span 1;
+}
+.sb-slots.tall .sb-slot[data-slot='1'] {
+  display: none;
+}
 
 .sb-slot.filled {
   border-style: solid;

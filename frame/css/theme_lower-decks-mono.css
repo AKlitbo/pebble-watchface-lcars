@@ -4,10 +4,10 @@
   Pebble-64 GColors from the frame plugin's pebble-colors.css.
 */
 :root {
-  --butter:         var(--GColorWhite);
-  --daybreak:       var(--GColorLightGray);
-  --harvestgold:    var(--GColorWhite);
-  --honey:          var(--GColorLightGray);
+  --butter: var(--GColorWhite);
+  --daybreak: var(--GColorLightGray);
+  --harvestgold: var(--GColorWhite);
+  --honey: var(--GColorLightGray);
   --october-sunset: var(--GColorDarkGray);
-  --orange:         var(--GColorDarkGray);
+  --orange: var(--GColorDarkGray);
 }

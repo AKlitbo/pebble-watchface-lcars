@@ -5,9 +5,9 @@
   cut-outs, blockhead box) is inherited and just renders in mono.
 */
 :root {
-  --v-silver:       var(--GColorLightGray);   /* frame + sidebars + most bars */
-  --v-gold:         var(--GColorWhite);        /* banner, top corner, wide top bar */
-  --v-science-blue: var(--GColorDarkGray);     /* blue picks + accent lines */
-  --v-frost:        var(--GColorWhite);         /* blockhead box + upper accent */
-  --v-pumpkin:      var(--GColorWhite);         /* wide bottom bar */
+  --v-silver: var(--GColorLightGray); /* frame + sidebars + most bars */
+  --v-gold: var(--GColorWhite); /* banner, top corner, wide top bar */
+  --v-science-blue: var(--GColorDarkGray); /* blue picks + accent lines */
+  --v-frost: var(--GColorWhite); /* blockhead box + upper accent */
+  --v-pumpkin: var(--GColorWhite); /* wide bottom bar */
 }

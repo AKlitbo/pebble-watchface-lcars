@@ -34,11 +34,21 @@ body .section {
 }
 
 /* each section takes the next colour round the classic palette, the way a real panel's blocks do */
-body .section:nth-of-type(2) { border-left-color: #ffaa55; }
-body .section:nth-of-type(3) { border-left-color: #55aaff; }
-body .section:nth-of-type(4) { border-left-color: #ff5500; }
-body .section:nth-of-type(5) { border-left-color: #aaaaff; }
-body .section:nth-of-type(6) { border-left-color: #aa5555; }
+body .section:nth-of-type(2) {
+  border-left-color: #ffaa55;
+}
+body .section:nth-of-type(3) {
+  border-left-color: #55aaff;
+}
+body .section:nth-of-type(4) {
+  border-left-color: #ff5500;
+}
+body .section:nth-of-type(5) {
+  border-left-color: #aaaaff;
+}
+body .section:nth-of-type(6) {
+  border-left-color: #aa5555;
+}
 
 /* a heading reads as the holder box on a bar: black label, amber lettering, a pill running off.
    the second selector is here to outrank Clay's own `.section > .component-heading:first-child`,
@@ -120,8 +130,8 @@ body .component .description {
 
 /* controls: dark wells with amber text */
 body .component select,
-body .component input[type="text"],
-body .component input[type="number"] {
+body .component input[type='text'],
+body .component input[type='number'] {
   background: #16161c;
   color: #ffcc88;
   border: 1px solid #3a3a44;
@@ -133,7 +143,7 @@ body .component input[type="number"] {
 
 /* the save button as a full LCARS pill */
 body .component-submit button,
-body button[type="submit"] {
+body button[type='submit'] {
   background: #ff5500;
   color: #000;
   border: none;

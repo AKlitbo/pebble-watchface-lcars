@@ -8,34 +8,34 @@
 */
 :root {
   /* Voyager palette, each pinned to a Pebble-64 cell so nothing dithers */
-  --v-silver:       var(--GColorLiberty);       /* slate frame + sidebars */
-  --v-gold:         var(--GColorChromeYellow);   /* banner, top corner, gold bar */
-  --v-science-blue: var(--GColorBlueMoon);       /* short blue pick + lower accent */
-  --v-frost:        var(--GColorBabyBlueEyes);   /* blockhead + upper accent */
-  --v-pumpkin:      var(--GColorMelon);          /* pale cream bar */
+  --v-silver: var(--GColorLiberty); /* slate frame + sidebars */
+  --v-gold: var(--GColorChromeYellow); /* banner, top corner, gold bar */
+  --v-science-blue: var(--GColorBlueMoon); /* short blue pick + lower accent */
+  --v-frost: var(--GColorBabyBlueEyes); /* blockhead + upper accent */
+  --v-pumpkin: var(--GColorMelon); /* pale cream bar */
 
   /* Voyager's elbow curve is the lower-decks radius, tighter than classic's 160/60 */
-  --radius-top:            0 0 0 100px;
-  --radius-bottom:         100px 0 0 0;
-  --radius-content-top:    0 0 0 44px;
+  --radius-top: 0 0 0 100px;
+  --radius-bottom: 100px 0 0 0;
+  --radius-content-top: 0 0 0 44px;
   --radius-content-bottom: 44px 0 0 0;
 
   /* repaint the classic vendor vars the frame actually renders with */
   --left-frame-top-color: var(--v-silver);
-  --left-frame-color:     var(--v-silver);
-  --corner-color-top:     var(--v-silver);
-  --corner-color-bottom:  var(--v-silver);
-  --panel-6-color:        var(--v-silver);
-  --banner-color:         var(--v-gold);
+  --left-frame-color: var(--v-silver);
+  --corner-color-top: var(--v-silver);
+  --corner-color-bottom: var(--v-silver);
+  --panel-6-color: var(--v-silver);
+  --banner-color: var(--v-gold);
 
   /* readout header bars (Stardate / Sensors / Vitals / Traversal) */
-  --lcars-bar-color:       var(--v-silver);
+  --lcars-bar-color: var(--v-silver);
   --lcars-bar-start-color: var(--v-science-blue);
-  --lcars-bar-end-color:   var(--v-science-blue);
-  --lcars-bar-text-color:  var(--v-gold);
+  --lcars-bar-end-color: var(--v-science-blue);
+  --lcars-bar-text-color: var(--v-gold);
 
   /* background-* utility classes the HTML uses for the corner and seam accents */
-  --gold:   var(--v-gold);
+  --gold: var(--v-gold);
   --almond: var(--v-pumpkin);
 
   /* Voyager bar proportions: a wide gold/cream segment, a short blue pick */
@@ -75,7 +75,7 @@
 }
 
 .watch .first-bar-panel .bar-4::before {
-  content: "";
+  content: '';
   position: absolute;
   left: 0;
   bottom: calc(var(--bar-height) + var(--bar-height) / 2);
@@ -85,7 +85,7 @@
 }
 
 .watch .first-bar-panel .bar-4::after {
-  content: "";
+  content: '';
   position: absolute;
   left: 0;
   bottom: 0;
@@ -95,7 +95,7 @@
 }
 
 .watch #gap .bar-panel .bar-9::before {
-  content: "";
+  content: '';
   position: absolute;
   left: 0;
   top: calc(var(--bar-height) + var(--bar-height) / 2);
@@ -105,7 +105,7 @@
 }
 
 .watch #gap .bar-panel .bar-9::after {
-  content: "";
+  content: '';
   position: absolute;
   left: 0;
   top: 0;

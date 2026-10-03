@@ -5,12 +5,12 @@
   uses only colors the watch can render.
 */
 :root {
-  --cool:        var(--GColorPictonBlue);
-  --evening:     var(--GColorBlueMoon);
+  --cool: var(--GColorPictonBlue);
+  --evening: var(--GColorBlueMoon);
   --galaxy-gray: var(--GColorDarkGray);
-  --ghost:       var(--GColorBabyBlueEyes);
-  --honey:       var(--GColorMelon);
-  --midnight:    var(--GColorBlue);
-  --moonbeam:    var(--GColorWhite);
-  --tangerine:   var(--GColorRajah);
+  --ghost: var(--GColorBabyBlueEyes);
+  --honey: var(--GColorMelon);
+  --midnight: var(--GColorBlue);
+  --moonbeam: var(--GColorWhite);
+  --tangerine: var(--GColorRajah);
 }

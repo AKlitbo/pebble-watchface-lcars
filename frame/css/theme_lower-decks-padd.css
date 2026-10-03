@@ -9,11 +9,11 @@
     The three distinct blues PADD is built on, each in its own Pebble cell so
     they stay separable: cornflower (frame) / light periwinkle / slate.
   */
-  --alpha-blue:  var(--GColorPictonBlue);
+  --alpha-blue: var(--GColorPictonBlue);
   --arctic-snow: var(--GColorBabyBlueEyes);
-  --night-rain:  var(--GColorLiberty);
-  --arctic-ice:  var(--GColorCeleste);
+  --night-rain: var(--GColorLiberty);
+  --arctic-ice: var(--GColorCeleste);
   --radioactive: var(--GColorCeleste);
-  --beta-blue:   var(--GColorCadetBlue);
+  --beta-blue: var(--GColorCadetBlue);
   --light-color: var(--GColorWhite);
 }

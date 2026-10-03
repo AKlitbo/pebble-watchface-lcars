@@ -5,10 +5,10 @@
   uses only colors the watch can render.
 */
 :root {
-  --butter:         var(--GColorPastelYellow);
-  --daybreak:       var(--GColorChromeYellow);
-  --harvestgold:    var(--GColorRajah);
-  --honey:          var(--GColorMelon);
+  --butter: var(--GColorPastelYellow);
+  --daybreak: var(--GColorChromeYellow);
+  --harvestgold: var(--GColorRajah);
+  --honey: var(--GColorMelon);
   --october-sunset: var(--GColorOrange);
-  --orange:         var(--GColorOrange);
+  --orange: var(--GColorOrange);
 }
