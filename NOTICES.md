@@ -4,18 +4,6 @@ LCARS Stardate is under the PolyForm Noncommercial License, see [LICENSE](LICENS
 
 For who made these and what they are used for, see the Credits section of the [README](README.md).
 
-## Code
-
-### ical.js
-
-The phone-side calendar reader in the shared PebbleKit JS bundle. LCARS Stardate surfaces no iCal panel, but the shared bundle carries the reader, so it ships in the built `.pbw`.
-
-- **Source:** <https://github.com/kewisch/ical.js>
-- **Licence:** Mozilla Public License 2.0, published at <https://www.mozilla.org/en-US/MPL/2.0/>. The full text also ships in the package at `node_modules/ical.js/LICENSE`
-- **What Ships:** the package's own prebuilt `dist/ical.es5.min.cjs`, copied in unchanged by the pkjs build. It is not modified, patched or re-bundled, so the source that produced it is the upstream repository above, and its licence header travels inside the bundle
-
-The MPL covers ical.js and nothing else here. Section 1.10 of that licence puts it plainly: a file carrying none of its code is not a modification of it, so the rest of this project stays under the PolyForm terms. Keeping ical.js in a file of its own rather than mixing it into ours is deliberate, and is what section 1.7 asks of a larger work.
-
 ## Fonts
 
 The face bundles its `.ttf` files under `resources/fonts/`, and the build converts them into the watch's own font format, so both this repository and the built watchface carry them.
