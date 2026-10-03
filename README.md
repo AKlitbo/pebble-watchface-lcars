@@ -1,94 +1,81 @@
 # LCARS Stardate
 
-An LCARS-inspired watchface for the Pebble Time 2 (**Emery**). It shows the time, stardate, date, weather, battery, heart rate and steps inside an LCARS frame, with themes and ops readouts selectable from a Clay settings page.
-
-| Watchface | Preview |
-| :--- | :--- |
-| **LCARS Stardate**<br>[changelog](CHANGELOG.md) | <img src=".github/images/lcars-stardate/theme_classic.png" width="75" title="Classic"> <img src=".github/images/lcars-stardate/theme_nemesis-blue.png" width="75" title="Nemesis Blue"> <img src=".github/images/lcars-stardate/theme_mono.png" width="75" title="Classic Mono"> <img src=".github/images/lcars-stardate/theme_voyager.png" width="75" title="Voyager"> <img src=".github/images/lcars-stardate/theme_voyager-mono.png" width="75" title="Voyager Mono"> <img src=".github/images/lcars-stardate/theme_lower-decks.png" width="75" title="Lower Decks"> <img src=".github/images/lcars-stardate/theme_lower-decks-mono.png" width="75" title="Lower Decks Mono"> <img src=".github/images/lcars-stardate/theme_lower-decks-padd.png" width="75" title="Lower Decks PADD"> <img src=".github/images/lcars-stardate/theme_lower-decks-padd-mono.png" width="75" title="Lower Decks PADD Mono"> |
+I made LCARS Stardate for my Pebble Time 2, so it runs on Emery only. It puts the time and the date inside an LCARS frame, with a battery gauge, Bluetooth and Quiet Time icons, and four panels you fill from the settings page with whatever readouts you like.
 
 ## Install
 
-Download the `.pbw` from [Releases](https://github.com/AKlitbo/pebble-watchface-lcars/releases) and open it with the Pebble app on your phone.
+Grab the `.pbw` from [Releases](https://github.com/AKlitbo/pebble-watchface-lcars/releases) and open it with the Pebble app on your phone.
 
-Releases are tagged `lcars-stardate-v<version>`, and the notes are that version's `CHANGELOG.md` entry. The asset names its platform, so `lcars-stardate-emery-1.7.0.pbw` is Emery only. Every release since 1.0.0 is here. Releases up to 1.11.0 were first published from the pebble-watchfaces repository, so their dates on this page are when they were copied over, and each note opens with the original release date.
+Each release's notes are its [changelog](CHANGELOG.md) entry, and the file name says which watch it's for, so `lcars-stardate-emery-1.13.0.pbw` is for Emery. Every version since 1.0.0 is there. I first published up to 1.11.0 from my pebble-watchfaces repository, so those show the date I copied them over here, and each note opens with the date it really came out.
 
-## Bugs and Requests
+## Themes
 
-Issues for this face are tracked alongside every other face in the [pebble-watchfaces](https://github.com/AKlitbo/pebble-watchfaces/issues) repository. Please open them there, even though the code lives here.
+Pick one from Frame Theme in the settings page.
+
+| | | | | |
+|:--:|:--:|:--:|:--:|:--:|
+| **Classic**<br><img src=".github/images/lcars-stardate/theme_classic.png" width="75"> | **Nemesis Blue**<br><img src=".github/images/lcars-stardate/theme_nemesis-blue.png" width="75"> | **Classic Mono**<br><img src=".github/images/lcars-stardate/theme_mono.png" width="75"> | **Voyager**<br><img src=".github/images/lcars-stardate/theme_voyager.png" width="75"> | **Voyager Mono**<br><img src=".github/images/lcars-stardate/theme_voyager-mono.png" width="75"> |
+| **Lower Decks**<br><img src=".github/images/lcars-stardate/theme_lower-decks.png" width="75"> | **Lower Decks Mono**<br><img src=".github/images/lcars-stardate/theme_lower-decks-mono.png" width="75"> | **Lower Decks PADD**<br><img src=".github/images/lcars-stardate/theme_lower-decks-padd.png" width="75"> | **Lower Decks PADD Mono**<br><img src=".github/images/lcars-stardate/theme_lower-decks-padd-mono.png" width="75"> | |
 
 ## Readouts
 
-Every readout the four ops slots can show, at each size it supports.
-
-The face has four pickable slots, two per column, under a fixed clock and stardate banner. A slot carries no fixed reading. What it shows comes from the catalogue below, and its bar word and glyph follow the pick, so changing a slot needs no new artwork for any theme.
+The bottom of the face has four panels, two in each column, under the clock and the date banner. You pick what each one shows in the settings page. Its label and icon follow your pick, so any readout works with any theme.
 
 ### Arrangements
 
-Six ways the same four slots read. Each is a picked set rather than a mode, so any readout can go in any slot and you can mix them however you like.
+These are a few ways to set them up, and none of them is a mode. Each is just four picks, so you can mix them however you like.
 
 <img src=".github/images/lcars-stardate/ops_body.png" width="105" title="Body"> <img src=".github/images/lcars-stardate/ops_weather.png" width="105" title="Weather"> <img src=".github/images/lcars-stardate/ops_sun.png" width="105" title="Sun"> <img src=".github/images/lcars-stardate/ops_moon.png" width="105" title="Moon"> <img src=".github/images/lcars-stardate/ops_calendar.png" width="105" title="Calendar"> <img src=".github/images/lcars-stardate/ops_alt-time.png" width="105" title="Alternate Time">
 
-### Slot
+### Panel
 
-The ordinary size, and what all four slots take.
+Every readout fits a normal panel, so any of these can go in any of the four.
 
 | | | | | | | |
 |:--:|:--:|:--:|:--:|:--:|:--:|:--:|
 | **Heart Rate**<br>![](resources/thumbnails/heart-slot.png) | **Steps / Distance**<br>![](resources/thumbnails/steps-slot.png) | **Battery**<br>![](resources/thumbnails/battery-slot.png) | **Calories**<br>![](resources/thumbnails/calories-slot.png) | **Sleep**<br>![](resources/thumbnails/sleep-slot.png) | **Active Minutes**<br>![](resources/thumbnails/active-slot.png) | **Moon Phase %**<br>![](resources/thumbnails/moon-pct-slot.png) |
-| **Moon Phase Name**<br>![](resources/thumbnails/moon-phase-slot.png) | **Next Full / New Moon**<br>![](resources/thumbnails/moon-next-slot.png) | **Sunrise**<br>![](resources/thumbnails/sunrise-slot.png) | **Sunset**<br>![](resources/thumbnails/sunset-slot.png) | **Length of Day**<br>![](resources/thumbnails/daylight-slot.png) | **Next Sun Event**<br>![](resources/thumbnails/sun-next-slot.png) | **Humidity**<br>![](resources/thumbnails/humidity-slot.png) |
-| **Wind**<br>![](resources/thumbnails/wind-slot.png) | **UV Index**<br>![](resources/thumbnails/uv-slot.png) | **High / Low**<br>![](resources/thumbnails/hilo-slot.png) | **Julian Date**<br>![](resources/thumbnails/julian-slot.png) | **Day of Year**<br>![](resources/thumbnails/day-of-year-slot.png) | **Week Number**<br>![](resources/thumbnails/week-slot.png) | **Temperature**<br>![](resources/thumbnails/temp-slot.png) |
+| **Moon Phase Name**<br>![](resources/thumbnails/moon-phase-slot.png) | **Next Full / New Moon**<br>![](resources/thumbnails/moon-next-slot.png) | **Sunrise**<br>![](resources/thumbnails/sunrise-slot.png) | **Sunset**<br>![](resources/thumbnails/sunset-slot.png) | **Length of Day**<br>![](resources/thumbnails/daylight-slot.png) | **Countdown to Sunrise / Sunset**<br>![](resources/thumbnails/sun-next-slot.png) | **Humidity**<br>![](resources/thumbnails/humidity-slot.png) |
+| **Wind**<br>![](resources/thumbnails/wind-slot.png) | **UV Index**<br>![](resources/thumbnails/uv-slot.png) | **High / Low Temperature**<br>![](resources/thumbnails/hilo-slot.png) | **Julian Date**<br>![](resources/thumbnails/julian-slot.png) | **Day of Year**<br>![](resources/thumbnails/day-of-year-slot.png) | **Week Number**<br>![](resources/thumbnails/week-slot.png) | **Temperature**<br>![](resources/thumbnails/temp-slot.png) |
 | **Conditions**<br>![](resources/thumbnails/conditions-slot.png) | **Epoch Clock**<br>![](resources/thumbnails/epoch-slot.png) | **Swatch Beats**<br>![](resources/thumbnails/beats-slot.png) | **Alternate Time Zone**<br>![](resources/thumbnails/zone1-slot.png) | **Next Alarm**<br>![](resources/thumbnails/alarm-slot.png) | | |
 
-Epoch's ten digits only fit once the row hands its icon space back to the value, which any readout with no glyph gets. The alternate zone names its own bar after the zone you pick, so a slot set to London reads LONDON. Until you pick one it reads ZONE 1, which is what the picture above shows.
+Epoch Clock has no icon, so its ten digits get the whole row. Alternate Time Zone labels its bar with the city you pick, so a panel set to London reads LONDON. Until you pick one it reads ZONE 1, which is what the picture shows.
 
 ### Tall
-
-One readout fills a whole column instead of a slot: the condition glyph over a large temperature, at a size the ordinary rows cannot give it.
 
 | |
 |:--:|
 | **Sensors Block**<br>![](resources/thumbnails/sensors-tall.png) |
 
-It only goes in the upper left, which is the one column the face draws it in, and it takes the lower left slot with it. The builder will not let you drop it anywhere else, and the firmware makes the same correction, so a hand-edited setting cannot smuggle one into the right column.
+The Sensors Block fills a whole column, with the weather icon over a big temperature that a normal panel has no room for.
 
-## Project Structure
+It only goes in the top left and takes the bottom left panel with it, since that's the one place the face draws it. The settings page won't let you drop it anywhere else, and the watchface leaves that panel empty if a setting ever says otherwise.
 
-* **`pebble.appinfo.json`**: the face's identity (uuid, version, message keys, resources).
-* **`config/`**: the face's own test and typecheck setup in `vitest.config.ts` and the `tsconfig*.json` files. The lint comes from the framework's `code-style` plugin, so there is no ESLint config here.
-* **`src/`**: `src/c/` the device code, `src/pkjs/` the Clay config page and phone-side bridge, and `src/data/` the slot presets both share.
-* **`resources/`**: the fonts, icons, baked backgrounds and Clay thumbnails.
-* **`frame/`**: the HTML the backgrounds are baked from.
-* **`CHANGELOG.md`**: the release history.
-* **`paf/`**: the shared [framework](https://github.com/AKlitbo/pebble-app-framework), filled by [paf](https://github.com/AKlitbo/pebble-app-framework-cli) from the tag in `paf.config.json` and gitignored. It holds the device code, the PebbleKit JS runtime, the waf helpers, the build and generator tooling, and the `icons`, `thumbnails`, `frame`, `dev`, and `code-style` plugins this face lists.
-* **`paf.config.json`**: the framework tag, and the plugins the face uses with their settings.
-* **`targets/<target>/`**: the build sandbox waf runs in, generated and gitignored.
-* **`tsconfig.json`**: points an editor at the projects in `config/`, since it only looks for a `tsconfig.json` above the file it opens. It checks no files of its own.
-* **`vendor/`**: third-party source SVGs and the LCARS template (gitignored, see [Third-Party Assets](#third-party-assets)).
+## Weather Sources
 
-Anything with a `.g.` in the name is generated and should not be hand-edited. Rerun the matching `paf gen lcars-stardate <kind>`, and `paf check` says which is out of date. CI checks that the committed output still matches.
+You pick the weather source in the settings page.
 
-## Releasing
+- **Open-Meteo**: the default. It's free and needs no account or key.
+- **OpenWeatherMap**: free tier, needs an account and an API key.
+- **WeatherAPI.com**: free tier, needs an account and an API key.
 
-A release starts when a `lcars-stardate-v<version>` tag is pushed. [release.yml](.github/workflows/release.yml) then builds the face, takes its notes from the matching [CHANGELOG.md](CHANGELOG.md) section, and publishes the `.pbw`.
+Any of them gives the face its temperature, conditions, wind, humidity, sunrise, and sunset. OpenWeatherMap's free tier has no UV index or today's high and low, so the face fills those in from Open-Meteo.
 
-```sh
-# date the [1.12.0] heading in CHANGELOG.md first, then
-git tag lcars-stardate-v1.12.0
-git push origin lcars-stardate-v1.12.0
-```
+## Bugs and Requests
 
-The tag version must match `version` in `pebble.appinfo.json`, the changelog entry must be dated, and the tag must not already be released. The workflow checks all three before it spends time on a build.
+I keep the issues for all my faces in one place, so please open bugs and requests for this one in [pebble-watchfaces](https://github.com/AKlitbo/pebble-watchfaces/issues), even though the code lives here.
 
-## Development
+## Building It Yourself
+
+If you want to build it yourself, you need [`paf`](https://github.com/AKlitbo/pebble-app-framework-cli#install) and the Pebble SDK. I run everything from WSL, because the build needs the SDK and `paf sync` installs `node_modules` for whichever system runs it. `paf doctor` tells you if anything is missing.
 
 ```sh
 paf sync                                  # fills paf/ from the framework tag in paf.config.json and installs node_modules
 paf build lcars-stardate [--clean]        # the .pbw, from WSL with the Pebble SDK installed
 ```
 
-`paf pin pebble-watchface-lcars <tag>` moves the face to another framework release, and prints the framework's changelog between the two.
+`paf pin lcars-stardate <tag>` moves the face to another framework release. It prints the breaking changes between the two tags first.
 
-The framework's tooling is shared with the other faces, so every command still takes the face name:
+The generators and tools work on one face, so they take its name:
 
 ```sh
 paf gen lcars-stardate all                          # every generator: the Clay components, icons, thumbnails, and backgrounds
@@ -101,24 +88,43 @@ paf tool lcars-stardate clay-preview                # the settings page in a bro
 paf tool lcars-stardate tap-walk                    # screenshot every state of the dev walk, from WSL
 ```
 
-The checks:
+Before I push, I run the same checks CI does:
 
 ```sh
 paf test
 paf lint [--fix]                          # the house style, from the code-style plugin
+paf format --check                        # the CSS, JSON, and YAML formatting
 paf typecheck
 paf check                                 # the generated files are still current
 ```
 
-## Weather Providers
+Anything with a `.g.` in the name is generated, so I never edit those by hand. Rerun the matching `paf gen lcars-stardate <kind>`, and `paf check` says which one is out of date.
 
-Selectable in Settings:
+### Project Structure
 
-- **Open-Meteo** *(recommended)*: free, no account or API key.
-- **WeatherAPI**: free tier, needs an account and API key.
-- **OpenWeatherMap**: free tier, needs an account and API key.
+* **`pebble.appinfo.json`**: the face's identity (uuid, version, message keys, resources).
+* **`config/`**: the face's own test and typecheck setup in `vitest.config.ts` and the `tsconfig*.json` files. The lint comes from the framework's `code-style` plugin, so there is no ESLint config here.
+* **`src/`**: `src/c/` is the watch code, `src/pkjs/` the settings page and the phone side, and `src/data/` the starting layout the settings page offers.
+* **`resources/`**: the fonts, icons, baked backgrounds, and Clay thumbnails.
+* **`frame/`**: the HTML the backgrounds are baked from.
+* **`CHANGELOG.md`**: the release history.
+* **`paf/`**: the shared [framework](https://github.com/AKlitbo/pebble-app-framework), filled by `paf` from the tag in `paf.config.json` and gitignored. It holds the watch code, the PebbleKit JS runtime, the waf helpers, the build and generator tools, and the `icons`, `thumbnails`, `frame`, `dev`, and `code-style` plugins this face lists.
+* **`paf.config.json`**: the framework tag, and the plugins the face uses with their settings.
+* **`targets/<target>/`**: the build sandbox waf runs in, generated and gitignored.
+* **`tsconfig.json`**: points an editor at the projects in `config/`, since it only looks for a `tsconfig.json` above the file it opens. It checks no files of its own.
+* **`vendor/`**: third-party source SVGs and the LCARS template (gitignored, see [Third-Party Assets](#third-party-assets)).
 
-All cover what this face reads: temperature, conditions, wind, humidity, and sunrise and sunset. OpenWeatherMap's free tier leaves out UV index, today's high and low, and chance of rain, so those are backfilled from Open-Meteo.
+## How I Release It
+
+I release by pushing a `lcars-stardate-v<version>` tag. [release.yml](.github/workflows/release.yml) then builds the face, takes the notes from the matching [changelog](CHANGELOG.md) section, and publishes the `.pbw`.
+
+```sh
+# date the [1.14.0] heading in CHANGELOG.md first, then
+git tag lcars-stardate-v1.14.0
+git push origin lcars-stardate-v1.14.0
+```
+
+Before it builds anything, the workflow checks that the tag matches `version` in `pebble.appinfo.json`, that the changelog entry is dated, that the tag isn't already released, and that `paf/` holds a framework with a release version.
 
 ---
 
@@ -126,21 +132,20 @@ All cover what this face reads: temperature, conditions, wind, humidity, and sun
 
 * **LCARS Design**: LCARS Inspired Website Template by [TheLCARS.com](https://www.thelcars.com), with modifications.
 * **Typography**: [Antonio](https://fonts.google.com/specimen/Antonio).
-* **Glyphs**: Heart, step, thermometer, and muted-speaker icons from [UXWing](https://uxwing.com).
+* **Glyphs**: the health, calendar, time, and system icons, plus the thermometer and UV ones, from [UXWing](https://uxwing.com).
 * **Weather Icons**: [Erik Flowers](https://github.com/erikflowers/weather-icons).
 * **Bluetooth Icons**: Bluetooth on / slash icons from [SVG Repo](https://www.svgrepo.com).
-* **Calendar Reading**: [ical.js](https://github.com/kewisch/ical.js) by Philipp Kewisch (shared bundle).
 * **Built With**: [Pebble SDK](https://developer.repebble.com) and [Clay](https://github.com/pebble-dev/clay).
 
 ## Third-Party Assets
 
-This repository bundles the face's fonts, its generated icon PNGs, and its baked background PNGs. The weather and glyph icons' SVG sources and the LCARS template are *not* bundled and must be fetched to regenerate them. Everything bundled keeps its own licence, listed with its source and terms in [NOTICES](NOTICES.md).
+The repo holds the fonts, the icon PNGs, and the baked backgrounds, each under its own licence, listed in [NOTICES](NOTICES.md). The SVGs behind the icons and the TheLCARS.com template aren't mine to share, so they aren't in the repo. To regenerate the icons or re-bake a frame, download them into `vendor/weather-icons/`, `vendor/uxwing/`, `vendor/svgrepo/`, and `vendor/the-lcars/`. Please get the template from [TheLCARS.com](https://www.thelcars.com) and support its creator.
 
-## License
+## Licence
 
-**Source Code:** © 2026 Andrew Klitbo (Null Syntax), licensed under the [PolyForm Noncommercial License 1.0.0](LICENSE). This license keeps the project aligned with the noncommercial nature of the LCARS-inspired assets and *Star Trek* fan-project guidelines. The shared framework in `paf/` is dual-licensed, and this face uses it under the PolyForm option.
+**Source Code:** © 2026 Andrew Klitbo (Null Syntax). I release it under the [PolyForm Noncommercial License 1.0.0](LICENSE), which keeps it in line with the noncommercial LCARS assets and the *Star Trek* fan project guidelines. The shared framework in `paf/` is dual-licensed, and I use it under the PolyForm option.
 
-You may use, modify, fork, and share it freely for any **noncommercial** purpose, personal use, hobby projects, study, and the like. See [LICENSE](LICENSE) for the full terms.
+You can use, change, fork, and share it for anything **noncommercial**, such as personal use, hobby projects, or study. See [LICENSE](LICENSE) for the full terms.
 
 ## Disclaimer
 
