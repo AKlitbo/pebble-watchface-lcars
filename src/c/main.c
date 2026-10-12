@@ -29,7 +29,8 @@
 static Window *s_window;
 
 /**
- * @brief The time-store rules from the current settings (cadence follows what is on screen).
+ * @brief The time-store rules from the current settings. The cadence follows what is on screen.
+ * On a .beats clock the hourly buzz also asks for a wake at the top of each hour.
  *
  * Three things can want the .beats ticker and they are independent: the clock itself, any ops
  * slot picked as BEATS, and a date format ending in a reading. A beat is 86.4 seconds, so
@@ -40,10 +41,12 @@ static Window *s_window;
 static TimeConfig time_cfg(void)
 {
     bool clock_beats = settings_u8(SETTING_TIME_FORMAT) == TIME_FORMAT_BEATS;
+    bool hourly = settings_u8(SETTING_HOURLY_VIBE) != VIBE_NONE;
 
     return (TimeConfig){
         .live = true,
         .minute_tick = !clock_beats,  // .beats replaces the clock, and only the clock
+        .hourly = hourly,             // a .beats clock still wakes on the hour for the buzz
         .beats = clock_beats || stardate_ops_shows_beats() || readout_date_shows_beats(),
     };
 }
@@ -51,8 +54,9 @@ static TimeConfig time_cfg(void)
 /**
  * @brief Redraw after a settings change: re-theme, rebuild the slots, re-arm the ticker.
  *
- * @param time_or_date_changed True if the time or date format changed (unused: a rebuild
- * re-pulls every readout anyway).
+ * @param time_or_date_changed True if a time or date format changed (unused: a rebuild re-pulls
+ * every readout anyway, and the ticker is re-armed on every change, since Hourly Vibration picks it
+ * too).
  */
 static void on_settings_changed(bool time_or_date_changed)
 {
@@ -61,28 +65,49 @@ static void on_settings_changed(bool time_or_date_changed)
     stardate_apply_theme();
     engine_rebuild();
 
-    time_store_reconfigure(time_cfg());  // swaps to the .beats ticker if the format changed
+    time_store_reconfigure(time_cfg());  // on every change, since the formats and the buzz both pick it
+}
+
+static time_t s_vibed_hour = -1;  ///< when the hour that last buzzed began
+
+/**
+ * @brief When the local hour holding a moment began, as seconds since the epoch.
+ *
+ * No two real hours share a start, so the hour the clocks repeat when they fall back, and an hour
+ * after a change of time zone, never look like the hour that last buzzed.
+ *
+ * @param now The moment broken apart in local time.
+ * @return The start of its hour.
+ */
+static time_t hour_start(const struct tm *now)
+{
+    return time(NULL) - now->tm_min * 60 - now->tm_sec;
 }
 
 /**
  * @brief Buzz once at the top of the hour with the pattern the user picked.
  *
- * The tick drives this so it lands when tm_min hits 0, and vibe_choice stays silent during quiet
- * time (and for VIBE_NONE). The hour is latched because the minute tick and the .beats ticker can
- * both run, and two fires inside the same minute would buzz the wrist twice for one hour.
+ * The time store wakes the face at minute 0, through the minute tick or, on a .beats clock, the
+ * hourly wake time_cfg asks for while the buzz is set. vibe_choice stays silent during quiet time
+ * (and for VIBE_NONE). The hour is latched because more than one ticker can fire inside minute 0,
+ * and two fires would buzz the wrist twice for one hour.
+ *
+ * The SDK's hour tick only fires when the hour number changes, so on a .beats clock the hour the
+ * clocks repeat in autumn buzzes only when a beat lands in its minute 0. That always happens in a
+ * zone a whole number of hours off UTC, and two times in three otherwise. Catching the rest would
+ * take the minute tick, sixty wakes an hour all year for one buzz a year.
  */
 static void hourly_vibe(void)
 {
-    static int s_vibed_hour = -1;
-
     const struct tm *now = time_store_tm();
+    time_t hour = hour_start(now);
 
-    if (now->tm_min != 0 || now->tm_hour == s_vibed_hour)
+    if (now->tm_min != 0 || hour == s_vibed_hour)
     {
         return;
     }
 
-    s_vibed_hour = now->tm_hour;
+    s_vibed_hour = hour;
     vibe_choice(settings_u8(SETTING_HOURLY_VIBE));
 }
 
@@ -125,6 +150,11 @@ static void init(void)
                                          .active = true, .calories = true, .distance = true,
                                          .persist_key = HEALTH_STORE_KEY}, NULL);
         time_store_init(time_cfg(), NULL);
+
+        // count the hour the face opens in as buzzed. a tick subscribe sends one tick straight
+        // away, and opening the face in minute 0 would otherwise buzz the hour a second time
+        s_vibed_hour = hour_start(time_store_tm());
+
         weather_store_init((WeatherConfig){.live = true, .poll_min = WEATHER_POLL_MIN,
                                            .persist_key = WEATHER_STORE_KEY}, NULL);
         location_store_init((LocationConfig){.live = true,
