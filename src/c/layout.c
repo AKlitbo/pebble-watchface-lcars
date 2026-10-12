@@ -246,6 +246,10 @@ void stardate_setup(Window *window)
     widgets_load();
 }
 
+// the build below writes all ten slots without reading max, so the engine's cap has to hold them
+// a slot added below raises this count too
+_Static_assert(ENGINE_SLOTS_MAX >= 10, "stardate_build writes ten slots");
+
 uint8_t stardate_build(EngineSlot *out, uint8_t max, GRect bounds)
 {
     uint8_t i = 0;
@@ -259,7 +263,7 @@ uint8_t stardate_build(EngineSlot *out, uint8_t max, GRect bounds)
 
     // the left column is either the one tall weather block or two slots and never
     // both. either way it costs two text layers so the whole face stays inside
-    // ENGINE_MAX_SLOTS
+    // ENGINE_SLOTS_MAX
     if (left_is_composite())
     {
         out[i++] = (EngineSlot){.zone = &s_zones[ZONE_COND],    .text = readout_weather_cond};
