@@ -16,15 +16,16 @@
 #include "ui/engine/engine.h"
 
 // the four slots show four consecutive entries. one tap per readout walks the
-// whole catalog so every entry gets photographed in each of the four positions
+// whole catalogue so every entry gets photographed in each of the four positions
 static uint8_t s_index;
 static void (*s_apply_theme)(void);
 
 // every frame reads a different clock, because a sheet of shots all sitting on the same minute
-// looks like one screenshot pasted over and over. 53 minutes a step is coprime with the hour, so
-// the walk crosses a whole day without landing on a time twice or falling into an obvious
-// pattern, and the clock stays a function of the walk index. That last part matters: the walk
-// returns to its starting frame pixel for pixel, which is how tap-walk.sh knows it has wrapped
+// looks like one screenshot pasted over and over. 53 shares no factor with the 1440 minutes in a
+// day, so the walk crosses a whole day without landing on a time twice or falling into a pattern
+// the hour and minute come from the walk index alone, so within one day the walk comes back to its
+// first frame pixel for pixel, which is how paf's tap-walk tool knows it has wrapped. the date comes
+// from the real clock, so a walk run across midnight changes the date readouts and never wraps
 #define CLOCK_BASE_MIN (7 * 60 + 38)
 #define CLOCK_STEP_MIN 53
 
@@ -32,7 +33,7 @@ static void (*s_apply_theme)(void);
  * @brief Pin the clock to this frame's time.
  *
  * The time store is only ever seeded here with live off and takes no subscription on that path,
- * so re-initialising it per tap re-seeds rather than stacking handlers.
+ * so re-initializing it per tap re-seeds rather than stacking handlers.
  *
  * @param index The walk position.
  */

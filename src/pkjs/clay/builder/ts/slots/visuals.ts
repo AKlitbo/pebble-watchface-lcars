@@ -75,7 +75,7 @@ export function thumbFor(thumbs: Thumbs, readout: Readout | null): string | null
 
 /**
  * Paint a readout into a box: the screenshot if there is one, otherwise its tint behind its emoji
- * and name so an unphotographed readout is still recognisable.
+ * and name so an unphotographed readout is still recognizable.
  *
  * @param el The box to fill. Its contents are replaced.
  * @param readout The readout, or null to leave the box empty.
@@ -125,7 +125,7 @@ export function fillVisual(el: HTMLElement, readout: Readout | null, thumbs: Thu
   }
 }
 
-/** Look a readout up by its catalog id. */
+/** Look a readout up by its catalogue id. */
 export function readoutById(readouts: Readout[], id: number): Readout | null {
   for (let i = 0; i < readouts.length; i++) {
     if (readouts[i].value === id) {

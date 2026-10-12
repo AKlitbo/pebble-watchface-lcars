@@ -21,7 +21,7 @@
 #include "system/settings/settings.h"
 #include "system/settings/setting_values.h"
 
-// one ops slot's Zone in its normal and no-glyph widths. a catalog entry can hand
+// one ops slot's Zone in its normal and no-glyph widths. a catalogue entry can hand
 // a slot a seven-digit julian day or a phase name like WAN CRES. so each one steps
 // down through Antonio 14 to 12 before it would clip
 #define OPS_ZONE(x, y, r)                                                    \

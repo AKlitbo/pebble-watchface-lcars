@@ -1,6 +1,6 @@
 /**
  * @file dev_ops.h
- * @brief The ops-slot walk: a tap steps both slots through the catalog on a fixed fixture, so
+ * @brief The ops-slot walk: a tap steps both slots through the catalogue on a fixed fixture, so
  * every readout can be shot without a phone to pick it.
  *
  * The slot picks are this face's own settings, and the emulator has no phone to send them, so
@@ -21,7 +21,7 @@
  */
 
 /**
- * @brief Seed every store with a fixture that gives all of the catalog a real reading.
+ * @brief Seed every store with a fixture that gives all of the catalogue a real reading.
  *
  * The clock is the walk's own, one time per frame, so this takes no hour and minute the way the
  * shared fixture does.

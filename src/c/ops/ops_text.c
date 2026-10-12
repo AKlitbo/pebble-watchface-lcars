@@ -1,6 +1,6 @@
 /**
  * @file ops_text.c
- * @brief The value formatters behind the ops catalog.
+ * @brief The value formatters behind the ops catalogue.
  *
  * Every reading here has a no-data state, and all of them answer "--" for it rather than
  * printing a bogus zero, matching the shared readouts.
@@ -45,7 +45,7 @@ static void no_data(char *out, size_t n)
 /**
  * @brief Write a length of time as "13H 43M".
  *
- * Every duration in the catalog goes through here, so only a real clock reading ever comes out
+ * Every duration in the catalogue goes through here, so only a real clock reading ever comes out
  * as "HH:MM". A day length written 13:43 sitting under a sunset written 20:14 reads as a third
  * time of day rather than as a span.
  *

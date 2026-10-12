@@ -1,11 +1,11 @@
 @charset "utf-8";
-/*  
-	Shared layout for Pebble LCARS watchfaces.
-	Authored at 4x scale (scaled down via transform).
-	Per-theme palettes live in theme_*.css files. 
+/*
+	shared layout for the LCARS frames
+	the watch is drawn at 960 by 1094, 4.8 times the Emery screen, and a transform scales it down
+	each theme's palette lives in its own theme_*.css
 */
 
-/* Browser-preview backdrop. Ignored in frame-render mode. */
+/* the backdrop for a browser preview, left out in frame-render mode */
 body {
   align-items: center;
   justify-content: center;
@@ -15,7 +15,7 @@ body {
   background: #333;
 }
 
-/* True Emery screen size (200x228 px). Watch scales down to fit here. */
+/* the Emery screen, 200 by 228, which the 4.8x watch scales down to fit */
 .viewport {
   width: 200px;
   height: 228px;
@@ -23,7 +23,7 @@ body {
   background: #000;
 }
 
-/* Section header bars (overrides vendor clamp() sizing for 4x scale). */
+/* section header bars, sized for the 4.8x drawing in place of the vendor sheet's clamp() sizes */
 .watch .lcars-text-bar {
   height: 43px;
   margin-block: 0;
@@ -44,12 +44,12 @@ body {
   /* match the bar height so the end-notch doesn't overhang */
 }
 
-/* STARDATE header alignment (matches bottom readouts). */
+/* STARDATE header alignment, matching the bottom readouts */
 .watch .stardate-bar {
   margin: 12px 28px 0 28px;
 }
 
-/* Bottom readouts layout (Weather left, Vitals/Traversal stacked right). */
+/* bottom readouts, weather on the left and Vitals over Traversal on the right */
 .watch .readouts {
   display: flex;
   gap: 24px;
@@ -74,7 +74,7 @@ body {
   flex-direction: column;
 }
 
-/* Readout data value container. */
+/* the readout's value box */
 .watch .readout .data {
   flex: 1;
   min-height: 1.5em;
@@ -89,14 +89,17 @@ body {
   color: var(--light-color, #fff);
 }
 
-/* Big left readout formatting. */
+/* the big left readout */
 .watch .weather .data {
   font-size: 96px;
   align-items: center;
   padding-top: 0;
 }
 
-/* Frame-render mode (?frame): renders full 4x size for screenshot tool. */
+/*
+	a query holding the word frame, such as ?frame, draws the watch at full size with its time,
+	banner, and readouts cleared, for looking at the artwork in a browser. the bake never adds it
+*/
 html.frame-render body {
   display: block;
   padding: 0;
@@ -112,7 +115,7 @@ html.frame-render .watch {
   transform: none;
 }
 
-/* The watch container: authored at 4x, scaled down to 200x228 Emery screen. */
+/* the watch is drawn at 4.8 times the Emery screen and scaled down to 200 by 228 */
 .watch {
   width: 960px;
   height: 1094px;
@@ -122,12 +125,12 @@ html.frame-render .watch {
   display: flex;
   flex-direction: column;
   --lfw: 224px;
-  /* sidebar (-> 56px) */
+  /* sidebar, about 47px on the watch */
   --bar-height: 44px;
-  /* segmented bar (-> 11px) */
+  /* segmented bar, about 9px on the watch */
 }
 
-/* Top region layout: sidebar + banner + flexible gap. */
+/* the top region: the sidebar, the banner, and a gap that takes up the rest */
 .watch .wrap {
   padding: 0;
   column-gap: 0;
@@ -138,20 +141,20 @@ html.frame-render .watch {
 
 .watch .wrap-top {
   height: 360px;
-  /* -> 90px */
+  /* 75px on the watch */
 }
 
 .watch #gap {
   flex: 1;
   margin-top: 20px;
-  /* -> 5px gap */
+  /* about a 4px gap on the watch */
 }
 
 .watch .bar-panel.first-bar-panel {
   margin-top: 0;
 }
 
-/* Sidebars clipping and layout. */
+/* the sidebars, clipped to their column */
 .watch .left-frame-top {
   display: flex;
   flex-direction: column;
@@ -196,7 +199,7 @@ html.frame-render .watch {
   border-bottom: 12px solid #000;
 }
 
-/* Right side */
+/* right side */
 .watch .right-frame-top {
   display: flex;
   flex-direction: column;
@@ -223,7 +226,7 @@ html.frame-render .watch {
   flex: 1;
 }
 
-/* Centre column main container. */
+/* the centre column */
 .watch main {
   padding: 0 28px 0 28px;
   flex: 1;
@@ -231,7 +234,7 @@ html.frame-render .watch {
   flex-direction: column;
 }
 
-/* The big clock - fills the space between the stardate bar and readouts. */
+/* the big clock, filling the space between the STARDATE bar and the readouts */
 .watch .time {
   flex: 1;
   display: flex;

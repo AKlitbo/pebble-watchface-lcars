@@ -20,7 +20,7 @@
 // and the engine loops it to build the text layers
 //
 // the four ops zones are the pickable slots. two per column
-// they carry no fixed reading. what they show comes from the catalog in ops/
+// they carry no fixed reading. what they show comes from the catalogue in ops/
 // and their bar word and glyph follow the pick
 //
 // each one has a WIDE twin for a readout that carries no glyph. it reaches left
@@ -51,10 +51,10 @@ enum
 };
 
 // --- Text Slots ---
-#define SLOT_TIME GRect(53, 92, 142, 74)       // centered time box (Antonio 62)
+#define SLOT_TIME GRect(53, 92, 142, 74)       // centred time box (Antonio 62)
 #define SLOT_BANNER GRect(53, 17, 142, 44)     // date below STARDATE bar (Antonio 36)
-#define SLOT_BANNER_SM GRect(53, 20, 142, 43)  // wide date fallback vertically centered (Antonio 32)
-#define SLOT_BANNER_XS GRect(53, 22, 142, 42)  // wider date fallback vertically centered (Antonio 28)
+#define SLOT_BANNER_SM GRect(53, 20, 142, 43)  // wide date fallback vertically centred (Antonio 32)
+#define SLOT_BANNER_XS GRect(53, 22, 142, 42)  // wider date fallback vertically centred (Antonio 28)
 #define SLOT_BANNER_XXS GRect(53, 24, 142, 40) // widest date fallback, fits the .beats formats (Antonio 24)
 #define SLOT_MERIDIEM GRect(150, 95, 45, 14)   // AM/PM top-right of clock and right-aligned (Antonio 10)
 #define SLOT_WEATHER GRect(72, 202, 49, 24)    // temp left-aligned next to thermometer
@@ -63,7 +63,7 @@ enum
 // all four slots are the same shape so it gets described once here and stamped
 // out per column and row. every offset is measured from the slot's bar origin
 //
-// the value box runs to the far edge of its column. catalog readings get long so
+// the value box runs to the far edge of its column. catalogue readings get long so
 // every pixel of room here is one that keeps a reading on the full-size font
 // instead of stepping it down
 //
@@ -110,12 +110,12 @@ enum
 
 // --- Icons ---
 // sized 1:1 to match bitmap
-#define WX_ICON GRect(51, 176, 24, 24)      // centered above thermometer
+#define WX_ICON GRect(51, 176, 24, 24)      // centred above thermometer
 // the weather glyphs are not all cut to the same margin. any whose art starts
 // higher than this inside its box gets nudged down to it. that keeps the whole
 // set clear of the bar overhead
 #define WX_MIN_TOP 2
-#define THERMO_ICON GRect(56, 204, 13, 17)  // centered below weather icon
+#define THERMO_ICON GRect(56, 204, 13, 17)  // centred below weather icon
 #define BT_ICON GRect(30, 95, 14, 14)       // bluetooth status in the first left-rail block
 #define QT_ICON GRect(15, 95, 14, 14)       // quiet-time status, just left of the bluetooth glyph
 
@@ -133,7 +133,7 @@ enum
 #define BAR_STARDATE GRect(52, 2, 142, 11)
 
 // --- LCARS Bar Labels ---
-// left-aligned in black holder boxes on colored bars
+// left-aligned in black holder boxes on coloured bars
 // the holder box matches its bar's height exactly so no sliver of bar shows under the label
 #define LBL_STARDATE GRect(60, 2, 54, 11)
 

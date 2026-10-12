@@ -14,7 +14,7 @@ export const SLOT_RT = 2;
 export const SLOT_RB = 3;
 export const SLOT_COUNT = 4;
 
-/** The catalog ids the builder has to reason about by name. Everything else is just a number. */
+/** The catalogue ids the builder has to reason about by name. Everything else is just a number. */
 export const ID_HEART = 0;
 export const ID_STEPS = 1;
 export const ID_EMPTY = 20;
@@ -43,7 +43,7 @@ export function isBottom(slot: number): boolean {
  * Whether a readout fills both rows of its column.
  *
  * Only the sensors block does. It is not a flag on the option list because the watch decides the
- * same thing from its own catalog, and two sources would be one too many.
+ * same thing from its own catalogue, and two sources would be one too many.
  */
 export function isTall(id: number): boolean {
   return id === ID_SENSORS;

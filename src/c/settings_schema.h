@@ -1,8 +1,8 @@
 /**
  * @file settings_schema.h
- * @brief lcars-stardate-emery settings schema: version 2, with a v0 migration that lifts
- * its pre-versioning blob. key 5 and the v1 size are frozen. Changing either makes
- * watches in the field lose their settings.
+ * @brief The face's settings schema. A blob saved before the settings had a version is
+ * lifted across by a migration. Key 5 and the 21-byte v1 size never change, since
+ * changing either makes every watch already running the face lose its settings.
  *
  * @ingroup watchface-lcars
  */

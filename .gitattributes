@@ -1,4 +1,4 @@
-# Normalise line endings to LF - Pebble's WSL/Docker toolchain chokes on CRLF.
+# normalize line endings to LF, since Pebble's WSL/Docker toolchain chokes on CRLF
 * text=auto eol=lf
 
 # Binary assets

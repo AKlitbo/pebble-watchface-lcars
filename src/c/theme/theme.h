@@ -61,7 +61,7 @@ GColor bar_body_for_theme(uint8_t theme);
 /**
  * @brief The lit-segment colour for the battery gauge at a given charge level.
  *
- * Color themes warn with red (critical) and amber (low). Mono themes stay grayscale,
+ * Colour themes warn with red (critical) and amber (low). Mono themes stay greyscale,
  * leaving the lit-segment count to signal charge.
  *
  * @param theme The theme setting value.

@@ -1,6 +1,6 @@
 /**
  * @file ops.c
- * @brief The ops catalog: one row per readout a slot can show.
+ * @brief The ops catalogue: one row per readout a slot can show.
  *
  * Indexed by OpsId so a row can never drift from the number that is persisted for it. The words
  * are the LCARS vocabulary the rest of the frame already speaks (SENSORS, STARDATE), which is why

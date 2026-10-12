@@ -32,7 +32,7 @@ describe('buildReadoutList', () => {
   /**
    * Clay hands option values back as strings.
    *
-   * Leaving them as text makes every later === against a catalog id fail, so the palette would
+   * Leaving them as text makes every later === against a catalogue id fail, so the palette would
    * drag readouts that never match the slot they land in.
    */
   test('reads a string option value as a number', () => {
@@ -108,7 +108,7 @@ describe('thumbFor', () => {
 });
 
 describe('readoutById', () => {
-  /** A drag carries a catalog id, so a failed lookup is a ghost with nothing drawn in it. */
+  /** A drag carries a catalogue id, so a failed lookup is a ghost with nothing drawn in it. */
   test('finds a readout by its catalog id', () => {
     const result = readoutById([HEART, SENSORS], ID_SENSORS);
 

@@ -1,8 +1,8 @@
 /**
  * @file ops_text.h
- * @brief The value formatters behind the ops catalog, plus the two hooks whose word or glyph
+ * @brief The value formatters behind the ops catalogue, plus the two hooks whose word or glyph
  * moves with the reading. Each formatter matches the engine's text-slot signature, so the
- * catalog table binds straight to one.
+ * catalogue table binds straight to one.
  *
  * The framework already formats the heart rate and the step count, so those are not repeated
  * here. Everything below is a reading no other face on this frame shows.

@@ -1,9 +1,9 @@
 /**
  * @file settings_schema.c
- * @brief lcars-stardate-emery settings schema: this face's persisted-settings identity.
+ * @brief The face's settings schema, the struct its settings are saved in and read back from.
  *
- * key 5 and the 21-byte v1 floor are frozen. Changing either makes watches in the
- * field lose their settings.
+ * Key 5 and the 21-byte v1 size never change, since changing either makes every watch
+ * already running the face lose its settings.
  *
  * @ingroup watchface-lcars
  */
@@ -126,7 +126,7 @@ typedef struct ClaySettingsV0
 /**
  * @brief Lift a pre-versioning blob, preserving every field.
  *
- * Recognised purely by its size, which never collides with a versioned blob.
+ * Recognized purely by its size, which never collides with a versioned blob.
  *
  * @param stored_size The size of the stored blob.
  * @return True if migrated, false otherwise.

@@ -17,7 +17,7 @@
 
 // ===== walk toggles (pick one) =====
 #define DEV_TAP_WALK_THEMES 0  // tap steps through every theme on fixed data + a fixed clock
-#define DEV_TAP_WALK_OPS    0  // tap steps both ops slots through the readout catalog
+#define DEV_TAP_WALK_OPS    0  // tap steps both ops slots through the readout catalogue
 #define DEV_TAP_WALK_WX     0  // tap steps the condition through every weather glyph
 
 // the harnesses are only reachable through DEV_MODE so a shipping build (0) needs

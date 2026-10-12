@@ -3,7 +3,7 @@
  *
  * A Clay component owns exactly one message key, and this face has four. So the builder's own key
  * carries the upper-left slot and the other three ride hidden stores on the same page, each found
- * by its own class. Every value is the catalog id written as text, which is what the watch's
+ * by its own class. Every value is the catalogue id written as text, which is what the watch's
  * enum settings already expect off the wire.
  */
 

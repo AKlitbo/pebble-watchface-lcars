@@ -1,6 +1,6 @@
 /**
  * @file ops.h
- * @brief The catalog behind the two pickable ops slots. Each entry pairs an LCARS holder-box
+ * @brief The catalogue behind the two pickable ops slots. Each entry pairs an LCARS holder-box
  * word with a glyph and a value formatter, so picking a readout swaps all three together.
  *
  * The face draws its labels and glyphs at runtime rather than baking them into the frame, which
@@ -58,7 +58,7 @@ typedef enum
 } OpsId;
 
 /**
- * @brief One catalog entry: the holder-box word, the glyph, and the value formatter.
+ * @brief One catalogue entry: the holder-box word, the glyph, and the value formatter.
  *
  * The two _for hooks are for readouts whose word or glyph moves with the reading, like the sun
  * countdown flipping between DAWN IN and DUSK IN. An entry sets the plain field or the hook,
@@ -75,9 +75,9 @@ typedef struct
 } OpsReadout;
 
 /**
- * @brief The catalog entry for a stored pick.
+ * @brief The catalogue entry for a stored pick.
  *
- * A number past the end of the catalog falls back to the empty entry, so a blob saved by a later
+ * A number past the end of the catalogue falls back to the empty entry, so a blob saved by a later
  * version can never point the face at nothing.
  *
  * @param id The stored OpsId.
@@ -88,7 +88,7 @@ const OpsReadout *ops_entry(uint8_t id);
 /**
  * @brief The holder-box word for an entry, resolved through label_for when it has one.
  *
- * @param entry The catalog entry.
+ * @param entry The catalogue entry.
  * @return The word, or "" when the slot draws no label.
  */
 const char *ops_label(const OpsReadout *entry);
@@ -96,7 +96,7 @@ const char *ops_label(const OpsReadout *entry);
 /**
  * @brief The glyph for an entry, resolved through icon_for when it has one.
  *
- * @param entry The catalog entry.
+ * @param entry The catalogue entry.
  * @return The resource id, or 0 when the slot draws no glyph.
  */
 uint32_t ops_icon(const OpsReadout *entry);
@@ -104,7 +104,7 @@ uint32_t ops_icon(const OpsReadout *entry);
 /**
  * @brief Format an entry's value into a buffer, writing "" for a slot that shows nothing.
  *
- * @param entry The catalog entry.
+ * @param entry The catalogue entry.
  * @param out Output buffer.
  * @param n Buffer size.
  */
@@ -113,7 +113,7 @@ void ops_text(const OpsReadout *entry, char *out, size_t n);
 /**
  * @brief Whether a pick fills both rows of its column rather than one.
  *
- * A tall pick is drawn by the face rather than off the catalog row, and only the top slot of a
+ * A tall pick is drawn by the face rather than off the catalogue row, and only the top slot of a
  * column can hold one. The bottom slot is left undrawn while its column is tall.
  *
  * @param id The stored OpsId.

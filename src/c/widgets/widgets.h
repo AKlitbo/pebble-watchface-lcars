@@ -18,7 +18,7 @@
  * @brief What the four ops slots resolved to this paint, in slot order (left top, left bottom,
  * right top, right bottom).
  *
- * Layout works this out from the catalog and hands it over, so the painters below stay painters
+ * Layout works this out from the catalogue and hands it over, so the painters below stay painters
  * that are told what to draw rather than reaching for settings themselves.
  */
 typedef struct

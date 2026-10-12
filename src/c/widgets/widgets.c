@@ -182,7 +182,7 @@ static void draw_icon(GContext *ctx, GBitmap *bmp, GRect r)
 /**
  * @brief Blit a glyph centred in a box, at its own size.
  *
- * The ops glyphs come from the catalog and are not all cut to the same shape: a thermometer is
+ * The ops glyphs come from the catalogue and are not all cut to the same shape: a thermometer is
  * taller than it is wide. graphics_draw_bitmap_in_rect repeats a bitmap that is smaller than the
  * box it is given, so the destination has to be the picture's own size or the glyph tiles.
  *

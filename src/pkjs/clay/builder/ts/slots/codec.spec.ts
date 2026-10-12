@@ -6,7 +6,7 @@
  * the slots ride hidden inputs found by class. That split is where the silent
  * failures live: a store that is not found reads as the component's own value
  * instead, and a store written without its change event never reaches Clay at
- * all. The ids are catalog numbers off the wire, and one of them is 0.
+ * all. The ids are catalogue numbers off the wire, and one of them is 0.
  */
 
 import { describe, test, expect, beforeEach } from 'vitest';
@@ -40,7 +40,7 @@ beforeEach(() => {
 
 describe('parseId', () => {
   /**
-   * Heart rate is catalog id 0, so a falsy check would swap it for Empty.
+   * Heart rate is catalogue id 0, so a falsy check would swap it for Empty.
    *
    * Every other id is truthy, which is what makes this the one that slips through review and
    * turns a configured heart rate panel blank on the next settings open.
@@ -58,14 +58,14 @@ describe('parseId', () => {
     expect(result).toBe(ID_SENSORS);
   });
 
-  /** A store the page never filled reads as empty text, and NaN would index the catalog off its end. */
+  /** A store the page never filled reads as empty text, and NaN would index the catalogue off its end. */
   test('falls back to empty for text that is not a number', () => {
     const result = [parseId(''), parseId('banana'), parseId(null), parseId(undefined)];
 
     expect(result).toEqual([ID_EMPTY, ID_EMPTY, ID_EMPTY, ID_EMPTY]);
   });
 
-  /** A negative id is not in the catalog, so passing it through would draw a panel from nowhere. */
+  /** A negative id is not in the catalogue, so passing it through would draw a panel from nowhere. */
   test('falls back to empty for a negative id', () => {
     const result = parseId('-1');
 
