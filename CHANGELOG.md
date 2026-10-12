@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- Fixed the Voyager frame taking twice the memory of the other frames. One stray pixel in its artwork pushed it past sixteen colours.
 - Fixed a watch that was reset, or had the watchface installed again, staying on the default settings until you pressed Save, and its weather not refreshing when the watch asked for it. Your saved settings now come back on their own.
 - Fixed a second clock showing the old hour after its city changed its clocks, until the next background update.
 - Fixed the settings page saying Fallback to Manual Location also applies with Enable Phone GPS turned off. With GPS off the city you pick is always used, and the setting only covers GPS being on but not finding you.
