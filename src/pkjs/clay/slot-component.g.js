@@ -209,6 +209,16 @@ module.exports = {
         }
       });
 
+      // paf/ts/clay/builder/ts/shared/thumbs.ts
+      function thumbByLabel(thumbs, label, size) {
+        const byModule = thumbs[label];
+        return byModule && byModule[size] || null;
+      }
+      var init_thumbs = __esm({
+        "paf/ts/clay/builder/ts/shared/thumbs.ts"() {
+        }
+      });
+
       // src/pkjs/clay/builder/ts/slots/visuals.ts
       var visuals_exports = {};
       __export(visuals_exports, {
@@ -234,11 +244,7 @@ module.exports = {
         return isTall(id) ? "tall" : "slot";
       }
       function thumbFor(thumbs, readout) {
-        if (!readout) {
-          return null;
-        }
-        const byLabel = thumbs[readout.label];
-        return byLabel && byLabel[sizeFor(readout.value)] || null;
+        return readout ? thumbByLabel(thumbs, readout.label, sizeFor(readout.value)) : null;
       }
       function fillVisual(el, readout, thumbs, withName) {
         el.innerHTML = "";
@@ -283,6 +289,7 @@ module.exports = {
       var init_visuals = __esm({
         "src/pkjs/clay/builder/ts/slots/visuals.ts"() {
           init_geometry();
+          init_thumbs();
         }
       });
 

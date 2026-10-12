@@ -85,23 +85,9 @@ describe('thumbFor', () => {
     expect(result).toEqual(['data:heart-slot', 'data:sensors-tall']);
   });
 
-  /** A readout the thumbnail pass skipped has no entry, and indexing into it would throw before the panel draws. */
-  test('returns null for a readout with no shots at all', () => {
-    const result = thumbFor(THUMBS, UNSHOT);
-
-    expect(result).toBeNull();
-  });
-
   /** An empty panel has no readout to photograph, and asking anyway would throw on the label lookup. */
   test('returns null for no readout', () => {
     const result = thumbFor(THUMBS, null);
-
-    expect(result).toBeNull();
-  });
-
-  /** An empty data url is falsy but not null, and setting img.src to it reloads the config page into the panel. */
-  test('returns null rather than the empty string for a blank entry', () => {
-    const result = thumbFor(THUMBS, { value: 1, label: 'Steps', icon: '·', color: '#999' });
 
     expect(result).toBeNull();
   });

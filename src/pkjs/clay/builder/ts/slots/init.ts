@@ -10,7 +10,8 @@ import { SLOT_COUNT, ID_EMPTY, isTall } from './geometry';
 import { formatId, readSlots, sanitize, writeStores } from './codec';
 import { SLOT_PRESETS } from './presets';
 import { buildReadoutList, fillVisual, readoutById } from './visuals';
-import type { Readout, Thumbs } from './visuals';
+import type { Readout } from './visuals';
+import type { Thumbs } from '../../../../../../paf/ts/clay/builder/ts/types';
 import { installDrag } from './drag';
 
 /** What Clay binds initialize to. */

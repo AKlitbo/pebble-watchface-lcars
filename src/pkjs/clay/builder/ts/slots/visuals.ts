@@ -7,6 +7,8 @@
  */
 
 import { ID_EMPTY, isTall } from './geometry';
+import { thumbByLabel } from '../../../../../../paf/ts/clay/builder/ts/shared/thumbs';
+import type { Thumbs } from '../../../../../../paf/ts/clay/builder/ts/types';
 
 /** One readout as the builder needs it, merged from the option list and module-meta. */
 export interface Readout {
@@ -15,9 +17,6 @@ export interface Readout {
   icon: string;
   color: string;
 }
-
-/** label -> size -> data URI, as module-thumbnails.g.js exports it. */
-export type Thumbs = Record<string, Record<string, string>>;
 
 /** The raw option rows Clay hands over on the component's config. */
 interface RawOption {
@@ -64,13 +63,7 @@ export function sizeFor(id: number): string {
  * @return A data URI, or null.
  */
 export function thumbFor(thumbs: Thumbs, readout: Readout | null): string | null {
-  if (!readout) {
-    return null;
-  }
-
-  const byLabel = thumbs[readout.label];
-
-  return (byLabel && byLabel[sizeFor(readout.value)]) || null;
+  return readout ? thumbByLabel(thumbs, readout.label, sizeFor(readout.value)) : null;
 }
 
 /**

@@ -9,7 +9,8 @@
 
 import { SLOT_COUNT, ID_EMPTY, canPlace, isTall, swallowedBy } from './geometry';
 import { fillVisual, readoutById } from './visuals';
-import type { Readout, Thumbs } from './visuals';
+import type { Readout } from './visuals';
+import type { Thumbs } from '../../../../../../paf/ts/clay/builder/ts/types';
 import { createDrag } from '../../../../../../paf/ts/clay/builder/ts/drag';
 
 /** What the drag needs from the component around it. */
