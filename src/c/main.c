@@ -10,6 +10,7 @@
 #include "ui/readouts.h"
 #include "io/stores/health_store.h"
 #include "io/stores/location_store.h"
+#include "io/stores/store_poll.h"
 #include "io/stores/system_store.h"
 #include "io/stores/time_store.h"
 #include "io/stores/weather_store.h"
@@ -95,28 +96,14 @@ static void on_time_tick(void)
 }
 
 /**
- * @brief Whether a reading is worth re-requesting: it never synced, or it is at least its own
- * poll interval old. Polling turned off (poll_min 0) is left alone, same as its store.
- */
-static bool reconnect_should_refresh(int age_s, int poll_min)
-{
-    if (poll_min <= 0)
-    {
-        return false;
-    }
-    return age_s < 0 || age_s >= poll_min * 60;
-}
-
-/**
  * @brief The phone app just reconnected, so catch up a reading that went stale while it was away.
  *
- * The phone's pkjs may have been closed for the whole gap, and the store's own poll is 30 min, so
- * without this the face sits on an old reading. Gating on age means bluetooth flapping cannot
- * re-fetch faster than the normal cadence.
+ * The phone's pkjs may have been closed for the whole gap, and the store only polls every
+ * WEATHER_POLL_MIN, so without this the face sits on an old reading.
  */
 static void on_phone_reconnected(void)
 {
-    if (reconnect_should_refresh(weather_store_age_s(), WEATHER_POLL_MIN))
+    if (store_poll_reconnect_due(weather_store_age_s(), WEATHER_POLL_MIN))
     {
         appmessage_request_weather();
     }
