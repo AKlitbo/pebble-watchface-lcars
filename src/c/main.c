@@ -44,7 +44,7 @@ static TimeConfig time_cfg(void)
     bool hourly = settings_u8(SETTING_HOURLY_VIBE) != VIBE_NONE;
 
     return (TimeConfig){
-        .live = true,
+        .live = !DEV_MODE,  // a dev build keeps the clock its fixture pinned
         .minute_tick = !clock_beats,  // .beats replaces the clock, and only the clock
         .hourly = hourly,             // a .beats clock still wakes on the hour for the buzz
         .beats = clock_beats || stardate_ops_shows_beats() || readout_date_shows_beats(),
@@ -71,17 +71,21 @@ static void on_settings_changed(bool time_or_date_changed)
 static time_t s_vibed_hour = -1;  ///< when the hour that last buzzed began
 
 /**
- * @brief When the local hour holding a moment began, as seconds since the epoch.
+ * @brief When the current local hour began, as seconds since the epoch.
  *
- * No two real hours share a start, so the hour the clocks repeat when they fall back, and an hour
- * after a change of time zone, never look like the hour that last buzzed.
+ * Two different real hours never share a start, so the hour the clocks repeat when they fall back
+ * does not look like the one before it. It reads the clock once and breaks that same reading apart,
+ * since pairing the clock with an older tick's minutes and seconds gives one hour two starts when a
+ * second turns over between them, and the hour buzzes twice.
  *
- * @param now The moment broken apart in local time.
- * @return The start of its hour.
+ * @return The start of the current hour.
  */
-static time_t hour_start(const struct tm *now)
+static time_t hour_start(void)
 {
-    return time(NULL) - now->tm_min * 60 - now->tm_sec;
+    time_t now = time(NULL);
+    const struct tm *local = localtime(&now);
+
+    return now - local->tm_min * 60 - local->tm_sec;
 }
 
 /**
@@ -99,10 +103,14 @@ static time_t hour_start(const struct tm *now)
  */
 static void hourly_vibe(void)
 {
-    const struct tm *now = time_store_tm();
-    time_t hour = hour_start(now);
+    if (time_store_tm()->tm_min != 0)
+    {
+        return;
+    }
 
-    if (now->tm_min != 0 || hour == s_vibed_hour)
+    time_t hour = hour_start();
+
+    if (hour == s_vibed_hour)
     {
         return;
     }
@@ -153,7 +161,7 @@ static void init(void)
 
         // count the hour the face opens in as buzzed. a tick subscribe sends one tick straight
         // away, and opening the face in minute 0 would otherwise buzz the hour a second time
-        s_vibed_hour = hour_start(time_store_tm());
+        s_vibed_hour = hour_start();
 
         weather_store_init((WeatherConfig){.live = true, .poll_min = WEATHER_POLL_MIN,
                                            .persist_key = WEATHER_STORE_KEY}, NULL);

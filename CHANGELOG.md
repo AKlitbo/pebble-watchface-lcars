@@ -9,7 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Fixed
 
 - Fixed Hourly Vibration skipping the buzz in some hours with the clock set to .beats, in a time zone a half hour or 45 minutes off the hour, such as India or Newfoundland. It now buzzes every hour.
-- Fixed Hourly Vibration staying silent for the hour the clocks repeat when they fall back in autumn.
+- Fixed Hourly Vibration staying silent for the hour the clocks repeat when they fall back in autumn. With the clock set to .beats in a time zone a half hour or 45 minutes off the hour, that one hour can still pass without a buzz.
 - Fixed Hourly Vibration buzzing a second time when you return to the watchface in the first minute of the hour.
 - Fixed the Voyager frame taking twice the memory of the other frames. One stray pixel in its artwork pushed it past sixteen colours.
 - Fixed a watch that was reset, or had the watchface installed again, staying on the default settings until you pressed Save, and its weather not refreshing when the watch asked for it. Your saved settings now come back on their own.
