@@ -75,9 +75,14 @@ void dev_ops_seed_stores(void)
     // pinned clock never ticking, moved on by the walk rather than by a tick
     apply_clock(0);
 
+    // copied from a named constant, which gets a section of its own that the linker drops with this
+    // function in a release build. the macro written straight into wx leaves an unnamed copy in the
+    // file's shared .data, which the SDK's linker keeps in every build
+    static const WeatherSeed s_empty = WEATHER_SEED_EMPTY;
+    WeatherSeed wx = s_empty;
+
     // unlike the shared fixture this fills every reading in, because a slot being photographed
     // showing "--" is a picture of nothing
-    WeatherSeed wx = WEATHER_SEED_EMPTY;
     wx.temp = 21;
     wx.cond = "PCLDY";
     wx.humidity = 62;

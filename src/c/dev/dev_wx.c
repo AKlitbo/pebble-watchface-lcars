@@ -44,7 +44,10 @@ static void (*s_apply_theme)(void);
  */
 static void apply_condition(uint8_t index)
 {
-    WeatherSeed wx = WEATHER_SEED_EMPTY;
+    // copied from a named constant, which the linker drops in a release build. the macro written
+    // straight into wx leaves an unnamed copy in the file's shared .data, which every build keeps
+    static const WeatherSeed s_empty = WEATHER_SEED_EMPTY;
+    WeatherSeed wx = s_empty;
     wx.temp = 21;
     wx.cond = s_conditions[index % ARRAY_LENGTH(s_conditions)];
     weather_store_init((WeatherConfig){.live = false, .poll_min = 0}, &wx);
