@@ -8,15 +8,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
-- Fixed Hourly Vibration skipping the buzz in some hours with the clock set to .beats, in a time zone a half hour or 45 minutes off the hour, such as India or Newfoundland. It now buzzes every hour.
-- Fixed Hourly Vibration staying silent for the hour the clocks repeat when they fall back in autumn. With the clock set to .beats in a time zone a half hour or 45 minutes off the hour, that one hour can still pass without a buzz.
-- Fixed Hourly Vibration buzzing a second time when you return to the watchface in the first minute of the hour.
-- Fixed the Voyager frame taking twice the memory of the other frames. One stray pixel in its artwork pushed it past sixteen colours.
-- Fixed a watch that was reset, or had the watchface installed again, staying on the default settings until you pressed Save, and its weather not refreshing when the watch asked for it. Your saved settings now come back on their own.
-- Fixed a second clock showing the old hour after its city changed its clocks, until the next background update.
-- Fixed the settings page saying Fallback to Manual Location also applies with Enable Phone GPS turned off. With GPS off the city you pick is always used, and the setting only covers GPS being on but not finding you.
+- Fixed Hourly Vibration skipping some hours with the clock set to .beats in a time zone a half hour or 45 minutes off the hour, such as India or Newfoundland.
+- Fixed Hourly Vibration staying silent for the repeated hour when the clocks fall back in autumn. A .beats clock in a half hour or 45 minute time zone can still miss that hour.
+- Fixed Hourly Vibration buzzing twice when you return to the watchface in the first minute of the hour.
+- Fixed the Voyager frame using twice the memory of the other frames. One stray pixel took its artwork past sixteen colours.
+- Fixed a reset or reinstalled watch staying on the default settings until you pressed Save. Its weather also stopped refreshing when due.
+- Fixed a second clock showing the wrong hour for a while after its city changed its clocks.
+- Fixed the settings page describing Fallback to Manual Location wrongly. It only applies when Enable Phone GPS is on but cannot find you.
 
 ## [1.13.0] - 2026-09-27
+
+> [!NOTE]
+> This release is numbered 1.13.0 as it originally contained a new feature, which was held back before it shipped. Everything that did ship is a fix or a moved setting.
 
 ### Changed
 
