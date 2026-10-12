@@ -68,64 +68,19 @@ static void on_settings_changed(bool time_or_date_changed)
     time_store_reconfigure(time_cfg());  // on every change, since the formats and the buzz both pick it
 }
 
-static time_t s_vibed_hour = -1;  ///< when the hour that last buzzed began
-
-/**
- * @brief When the current local hour began, as seconds since the epoch.
- *
- * Two different real hours never share a start, so the hour the clocks repeat when they fall back
- * does not look like the one before it. It reads the clock once and breaks that same reading apart,
- * since pairing the clock with an older tick's minutes and seconds gives one hour two starts when a
- * second turns over between them, and the hour buzzes twice.
- *
- * @return The start of the current hour.
- */
-static time_t hour_start(void)
-{
-    time_t now = time(NULL);
-    const struct tm *local = localtime(&now);
-
-    return now - local->tm_min * 60 - local->tm_sec;
-}
-
-/**
- * @brief Buzz once at the top of the hour with the pattern the user picked.
- *
- * The time store wakes the face at minute 0, through the minute tick or, on a .beats clock, the
- * hourly wake time_cfg asks for while the buzz is set. vibe_choice stays silent during quiet time
- * (and for VIBE_NONE). The hour is latched because more than one ticker can fire inside minute 0,
- * and two fires would buzz the wrist twice for one hour.
- *
- * The SDK's hour tick only fires when the hour number changes, so on a .beats clock the hour the
- * clocks repeat in autumn buzzes only when a beat lands in its minute 0. That always happens in a
- * zone a whole number of hours off UTC, and two times in three otherwise. Catching the rest would
- * take the minute tick, sixty wakes an hour all year for one buzz a year.
- */
-static void hourly_vibe(void)
-{
-    if (time_store_tm()->tm_min != 0)
-    {
-        return;
-    }
-
-    time_t hour = hour_start();
-
-    if (hour == s_vibed_hour)
-    {
-        return;
-    }
-
-    s_vibed_hour = hour;
-    vibe_choice(settings_u8(SETTING_HOURLY_VIBE));
-}
-
 /**
  * @brief Tick callback: repaint the slots and fire the hourly vibe.
+ *
+ * vibe_hourly buzzes once per hour however many tickers land in minute 0, and stays silent during
+ * quiet time and for VIBE_NONE. On a .beats clock the hour tick time_cfg asks for is what lands it
+ * there. The SDK sends no hour tick for the hour the clocks repeat in autumn, so on a .beats clock
+ * that hour buzzes only when a beat lands in its minute 0. Catching the rest would take the minute
+ * tick, sixty wakes an hour all year for one buzz a year.
  */
 static void on_time_tick(void)
 {
     engine_mark_dirty();
-    hourly_vibe();
+    vibe_hourly(time_store_tm(), settings_u8(SETTING_HOURLY_VIBE));
 }
 
 /**
@@ -158,11 +113,6 @@ static void init(void)
                                          .active = true, .calories = true, .distance = true,
                                          .persist_key = HEALTH_STORE_KEY}, NULL);
         time_store_init(time_cfg(), NULL);
-
-        // count the hour the face opens in as buzzed. a tick subscribe sends one tick straight
-        // away, and opening the face in minute 0 would otherwise buzz the hour a second time
-        s_vibed_hour = hour_start();
-
         weather_store_init((WeatherConfig){.live = true, .poll_min = WEATHER_POLL_MIN,
                                            .persist_key = WEATHER_STORE_KEY}, NULL);
         location_store_init((LocationConfig){.live = true,
