@@ -62,7 +62,7 @@ export default buildConfig({
   intro: 'Personalize your layout, dial in your weather preferences, and make this watchface your own.',
   theme: {
     label: 'Frame Theme',
-    description: 'LCARS color scheme for the watch frame.',
+    description: 'LCARS colour scheme for the watch frame.',
     options: [
       { label: 'Classic', value: 0 },
       { label: 'Nemesis Blue', value: 3 },
