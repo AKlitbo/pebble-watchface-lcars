@@ -17,6 +17,8 @@ Pick one from Frame Theme in the settings page.
 | **Classic**<br><img src=".github/images/lcars-stardate/theme_classic.png" width="75"> | **Nemesis Blue**<br><img src=".github/images/lcars-stardate/theme_nemesis-blue.png" width="75"> | **Classic Mono**<br><img src=".github/images/lcars-stardate/theme_mono.png" width="75"> | **Voyager**<br><img src=".github/images/lcars-stardate/theme_voyager.png" width="75"> | **Voyager Mono**<br><img src=".github/images/lcars-stardate/theme_voyager-mono.png" width="75"> |
 | **Lower Decks**<br><img src=".github/images/lcars-stardate/theme_lower-decks.png" width="75"> | **Lower Decks Mono**<br><img src=".github/images/lcars-stardate/theme_lower-decks-mono.png" width="75"> | **Lower Decks PADD**<br><img src=".github/images/lcars-stardate/theme_lower-decks-padd.png" width="75"> | **Lower Decks PADD Mono**<br><img src=".github/images/lcars-stardate/theme_lower-decks-padd-mono.png" width="75"> | |
 
+Keep one theme fixed, or set Theme Mode to Day / Night / Quiet to wear one by day and swap to another after dark or while Quiet Time is on. Night follows your sunrise and sunset.
+
 ## Readouts
 
 The bottom of the face has four panels, two in each column, under the clock and the date banner. You pick what each one shows in the settings page. Its label and icon follow your pick, so any readout works with any theme.
@@ -119,9 +121,9 @@ Anything with a `.g.` in the name is generated, so I never edit those by hand. R
 I release by pushing a `lcars-stardate-v<version>` tag. [release.yml](.github/workflows/release.yml) then builds the face, takes the notes from the matching [changelog](CHANGELOG.md) section, and publishes the `.pbw`.
 
 ```sh
-# date the [1.14.0] heading in CHANGELOG.md first, then
-git tag lcars-stardate-v1.14.0
-git push origin lcars-stardate-v1.14.0
+# date the [1.15.0] heading in CHANGELOG.md first, then
+git tag lcars-stardate-v1.15.0
+git push origin lcars-stardate-v1.15.0
 ```
 
 Before it builds anything, the workflow checks that the tag matches `version` in `pebble.appinfo.json`, that the changelog entry is dated, that the tag isn't already released, and that `paf/` holds a framework with a release version.

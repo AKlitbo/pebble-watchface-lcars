@@ -167,6 +167,25 @@ uint8_t stardate_build(EngineSlot *out, uint8_t max, GRect bounds);
 bool stardate_ops_shows_beats(void);
 
 /**
+ * @brief The theme showing right now.
+ *
+ * In Fixed mode this is the picked theme. In Day / Night / Quiet mode it is the night or Quiet Time
+ * theme when those are on and in effect, and the picked one otherwise. Every paint reads its colours
+ * from here so the whole face stays on one theme.
+ *
+ * @return A theme setting value.
+ */
+uint8_t stardate_active_theme(void);
+
+/**
+ * @brief Reload the frame if the active theme has changed since the last paint.
+ *
+ * Call it on the clock tick so Day / Night / Quiet mode swaps the frame when dark falls or Quiet
+ * Time starts. It does nothing when the theme has not moved.
+ */
+void stardate_refresh_theme(void);
+
+/**
  * @brief Re-apply the theme by swapping the frame bitmap.
  */
 void stardate_apply_theme(void);

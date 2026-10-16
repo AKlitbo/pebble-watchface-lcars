@@ -18,6 +18,9 @@
 #include "widgets/widgets.h"
 #include "io/stores/system_store.h"
 #include "io/stores/weather_store.h"
+#include "io/stores/time_store.h"
+#include "clock/solar.h"
+#include "role/role.h"
 #include "system/settings/settings.h"
 #include "system/settings/setting_values.h"
 
@@ -199,6 +202,62 @@ static void load_frame(uint8_t theme)
 }
 
 /**
+ * @brief Whether the sun is down right now, from the sunrise and sunset the phone sent.
+ *
+ * Before the phone has sent either, it falls back to a plain six-to-eighteen day, so night still
+ * means night rather than reading as day all the time.
+ *
+ * @return True while it is dark.
+ */
+static bool is_night(void)
+{
+    int rise = weather_store_sunrise();
+    int set = weather_store_sunset();
+
+    // the two readings arrive together, so a missing one means neither is known. fall back to the
+    // whole plain day rather than pairing a real time with a made-up one
+    if (rise < 0 || set < 0)
+    {
+        rise = 6 * 60;
+        set = 18 * 60;
+    }
+
+    const struct tm *now = time_store_tm();
+    int now_min = now->tm_hour * 60 + now->tm_min;
+
+    return solar_day_progress(rise, set, now_min) < 0;
+}
+
+uint8_t stardate_active_theme(void)
+{
+    uint8_t day = settings_u8(SETTING_THEME);
+
+    if (lcars_theme_mode() != THEME_MODE_DAYNIGHT)
+    {
+        return day;
+    }
+
+    // Quiet Time wins over night, and each override only counts when its own toggle is on
+    Role role = role_pick(quiet_time_is_active(), lcars_use_quiet_theme(),
+                          is_night(), lcars_use_night_theme());
+
+    switch (role)
+    {
+        case ROLE_QUIET:
+            return lcars_quiet_theme();
+        case ROLE_NIGHT:
+            return lcars_night_theme();
+        default:
+            return day;
+    }
+}
+
+void stardate_refresh_theme(void)
+{
+    load_frame(stardate_active_theme());
+}
+
+/**
  * @brief Overlays draw-slot: the battery gauge, the bar labels, and the glyphs.
  *
  * @param ctx The graphics context.
@@ -241,7 +300,7 @@ void stardate_setup(Window *window)
     // the frame bitmap sits at the bottom under the engine's slot layers
     s_frame_layer = bitmap_layer_create(layer_get_bounds(root));
     layer_add_child(root, bitmap_layer_get_layer(s_frame_layer));
-    load_frame(settings_u8(SETTING_THEME));
+    load_frame(stardate_active_theme());
 
     widgets_load();
 }
@@ -285,7 +344,7 @@ uint8_t stardate_build(EngineSlot *out, uint8_t max, GRect bounds)
 
 void stardate_apply_theme(void)
 {
-    load_frame(settings_u8(SETTING_THEME));
+    load_frame(stardate_active_theme());
 }
 
 void stardate_teardown(void)

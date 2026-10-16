@@ -79,6 +79,8 @@ static void on_settings_changed(bool time_or_date_changed)
  */
 static void on_time_tick(void)
 {
+    // in Day / Night / Quiet mode the frame theme can change with the hour, so reload it if it moved
+    stardate_refresh_theme();
     engine_mark_dirty();
     vibe_hourly(time_store_tm(), settings_u8(SETTING_HOURLY_VIBE));
 }

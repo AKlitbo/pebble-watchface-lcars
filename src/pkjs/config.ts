@@ -58,25 +58,73 @@ const BUILDER_OPTIONS = [SENSORS_BLOCK, ...OPS_OPTIONS].map(function (option) {
   return merged;
 });
 
+// the nine frame themes, shared by the Frame Theme picker and the night and Quiet Time pickers
+const THEME_OPTIONS = [
+  { label: 'Classic', value: 0 },
+  { label: 'Nemesis Blue', value: 3 },
+  { label: 'Classic Mono', value: 4 },
+  { label: 'Voyager', value: 7 },
+  { label: 'Voyager Mono', value: 8 },
+  { label: 'Lower Decks', value: 1 },
+  { label: 'Lower Decks Mono', value: 5 },
+  { label: 'Lower Decks PADD', value: 2 },
+  { label: 'Lower Decks PADD Mono', value: 6 },
+];
+
 export default buildConfig({
   // the framework's default intro leaves weather out, and this face has it
   intro: 'Personalize your layout, dial in your weather preferences, and make this watchface your own.',
   theme: {
     label: 'Frame Theme',
     description: 'LCARS colour scheme for the watch frame.',
-    options: [
-      { label: 'Classic', value: 0 },
-      { label: 'Nemesis Blue', value: 3 },
-      { label: 'Classic Mono', value: 4 },
-      { label: 'Voyager', value: 7 },
-      { label: 'Voyager Mono', value: 8 },
-      { label: 'Lower Decks', value: 1 },
-      { label: 'Lower Decks Mono', value: 5 },
-      { label: 'Lower Decks PADD', value: 2 },
-      { label: 'Lower Decks PADD Mono', value: 6 },
-    ],
+    options: THEME_OPTIONS,
     previews: themePreviews,
   },
+  appearanceItems: [
+    {
+      'type': 'select',
+      'messageKey': 'APPEARANCE_THEME_MODE',
+      'label': 'Theme Mode',
+      'description': 'How the frame theme above is chosen. Fixed keeps it. Day / Night / Quiet keeps it by day and swaps to another after dark or while Quiet Time is on.',
+      'defaultValue': 0,
+      'options': [
+        { 'label': 'Fixed', 'value': 0 },
+        { 'label': 'Day / Night / Quiet', 'value': 1 },
+      ],
+    },
+    {
+      'type': 'toggle',
+      'messageKey': 'APPEARANCE_NIGHT_THEME_ON',
+      'visibleWhen': { 'key': 'APPEARANCE_THEME_MODE', 'in': [1] },
+      'label': 'Use Night Theme',
+      'description': 'In Day / Night / Quiet mode, use a different frame theme after dark. Off keeps the daytime one all night. Night follows your sunrise and sunset.',
+      'defaultValue': false,
+    },
+    {
+      'type': 'select',
+      'messageKey': 'APPEARANCE_NIGHT_THEME',
+      'visibleWhen': [{ 'key': 'APPEARANCE_THEME_MODE', 'in': [1] }, { 'key': 'APPEARANCE_NIGHT_THEME_ON', 'in': [true] }],
+      'label': 'Night Theme',
+      'defaultValue': 0,
+      'options': THEME_OPTIONS,
+    },
+    {
+      'type': 'toggle',
+      'messageKey': 'APPEARANCE_QUIET_THEME_ON',
+      'visibleWhen': { 'key': 'APPEARANCE_THEME_MODE', 'in': [1] },
+      'label': 'Use Quiet Time Theme',
+      'description': 'In Day / Night / Quiet mode, use a different frame theme while Quiet Time is on. Quiet Time wins over night.',
+      'defaultValue': false,
+    },
+    {
+      'type': 'select',
+      'messageKey': 'APPEARANCE_QUIET_THEME',
+      'visibleWhen': [{ 'key': 'APPEARANCE_THEME_MODE', 'in': [1] }, { 'key': 'APPEARANCE_QUIET_THEME_ON', 'in': [true] }],
+      'label': 'Quiet Time Theme',
+      'defaultValue': 0,
+      'options': THEME_OPTIONS,
+    },
+  ],
   layoutSections: [
     {
       'type': 'section',

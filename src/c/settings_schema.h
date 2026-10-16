@@ -15,11 +15,59 @@
  */
 
 /**
+ * @brief How the frame theme is chosen.
+ *
+ * Fixed keeps the one theme the wearer picked. Day / Night / Quiet keeps it by day and swaps to the
+ * night or Quiet Time theme when those are turned on.
+ */
+typedef enum
+{
+    THEME_MODE_FIXED = 0,
+    THEME_MODE_DAYNIGHT,
+    THEME_MODE_COUNT
+} ThemeMode;
+
+/**
  * @brief Gets the settings schema for this face.
  *
  * @return A pointer to the schema.
  */
 const SettingsSchema *lcars_settings_schema(void);
+
+/**
+ * @brief Which way the frame theme is chosen, a ThemeMode.
+ *
+ * @return THEME_MODE_FIXED or THEME_MODE_DAYNIGHT.
+ */
+uint8_t lcars_theme_mode(void);
+
+/**
+ * @brief Whether Day / Night / Quiet mode swaps to the night theme after dark.
+ *
+ * @return True when the night theme is turned on.
+ */
+bool lcars_use_night_theme(void);
+
+/**
+ * @brief The theme to show after dark in Day / Night / Quiet mode.
+ *
+ * @return A theme setting value.
+ */
+uint8_t lcars_night_theme(void);
+
+/**
+ * @brief Whether Day / Night / Quiet mode swaps to the Quiet Time theme while Quiet Time is on.
+ *
+ * @return True when the Quiet Time theme is turned on.
+ */
+bool lcars_use_quiet_theme(void);
+
+/**
+ * @brief The theme to show while Quiet Time is on in Day / Night / Quiet mode.
+ *
+ * @return A theme setting value.
+ */
+uint8_t lcars_quiet_theme(void);
 
 /**
  * @brief What the upper left slot is set to show.

@@ -18,9 +18,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define LCARS_SETTINGS_VERSION 6
+#define LCARS_SETTINGS_VERSION 7
 // smallest versioned blob accepted. fields are append-only so this never changes
 #define LCARS_SETTINGS_V1_SIZE 21
+
+// how many frame themes the picker offers. the night and Quiet Time overrides count the same set,
+// so adding a theme is one bump here rather than three spread through the field table
+#define LCARS_THEME_COUNT 9
 
 /**
  * @addtogroup watchface-lcars
@@ -52,9 +56,15 @@ typedef struct LcarsSettings
     uint8_t slot_rt;
     uint8_t slot_rb;
     char    time_zone_offset_1[32]; // "offset,City, Region, CC" as Clay's location search sends it
+    // --- added in v7 ---
+    uint8_t theme_mode;       // a ThemeMode
+    bool    use_night_theme;
+    uint8_t night_theme;
+    bool    use_quiet_theme;
+    uint8_t quiet_theme;
 } LcarsSettings;
 
-_Static_assert(sizeof(LcarsSettings) == 62, "lcars blob size is frozen at 62 bytes (v6)");
+_Static_assert(sizeof(LcarsSettings) == 67, "lcars blob size is frozen at 67 bytes (v7)");
 _Static_assert(offsetof(LcarsSettings, bluetooth_icon) == LCARS_SETTINGS_V1_SIZE,
                "lcars v1 floor is frozen; the v2 fields must stay appended after it");
 
@@ -70,12 +80,19 @@ static LcarsSettings s_settings;
 #define SETTING_SLOT_RT ((SettingId)(SETTING_COUNT + 2))
 #define SETTING_SLOT_RB ((SettingId)(SETTING_COUNT + 3))
 
+// the frame-theme mode and its night and Quiet Time overrides, also this face's own
+#define SETTING_THEME_MODE     ((SettingId)(SETTING_COUNT + 4))
+#define SETTING_NIGHT_THEME_ON ((SettingId)(SETTING_COUNT + 5))
+#define SETTING_NIGHT_THEME    ((SettingId)(SETTING_COUNT + 6))
+#define SETTING_QUIET_THEME_ON ((SettingId)(SETTING_COUNT + 7))
+#define SETTING_QUIET_THEME    ((SettingId)(SETTING_COUNT + 8))
+
 // lcars subscribes to every known setting in its frozen struct order. "%Y.%m%d" is
 // its numeric stardate-style date default
 static const SettingField s_fields[] = {
     KNOWN_TEMPERATURE_UNIT(offsetof(LcarsSettings, temperature_unit)),
     KNOWN_DATE_FORMAT(offsetof(LcarsSettings, date_format), "%Y.%m%d"),
-    KNOWN_THEME(offsetof(LcarsSettings, theme), 9),
+    KNOWN_THEME(offsetof(LcarsSettings, theme), LCARS_THEME_COUNT),
     KNOWN_STEPS_MODE(offsetof(LcarsSettings, steps_mode), STEPS_MODE_COUNT),
     KNOWN_TIME_FORMAT(offsetof(LcarsSettings, time_format), TIME_FORMAT_COUNT),
     KNOWN_BLUETOOTH_ICON(offsetof(LcarsSettings, bluetooth_icon)),
@@ -100,6 +117,24 @@ static const SettingField s_fields[] = {
     { .id = SETTING_SLOT_RB, .message_key = &MESSAGE_KEY_APPEARANCE_SLOT_RIGHT_BOTTOM,
       .type = SETTING_ENUM_U8, .offset = offsetof(LcarsSettings, slot_rb),
       .enum_count = OPS_COUNT, .default_num = OPS_STEPS },
+
+    // the frame-theme mode and its two overrides. the override themes count the same nine themes
+    // as the main picker above, so they stay in step with it
+    { .id = SETTING_THEME_MODE, .message_key = &MESSAGE_KEY_APPEARANCE_THEME_MODE,
+      .type = SETTING_ENUM_U8, .offset = offsetof(LcarsSettings, theme_mode),
+      .enum_count = THEME_MODE_COUNT, .default_num = THEME_MODE_FIXED },
+    { .id = SETTING_NIGHT_THEME_ON, .message_key = &MESSAGE_KEY_APPEARANCE_NIGHT_THEME_ON,
+      .type = SETTING_BOOL, .offset = offsetof(LcarsSettings, use_night_theme),
+      .default_num = 0 },
+    { .id = SETTING_NIGHT_THEME, .message_key = &MESSAGE_KEY_APPEARANCE_NIGHT_THEME,
+      .type = SETTING_ENUM_U8, .offset = offsetof(LcarsSettings, night_theme),
+      .enum_count = LCARS_THEME_COUNT, .default_num = 0 },
+    { .id = SETTING_QUIET_THEME_ON, .message_key = &MESSAGE_KEY_APPEARANCE_QUIET_THEME_ON,
+      .type = SETTING_BOOL, .offset = offsetof(LcarsSettings, use_quiet_theme),
+      .default_num = 0 },
+    { .id = SETTING_QUIET_THEME, .message_key = &MESSAGE_KEY_APPEARANCE_QUIET_THEME,
+      .type = SETTING_ENUM_U8, .offset = offsetof(LcarsSettings, quiet_theme),
+      .enum_count = LCARS_THEME_COUNT, .default_num = 0 },
 
     // the ZONE 1 readout's zone. the id is SETTING_COUNT because nothing reads this through the
     // library's typed accessors, only the two helpers at the bottom of this file
@@ -184,6 +219,31 @@ uint8_t lcars_slot_rt(void)
 uint8_t lcars_slot_rb(void)
 {
     return s_settings.slot_rb;
+}
+
+uint8_t lcars_theme_mode(void)
+{
+    return s_settings.theme_mode;
+}
+
+bool lcars_use_night_theme(void)
+{
+    return s_settings.use_night_theme;
+}
+
+uint8_t lcars_night_theme(void)
+{
+    return s_settings.night_theme;
+}
+
+bool lcars_use_quiet_theme(void)
+{
+    return s_settings.use_quiet_theme;
+}
+
+uint8_t lcars_quiet_theme(void)
+{
+    return s_settings.quiet_theme;
 }
 
 bool lcars_zone_1_is_set(void)

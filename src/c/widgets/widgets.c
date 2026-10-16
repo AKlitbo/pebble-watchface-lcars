@@ -8,7 +8,6 @@
 #include "widgets.h"
 
 #include "layout.h"
-#include "system/settings/settings.h"
 #include "theme/theme.h"
 #include "ui/icon_cache.h"
 #include "ui/weather/icons.h"
@@ -248,7 +247,7 @@ static bool slot_draws(const OpsChrome *chrome, int slot)
 
 void widgets_draw_bars(GContext *ctx, const OpsChrome *chrome)
 {
-    uint8_t theme = settings_u8(SETTING_THEME);
+    uint8_t theme = stardate_active_theme();
     GColor cap = bar_cap_for_theme(theme);
     GColor body = bar_body_for_theme(theme);
 
@@ -265,7 +264,7 @@ void widgets_draw_bars(GContext *ctx, const OpsChrome *chrome)
 
 void widgets_draw_labels(GContext *ctx, const OpsChrome *chrome)
 {
-    GColor lbl_color = label_color_for_theme(settings_u8(SETTING_THEME));
+    GColor lbl_color = label_color_for_theme(stardate_active_theme());
 
     lcars_label(ctx, LBL_STARDATE, "STARDATE", s_font_label, lbl_color, 3);
 
@@ -280,7 +279,7 @@ void widgets_draw_labels(GContext *ctx, const OpsChrome *chrome)
 
 void widgets_draw_battery(GContext *ctx, int level)
 {
-    uint8_t theme = settings_u8(SETTING_THEME);
+    uint8_t theme = stardate_active_theme();
     GColor accent = panel_accent_for_theme(theme);
     GColor fill = battery_fill_for_theme(theme, level);
     lcars_battery_gauge(ctx, GRect(6, 4, 32, 12), level, accent, fill);
