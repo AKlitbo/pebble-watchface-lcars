@@ -7,6 +7,7 @@
 import buildConfig from '../../paf/ts/pkjs/config-builder';
 import moduleThumbnails from './clay/module-thumbnails.g';
 import moduleMeta from './clay/module-meta';
+import themePreviews from './clay/theme-previews.g';
 
 // what either right-hand slot can show. the value is the C OpsId, so these numbers are the
 // contract with src/c/ops/ops.h and are only ever appended to, never reordered
@@ -74,6 +75,7 @@ export default buildConfig({
       { label: 'Lower Decks PADD', value: 2 },
       { label: 'Lower Decks PADD Mono', value: 6 },
     ],
+    previews: themePreviews,
   },
   layoutSections: [
     {
