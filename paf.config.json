@@ -10,6 +10,6 @@
       "prettier": true
     }
   },
-  "framework": "v4.3.0",
-  "commit": "69a549ea335d7bd45e16e5dda298494c2c0a45bc"
+  "framework": "v4.5.0",
+  "commit": "4989d6fc1b3df447dd81f92ec253d3071a9815f5"
 }
