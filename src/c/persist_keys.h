@@ -18,7 +18,8 @@
 #define LCARS_SETTINGS_KEY 5
 
 // --- store snapshots (high band, handed to each store's init) ---
-// 251 (calendar) and 254 (stock) are left reserved: this face wires neither
+// 251 (calendar) and 254 (stock) are left reserved: this face wires neither. 249 holds the
+// framework's own copy of the weather source choice
 #define HEALTH_STORE_KEY   252
 #define LOCATION_STORE_KEY 253
 #define WEATHER_STORE_KEY  255

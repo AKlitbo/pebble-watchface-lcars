@@ -22,6 +22,20 @@ body {
   color: #fff;
 }
 
+/* the framework's own rows, such as the plugin notes, the supported plugins list, and the search
+   dropdowns, read their colours from these. links and warnings take the amber the labels wear, the
+   info notes take the lavender of the heading bars, and the dropdowns take the dark wells the
+   controls sit in */
+:root {
+  --pf-accent: #ffaa55;
+  --pf-on-accent: #000;
+  --pf-note-accent: #ffaa55;
+  --pf-note-info-accent: #aaaaff;
+  --pf-surface: #16161c;
+  --pf-ink: #ffcc88;
+  --pf-line: #3a3a44;
+}
+
 /* the coloured rail down the left of a real LCARS panel, in a form a settings list can wear */
 body .section {
   position: relative;
