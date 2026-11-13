@@ -10,7 +10,6 @@
 #include "ui/readouts.h"
 #include "io/stores/health_store.h"
 #include "io/stores/location_store.h"
-#include "io/stores/store_poll.h"
 #include "io/stores/system_store.h"
 #include "io/stores/time_store.h"
 #include "io/stores/weather_store.h"
@@ -22,8 +21,7 @@
 #include "settings_schema.h"
 #include "system/vibe/vibe.h"
 
-// weather polls the phone this often. the reconnect catch-up reuses it as the staleness gate so
-// the two cadences can never drift apart
+// weather polls the phone this often
 #define WEATHER_POLL_MIN 30
 
 static Window *s_window;
@@ -44,7 +42,7 @@ static TimeConfig time_cfg(void)
     bool hourly = settings_u8(SETTING_HOURLY_VIBE) != VIBE_NONE;
 
     return (TimeConfig){
-        .live = !DEV_MODE,  // a dev build keeps the clock its fixture pinned
+        .live = true,
         .minute_tick = !clock_beats,  // .beats replaces the clock, and only the clock
         .hourly = hourly,             // a .beats clock still wakes on the hour for the buzz
         .beats = clock_beats || stardate_ops_shows_beats() || readout_date_shows_beats(),
@@ -85,26 +83,13 @@ static void on_time_tick(void)
     vibe_hourly(time_store_tm(), settings_u8(SETTING_HOURLY_VIBE));
 }
 
-/**
- * @brief The phone app just reconnected, so catch up a reading that went stale while it was away.
- *
- * The phone's pkjs may have been closed for the whole gap, and the store only polls every
- * WEATHER_POLL_MIN, so without this the face sits on an old reading.
- */
-static void on_phone_reconnected(void)
-{
-    if (store_poll_reconnect_due(weather_store_age_s(), WEATHER_POLL_MIN))
-    {
-        appmessage_request_weather();
-    }
-}
-
 static void init(void)
 {
     settings_init(lcars_settings_schema());
 
     // each store owns its own source. init starts it (live) or seeds it. dev mode seeds
-    // every store from a fixed fixture (live=false) for deterministic screenshots
+    // every store from a fixed fixture (live=false) for deterministic screenshots, and this
+    // face's own walks seed their readings over it
     if (!dev_seed_stores())
     {
         system_store_init((SystemConfig){.live = true, .vibe = vibe_bt_transition}, NULL);
@@ -120,6 +105,7 @@ static void init(void)
         location_store_init((LocationConfig){.live = true,
                                              .persist_key = LOCATION_STORE_KEY}, NULL);
     }
+    lcars_dev_seed_stores();
 
     s_window = window_create();
     stardate_setup(s_window);              // fonts + frame + overlays
@@ -132,7 +118,6 @@ static void init(void)
     weather_store_subscribe(engine_mark_dirty);
     location_store_subscribe(engine_mark_dirty);
     system_store_subscribe(engine_mark_dirty);
-    system_store_on_reconnect(on_phone_reconnected);
 
     // weather_store + location_store own their channels. main only wires settings
     appmessage_on_settings_changed(on_settings_changed);
@@ -140,11 +125,13 @@ static void init(void)
 
     // dev mode only: force the theme then paint the fixture then subscribe the tap walk
     dev_start(stardate_apply_theme);
+    lcars_dev_start(stardate_apply_theme);
 }
 
 static void deinit(void)
 {
     dev_stop();
+    lcars_dev_stop();
     system_store_deinit();
     engine_deinit();
     stardate_teardown();

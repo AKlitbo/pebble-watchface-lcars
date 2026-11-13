@@ -1,106 +1,67 @@
 /**
  * @file dev.h
- * @brief Per-face dev-walk switches. Keep DEV_MODE 0 for any build you ship. Flip it (plus one
- * walk toggle) to boot the face into a fixed fixture and tap-walk it for screenshots.
+ * @brief This face's own dev walks, beside the dev plugin's hooks. `paf build lcars-stardate --dev`
+ * turns dev mode on, and the walk comes from paf.dev.config.json beside paf.config.json.
  *
- * Two walks: the shared theme walk in the dev plugin's `dev/dev_walk`, and this face's ops-slot walk
- * in `dev/dev_ops`. Pick one. The shared walk builds only with `dev` listed under plugins in
- * paf.config.json. This file only holds the switches.
+ * `"walk": "themes"` is the plugin's theme walk. This face adds two of its own: `"walk": "ops"` steps
+ * both ops slots through the readout catalogue in `dev/dev_ops`, and `"walk": "wx"` steps the
+ * condition through every weather glyph in `dev/dev_wx`. Each seeds its own readings over the
+ * plugin's fixture and takes the taps once the plugin has painted the fixture.
+ *
+ * The hooks are static inline and empty with dev mode off, so a release build carries none of it.
  *
  * @ingroup watchface-lcars
  */
 #pragma once
 #include <pebble.h>
+#include "dev/dev_hooks.h"
 
-// ===== master switch (0 for any shipped build) =====
-#define DEV_MODE 0
-
-// ===== walk toggles (pick one) =====
-#define DEV_TAP_WALK_THEMES 0  // tap steps through every theme on fixed data + a fixed clock
-#define DEV_TAP_WALK_OPS    0  // tap steps both ops slots through the readout catalogue
-#define DEV_TAP_WALK_WX     0  // tap steps the condition through every weather glyph
-
-// the harnesses are only reachable through DEV_MODE so a shipping build (0) needs
-// neither include nor any walk macro
-#if DEV_MODE
-#if DEV_TAP_WALK_OPS
+// the build sets DEV_TAP_WALK_<NAME> only for the walk it picks, so each is checked with defined
+#if DEV_MODE && defined(DEV_TAP_WALK_OPS) && DEV_TAP_WALK_OPS
+#define LCARS_DEV_WALK_OPS 1
 #include "dev/dev_ops.h"
-#elif DEV_TAP_WALK_WX
+#elif DEV_MODE && defined(DEV_TAP_WALK_WX) && DEV_TAP_WALK_WX
+#define LCARS_DEV_WALK_WX 1
 #include "dev/dev_wx.h"
-#else
-#include "dev/dev_walk.h"
 #endif
-#endif
-
-// ===== the fixed clock every shot shows =====
-// the ops walk is the exception: it carries a clock per frame in dev_ops.c, so a sheet of its
-// readouts is not the same minute over and over
-#define DEV_TIME_HOUR 8   // 08:00 is a wide clock string
-#define DEV_TIME_MIN  0
-
-// which walk a tap advances (from the toggles above)
-#if DEV_TAP_WALK_THEMES
-  #define DEV_WALK_MODE DEV_WALK_THEMES
-#else
-  #define DEV_WALK_MODE DEV_WALK_NONE
-#endif
-
-// the hooks are static inline so a release build (DEV_MODE 0) inlines them to nothing and
-// leaves no dev symbol at all. main.c and layout.c stay #if-free while shipping zero dev code
 
 /**
- * @brief Seed the stores from the dev fixture (live=false) when DEV_MODE is on.
- *
- * @return True if it seeded, so main skips the live inits. False in a release build.
+ * @brief Seeds the readings this face's own walk needs over the plugin's fixture. Does nothing
+ * unless the ops or weather walk is picked. Call it after `dev_seed_stores`.
  */
-static inline bool dev_seed_stores(void)
+static inline void lcars_dev_seed_stores(void)
 {
-#if DEV_MODE
-#if DEV_TAP_WALK_OPS
+#if defined(LCARS_DEV_WALK_OPS)
     dev_ops_seed_stores();
-#elif DEV_TAP_WALK_WX
+#elif defined(LCARS_DEV_WALK_WX)
     dev_wx_seed_stores(DEV_TIME_HOUR, DEV_TIME_MIN);
-#else
-    dev_walk_seed_stores(DEV_TIME_HOUR, DEV_TIME_MIN);
-#endif
-    return true;
-#else
-    return false;
 #endif
 }
 
 /**
- * @brief Start the walk (force theme, first paint, tap subscription) when DEV_MODE is on. A
- * no-op otherwise. Call after engine_init.
+ * @brief Starts this face's own walk, painting its first step and taking the taps. Does nothing
+ * unless the ops or weather walk is picked. Call it after `dev_start`.
  *
  * @param apply_theme The face's theme-apply hook.
  */
-static inline void dev_start(void (*apply_theme)(void))
+static inline void lcars_dev_start(void (*apply_theme)(void))
 {
-#if DEV_MODE
-#if DEV_TAP_WALK_OPS
+#if defined(LCARS_DEV_WALK_OPS)
     dev_ops_init(apply_theme);
-#elif DEV_TAP_WALK_WX
+#elif defined(LCARS_DEV_WALK_WX)
     dev_wx_init(apply_theme);
-#else
-    dev_walk_init(DEV_WALK_MODE, apply_theme);
-#endif
 #else
     (void)apply_theme;
 #endif
 }
 
-/** @brief Stop the walk (drop the tap) when DEV_MODE is on. A no-op otherwise. */
-static inline void dev_stop(void)
+/** @brief Drops this face's own walk's tap subscription. Does nothing unless one is running. */
+static inline void lcars_dev_stop(void)
 {
-#if DEV_MODE
-#if DEV_TAP_WALK_OPS
+#if defined(LCARS_DEV_WALK_OPS)
     dev_ops_deinit();
-#elif DEV_TAP_WALK_WX
+#elif defined(LCARS_DEV_WALK_WX)
     dev_wx_deinit();
-#else
-    dev_walk_deinit();
-#endif
 #endif
 }
 
@@ -114,7 +75,7 @@ static inline void dev_stop(void)
  */
 static inline uint8_t dev_ops_pick(int slot, uint8_t stored)
 {
-#if DEV_MODE && DEV_TAP_WALK_OPS
+#if defined(LCARS_DEV_WALK_OPS)
     (void)stored;
     return dev_ops_walk_pick(slot);
 #else

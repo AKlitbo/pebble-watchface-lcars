@@ -4,23 +4,15 @@
   "version": "1.14.0",
   "watchface": true,
   "uuid": "68b0e2fe-b970-4cb2-8b4c-45ea9c13d968",
-  "sdkVersion": "3",
-  "enableMultiJS": true,
   "targetPlatforms": [
     "emery"
   ],
   "capabilities": [
-    "location",
-    "configurable",
     "health"
   ],
   "messageKeys": [
-    "WEATHER_TEMPERATURE",
-    "WEATHER_CONDITIONS",
-    "WEATHER_REQUEST",
     "SETTINGS_REQUEST",
     "SETTINGS_FRESH",
-    "WEATHER_OK",
     "LOCATION_LATITUDE",
     "LOCATION_LONGITUDE",
     "LOCATION_NAME",

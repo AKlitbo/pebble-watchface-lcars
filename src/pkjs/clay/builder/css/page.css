@@ -168,7 +168,7 @@ body .sb-btn {
    Clay's stock orange with a round outlined badge. dressed here as a small LCARS panel instead,
    wearing the left rail and rounded right corners a section wears, with the badge as a filled
    holder box in amber on black the way a real bar reads */
-body .loc-search .loc-note {
+body .pf-loc-search .pf-loc-note {
   background: #16161c !important;
   border-left: 6px solid #ffaa55 !important;
   border-radius: 0 8px 8px 0 !important;
@@ -182,7 +182,7 @@ body .loc-search .loc-note {
   text-transform: uppercase !important;
 }
 
-body .loc-search .loc-note:before {
+body .pf-loc-search .pf-loc-note:before {
   top: 8px !important;
   left: 14px !important;
   width: 16px !important;

@@ -93,7 +93,7 @@ describe('the slot tables', () => {
     expect(result).toBeNull();
   });
 
-  /** Each store needs its own class to be found by, since every hiddenStore already shares .gl-store. */
+  /** Each store needs its own class to be found by, since every hiddenStore already shares .pf-hidden-store. */
   test('give the other three slots distinct store classes', () => {
     const classes = SLOT_STORE_CLASS.slice(1);
 

@@ -24,9 +24,9 @@ export function formatId(id: number): string {
 /**
  * Find the hidden input backing a slot.
  *
- * Every hiddenStore carries .gl-store, so each one on the page is given its own extra class and
- * that is what this looks for. Returns null for the upper-left slot, which is the component's own
- * value rather than a store, and for a store that is not on the page.
+ * Every hiddenStore carries .pf-hidden-store, so each one on the page is given its own extra class
+ * and that is what this looks for. Returns null for the upper-left slot, which is the component's
+ * own value rather than a store, and for a store that is not on the page.
  *
  * @param root The component element, used only to reach the document.
  * @param slot The slot to find.

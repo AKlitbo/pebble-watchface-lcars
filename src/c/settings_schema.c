@@ -87,19 +87,19 @@ static LcarsSettings s_settings;
 #define SETTING_QUIET_THEME_ON ((SettingId)(SETTING_COUNT + 7))
 #define SETTING_QUIET_THEME    ((SettingId)(SETTING_COUNT + 8))
 
-// lcars subscribes to every known setting in its frozen struct order. "%Y.%m%d" is
-// its numeric stardate-style date default
+// lcars subscribes to every known setting in its frozen struct order. every KNOWN_ entry takes
+// its default from the settings page, so the date opens on the numeric stardate-style "%Y.%m%d"
 static const SettingField s_fields[] = {
     KNOWN_TEMPERATURE_UNIT(offsetof(LcarsSettings, temperature_unit)),
-    KNOWN_DATE_FORMAT(offsetof(LcarsSettings, date_format), "%Y.%m%d"),
+    KNOWN_DATE_FORMAT(offsetof(LcarsSettings, date_format)),
     KNOWN_THEME(offsetof(LcarsSettings, theme), LCARS_THEME_COUNT),
-    KNOWN_STEPS_MODE(offsetof(LcarsSettings, steps_mode), STEPS_MODE_COUNT),
-    KNOWN_TIME_FORMAT(offsetof(LcarsSettings, time_format), TIME_FORMAT_COUNT),
+    KNOWN_STEPS_MODE(offsetof(LcarsSettings, steps_mode)),
+    KNOWN_TIME_FORMAT(offsetof(LcarsSettings, time_format)),
     KNOWN_BLUETOOTH_ICON(offsetof(LcarsSettings, bluetooth_icon)),
-    KNOWN_BLUETOOTH_VIBE_CONNECT(offsetof(LcarsSettings, vibe_connect), VIBE_COUNT),
-    KNOWN_BLUETOOTH_VIBE_DISCONNECT(offsetof(LcarsSettings, vibe_disconnect), VIBE_COUNT),
+    KNOWN_BLUETOOTH_VIBE_CONNECT(offsetof(LcarsSettings, vibe_connect)),
+    KNOWN_BLUETOOTH_VIBE_DISCONNECT(offsetof(LcarsSettings, vibe_disconnect)),
     KNOWN_QUIET_TIME_ICON(offsetof(LcarsSettings, quiet_time_icon)),
-    KNOWN_HOURLY_VIBE(offsetof(LcarsSettings, hourly_vibe), VIBE_COUNT),
+    KNOWN_HOURLY_VIBE(offsetof(LcarsSettings, hourly_vibe)),
 
     // --- this face's own ---
     // an untouched face shows the weather block filling the left column with the
@@ -188,9 +188,7 @@ static bool lcars_migrate(int stored_size)
 static const SettingsSchema s_schema = {
     .key = LCARS_SETTINGS_KEY,
     .version = LCARS_SETTINGS_VERSION,
-    .min_versioned_size = LCARS_SETTINGS_V1_SIZE,
-    .blob = &s_settings,
-    .blob_size = SETTINGS_BLOB_SIZE(LcarsSettings),
+    SETTINGS_BLOB(s_settings, LCARS_SETTINGS_V1_SIZE),
     .fields = s_fields,
     .field_count = ARRAY_LENGTH(s_fields),
     .migrate = lcars_migrate,

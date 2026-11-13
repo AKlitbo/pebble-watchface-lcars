@@ -21,7 +21,7 @@ jobs:
       - uses: actions/checkout@v7
 
       # paf fills paf/ from the framework tag in paf.config.json and installs node_modules from the committed lock
-      - uses: AKlitbo/pebble-app-framework-cli/.github/actions/sync@v2.0.0
+      - uses: AKlitbo/pebble-app-framework-cli/.github/actions/sync@v2.1.0
 
       # every check that can stop a release runs here, before the SDK install and the build, so a
       # mistyped tag or an undated changelog costs seconds

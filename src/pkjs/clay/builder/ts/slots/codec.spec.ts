@@ -23,7 +23,7 @@ function mountStores(values: Record<string, string>): HTMLElement {
   Object.keys(values).forEach((cls) => {
     const input = document.createElement('input');
 
-    input.className = 'gl-store ' + cls;
+    input.className = 'pf-hidden-store ' + cls;
     input.value = values[cls];
     document.body.appendChild(input);
   });
@@ -94,7 +94,7 @@ describe('storeFor', () => {
     expect(result).toBeNull();
   });
 
-  /** Every hiddenStore shares .gl-store, so finding a slot's own class is the only thing keeping them apart. */
+  /** Every hiddenStore shares .pf-hidden-store, so finding a slot's own class is the only thing keeping them apart. */
   test('finds each of the other slots by its own class', () => {
     const root = mountStores({ 'sb-lb': '1', 'sb-rt': '2', 'sb-rb': '3' });
 
@@ -143,7 +143,7 @@ describe('writeStores', () => {
     const root = mountStores({ 'sb-lb': '20', 'sb-rt': '20', 'sb-rb': '20' });
     const changed: string[] = [];
 
-    document.querySelectorAll('.gl-store').forEach((store) => {
+    document.querySelectorAll('.pf-hidden-store').forEach((store) => {
       store.addEventListener('change', () => changed.push((store as HTMLInputElement).value));
     });
 
@@ -159,7 +159,7 @@ describe('writeStores', () => {
     const root = mountStores({ 'sb-lb': '20', 'sb-rt': '0', 'sb-rb': '1' });
     let fired = 0;
 
-    document.querySelectorAll('.gl-store').forEach((store) => {
+    document.querySelectorAll('.pf-hidden-store').forEach((store) => {
       store.addEventListener('change', () => { fired += 1; });
     });
 
