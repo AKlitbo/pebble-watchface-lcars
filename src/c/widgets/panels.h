@@ -3,8 +3,9 @@
  * @brief Painters for the ops panels bigger than one slot: the daylight bar, steps and heart rate by
  * the hour, now playing, the next event, the hour, day, week, and year progress bars, the daily goal
  * bars, the countdown to the next sunrise or sunset, today's heart rate and steps, now playing with
- * its art, the agenda, and the hourly and four day forecasts across all four. The weekday readout is
- * painted here too, though it fills one slot, since its days are drawn rather than written.
+ * its art, the agenda, the hourly and four day forecasts across all four, and the Sensors Block and
+ * the other tall panels down a column. The weekday readout is painted here too, though it fills one
+ * slot, since its days are drawn rather than written.
  *
  * @ingroup watchface-lcars
  */
@@ -22,7 +23,7 @@
  * @brief Whether a pick is a panel this file paints, rather than a readout off the catalogue.
  *
  * @param id The OpsId.
- * @return True for a wide or full panel, and for the weekday readout.
+ * @return True for a tall, wide, or full panel, and for the weekday readout.
  */
 bool panels_paints(uint8_t id);
 

@@ -14,6 +14,7 @@ import {
   GRID,
   SLOT_LT, SLOT_LB, SLOT_RT, SLOT_RB,
   ID_HEART, ID_STEPS, ID_EMPTY, ID_SENSORS, ID_WIDE_DAYLIGHT, ID_FULL_HEART,
+  ID_TALL_HEART, ID_TALL_BATTERY,
 } from './geometry';
 
 /** Dragged straight off the palette rather than out of a panel. */
@@ -46,36 +47,79 @@ describe('tryPlace', () => {
     expect(result).toEqual([ID_SENSORS, ID_EMPTY, ID_STEPS, ID_EMPTY]);
   });
 
-  /** The watch draws the tall block in one column, so a drop anywhere else has to be refused rather than shown and then corrected. */
-  test('refuses the tall block anywhere but the upper left', () => {
+  /** A tall block started on the bottom row would run off the screen, so a drop there has to be refused rather than shown and then corrected. */
+  test('refuses the tall block on the bottom row', () => {
     const slots = [ID_EMPTY, ID_HEART, ID_STEPS, ID_EMPTY];
 
     const result = [
       tryPlace(slots, ID_SENSORS, FROM_PALETTE, SLOT_LB, GRID),
-      tryPlace(slots, ID_SENSORS, FROM_PALETTE, SLOT_RT, GRID),
       tryPlace(slots, ID_SENSORS, FROM_PALETTE, SLOT_RB, GRID),
     ];
 
-    expect(result).toEqual([null, null, null]);
+    expect(result).toEqual([null, null]);
   });
 
   /**
-   * A swap into the upper left would push the tall block out of the one column it fits.
+   * A swap into the upper left would push the tall block onto the steps still sitting in the right
+   * column.
    *
    * This is why the whole arrangement is checked rather than the target panel alone. Looking only
-   * at where the heart lands says yes, and the move quietly strands the sensors block on the right.
+   * at where the heart lands says yes, and the move quietly drops the steps under the sensors block.
    */
-  test('refuses a swap that would push the tall block out of its column', () => {
+  test('refuses a swap that would push the tall block onto a panel it cannot trade with', () => {
     const result = tryPlace(SHIPPED, ID_HEART, SLOT_RT, SLOT_LT, GRID);
 
     expect(result).toBeNull();
   });
 
-  /** Dragging the tall block down its own column is the same bug from the other side. */
+  /** A tall block started on the bottom row would run off the screen, so dragging it down its own column is refused. */
   test('refuses moving the tall block into the panel below it', () => {
     const result = tryPlace(SHIPPED, ID_SENSORS, SLOT_LT, SLOT_LB, GRID);
 
     expect(result).toBeNull();
+  });
+
+  /** A block off the palette goes in the right column too, and takes both of its panels. */
+  test('drops a block into the right column', () => {
+    const result = tryPlace(SHIPPED, ID_TALL_BATTERY, FROM_PALETTE, SLOT_RT, GRID);
+
+    expect(result).toEqual([ID_SENSORS, ID_EMPTY, ID_TALL_BATTERY, ID_EMPTY]);
+  });
+
+  /** Dragging a block across trades whole columns, so the column it lands on moves over rather than vanishing. */
+  test('trades two columns when a block is dragged across', () => {
+    const slots = [ID_TALL_HEART, ID_EMPTY, ID_HEART, ID_STEPS];
+
+    const result = tryPlace(slots, ID_TALL_HEART, SLOT_LT, SLOT_RT, GRID);
+
+    expect(result).toEqual([ID_HEART, ID_STEPS, ID_TALL_HEART, ID_EMPTY]);
+  });
+
+  /** Two blocks side by side swap places as whole columns, with neither one refused on the right. */
+  test('swaps two blocks side by side', () => {
+    const slots = [ID_TALL_HEART, ID_EMPTY, ID_TALL_BATTERY, ID_EMPTY];
+
+    const result = tryPlace(slots, ID_TALL_BATTERY, SLOT_RT, SLOT_LT, GRID);
+
+    expect(result).toEqual([ID_TALL_BATTERY, ID_EMPTY, ID_TALL_HEART, ID_EMPTY]);
+  });
+
+  /** The sensors block goes in either column like the other blocks, so a swap carries it right rather than being refused. */
+  test('swaps the sensors block into the right column', () => {
+    const slots = [ID_SENSORS, ID_EMPTY, ID_TALL_BATTERY, ID_EMPTY];
+
+    const result = tryPlace(slots, ID_TALL_BATTERY, SLOT_RT, SLOT_LT, GRID);
+
+    expect(result).toEqual([ID_TALL_BATTERY, ID_EMPTY, ID_SENSORS, ID_EMPTY]);
+  });
+
+  /** A sensors block off the palette lands on the right too, and takes both of that column's panels. */
+  test('drops the sensors block into the right column', () => {
+    const slots = [ID_TALL_HEART, ID_EMPTY, ID_HEART, ID_STEPS];
+
+    const result = tryPlace(slots, ID_SENSORS, FROM_PALETTE, SLOT_RT, GRID);
+
+    expect(result).toEqual([ID_TALL_HEART, ID_EMPTY, ID_SENSORS, ID_EMPTY]);
   });
 
   /** A pick let go on the panel it came from must land back as it was, not swap the panel with itself into something else. */

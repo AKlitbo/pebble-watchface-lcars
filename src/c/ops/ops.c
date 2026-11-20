@@ -55,8 +55,7 @@ static const OpsReadout s_catalog[OPS_COUNT] = {
 
     // the tall weather block. one bar over a big condition glyph and a large
     // temperature filling both rows of its column
-    // the row here carries only the word. layout draws the rest from its own slots
-    // rather than through this table
+    // the row here carries only the word, and widgets/panels.c draws the rest
     [OPS_SENSORS]      = {.label = "SENSORS", .shape = OPS_SHAPE_TALL},
 
     // three other ways of saying what time it is
@@ -131,6 +130,29 @@ static const OpsReadout s_catalog[OPS_COUNT] = {
 
     // the word moves with the countdown the way the single one's does, DAWN IN or DUSK IN
     [OPS_WIDE_SUN_NEXT] = {.label_for = ops_sun_next_label, .shape = OPS_SHAPE_WIDE},
+
+    // the tall panels fill a column, and widgets/panels.c draws everything under the word. a goal's
+    // word drops the GOAL the wide bars carry, since a column's holder box only takes nine characters
+    [OPS_TALL_STEP_GOAL]     = {.label = "TRAVERSAL", .shape = OPS_SHAPE_TALL},
+    [OPS_TALL_DISTANCE_GOAL] = {.label = "DISTANCE",  .shape = OPS_SHAPE_TALL},
+    [OPS_TALL_CALORIE_GOAL]  = {.label = "METABOLIC", .shape = OPS_SHAPE_TALL},
+    [OPS_TALL_ACTIVE_GOAL]   = {.label = "EXERTION",  .shape = OPS_SHAPE_TALL},
+    [OPS_TALL_SLEEP_GOAL]    = {.label = "REGEN",     .shape = OPS_SHAPE_TALL},
+    [OPS_TALL_HEART]         = {.label = "VITALS",    .shape = OPS_SHAPE_TALL},
+    [OPS_TALL_STEPS_HOURS]   = {.label = "TRAVERSAL", .shape = OPS_SHAPE_TALL},
+    [OPS_TALL_HEART_HOURS]   = {.label = "VITALS",    .shape = OPS_SHAPE_TALL},
+    [OPS_TALL_BATTERY]       = {.label = "POWER",     .shape = OPS_SHAPE_TALL},
+    [OPS_TALL_ALARM]         = {.label = "ALARM",     .shape = OPS_SHAPE_TALL},
+    [OPS_TALL_BEATS]         = {.label = "BEATS",     .shape = OPS_SHAPE_TALL},
+    [OPS_TALL_SUN_NEXT]      = {.label_for = ops_sun_next_label, .shape = OPS_SHAPE_TALL},
+    [OPS_TALL_DAYLIGHT]      = {.label = "DAYLIGHT",  .shape = OPS_SHAPE_TALL},
+    [OPS_TALL_MOON]          = {.label = "LUNAR",     .shape = OPS_SHAPE_TALL},
+    [OPS_TALL_UV]            = {.label = "UV INDEX",  .shape = OPS_SHAPE_TALL},
+    [OPS_TALL_HOUR_PROGRESS] = {.label = "HOUR",      .shape = OPS_SHAPE_TALL},
+    [OPS_TALL_DAY_PROGRESS]  = {.label = "DAY",       .shape = OPS_SHAPE_TALL},
+    [OPS_TALL_WEEK_PROGRESS] = {.label = "WEEK",      .shape = OPS_SHAPE_TALL},
+    [OPS_TALL_YEAR_PROGRESS] = {.label = "YEAR",      .shape = OPS_SHAPE_TALL},
+    [OPS_TALL_EVENT]         = {.label = "SCHEDULE",  .shape = OPS_SHAPE_TALL},
 };
 
 const OpsReadout *ops_entry(uint8_t id)
@@ -200,12 +222,6 @@ static int cells_for(const OpsGrid *grid, uint8_t id, int slot, int cells[OPS_CE
     int rows = (shape == OPS_SHAPE_TALL || shape == OPS_SHAPE_FULL) ? 2 : 1;
     int col0 = slot / grid->rows;
     int row0 = slot % grid->rows;
-
-    // the tall block is drawn in the left column only
-    if (shape == OPS_SHAPE_TALL && col0 != 0)
-    {
-        return 0;
-    }
 
     if (col0 + cols > grid->cols || row0 + rows > grid->rows)
     {

@@ -23,6 +23,29 @@
 void ops_text_battery(char *out, size_t n);
 void ops_text_next_alarm(char *out, size_t n);
 
+/**
+ * @brief How long until the next alarm rings.
+ *
+ * @return Whole minutes, 0 once it is due, or -1 with no alarm set.
+ */
+int ops_alarm_minutes(void);
+
+/**
+ * @brief How long until the next alarm rings, such as "7H 21M" or "40M".
+ *
+ * @param out Output buffer, written "" with no alarm set.
+ * @param n Buffer size.
+ */
+void ops_text_alarm_left(char *out, size_t n);
+
+/**
+ * @brief How long until the next alarm rings, such as "IN 7H 21M" or "IN 40M".
+ *
+ * @param out Output buffer, written "" with no alarm set.
+ * @param n Buffer size.
+ */
+void ops_text_alarm_until(char *out, size_t n);
+
 // --- health ---
 void ops_text_calories(char *out, size_t n);
 void ops_text_sleep(char *out, size_t n);
@@ -38,6 +61,22 @@ uint32_t ops_moon_icon(void);
 
 /** @brief FULL IN or NEW IN, whichever the countdown is running to. */
 const char *ops_moon_next_label(void);
+
+/**
+ * @brief The moon countdown with its word, such as "FULL IN 6 DAYS", or "FULL NOW" on the day.
+ *
+ * @param out Output buffer.
+ * @param n Buffer size.
+ */
+void ops_text_moon_countdown(char *out, size_t n);
+
+/**
+ * @brief The moon countdown cut short for a narrow line, such as "FULL 6D", or "FULL NOW" on the day.
+ *
+ * @param out Output buffer.
+ * @param n Buffer size.
+ */
+void ops_text_moon_countdown_short(char *out, size_t n);
 
 // --- sun ---
 // these read the sunrise and sunset the phone sent, so they need the five extra weather keys
@@ -159,6 +198,19 @@ int ops_progress_pct(OpsPeriod period);
  * @return 1 for Monday, counted the way tm_wday counts.
  */
 int ops_week_start(void);
+
+/**
+ * @brief Which unit of a period the clock is in, counted from 1, over how many the period holds.
+ *
+ * The minute of the hour, the hour of the day, the day of the week, and the day of the year, such
+ * as "MIN 48/60" or "DAY 302/365". Each counts the one under way, so the first minute of the hour
+ * reads 1 rather than 0.
+ *
+ * @param period Which period.
+ * @param out Output buffer.
+ * @param n Buffer size.
+ */
+void ops_text_period_count(OpsPeriod period, char *out, size_t n);
 
 /**
  * @brief The hour's progress as a whole percent, such as "87%".

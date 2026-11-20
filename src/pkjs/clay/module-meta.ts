@@ -72,8 +72,28 @@ const moduleMeta: Record<string, LcarsModuleMeta> = {
   'Weeks Left':                     { icon: '🗓', blockColor: '#78909c', slug: 'weeks-left', group: 'Date' },
   'Weekday Dots':       { icon: '📅', blockColor: '#78909c', slug: 'weekday-dots', group: 'Date' },
 
-  // the tall one that fills two cells of the left column
+  // the blocks that fill two cells of a column, in either column
   'Sensors Block (weather + temperature)': { icon: '🌤', blockColor: '#1e88e5', slug: 'sensors', group: 'Weather', plugin: 'weather' },
+  'Step Goal Block (TRAVERSAL)': { icon: '👟', blockColor: '#2ecc71', slug: 'step-goal-block', group: 'Health' },
+  'Distance Goal Block (DISTANCE)': { icon: '📏', blockColor: '#27ae60', slug: 'distance-goal-block', group: 'Health' },
+  'Calorie Goal Block (METABOLIC)': { icon: '🔥', blockColor: '#e67e22', slug: 'calorie-goal-block', group: 'Health' },
+  'Active Minutes Goal Block (EXERTION)': { icon: '🏃', blockColor: '#1abc9c', slug: 'active-goal-block', group: 'Health' },
+  'Sleep Goal Block (REGEN)': { icon: '😴', blockColor: '#4a5568', slug: 'sleep-goal-block', group: 'Health' },
+  'Heart Rate Block (VITALS)': { icon: '❤️', blockColor: '#e74c3c', slug: 'heart-block', group: 'Health' },
+  'Steps by the Hour Block (TRAVERSAL)': { icon: '👟', blockColor: '#2ecc71', slug: 'steps-hours-block', group: 'Health' },
+  'Heart Rate by the Hour Block (VITALS)': { icon: '❤️', blockColor: '#e74c3c', slug: 'heart-hours-block', group: 'Health' },
+  'Battery Block (POWER)': { icon: '🔋', blockColor: '#f0a500', slug: 'battery-block', group: 'Status' },
+  'Next Alarm Block (ALARM)': { icon: '🔔', blockColor: '#ef5350', slug: 'alarm-block', group: 'Status' },
+  'Swatch Beats Block': { icon: '🌐', blockColor: '#e91e63', slug: 'beats-block', group: 'Clock' },
+  'Countdown to Sunrise / Sunset Block': { icon: '⏳', blockColor: '#ff8f00', slug: 'sun-next-block', group: 'Sky', plugin: 'weather' },
+  'Daylight Block (DAYLIGHT)': { icon: '☀️', blockColor: '#fbc02d', slug: 'daylight-block', group: 'Sky', plugin: 'weather' },
+  'Moon Block (LUNAR)': { icon: '🌗', blockColor: '#7e57c2', slug: 'moon-block', group: 'Sky' },
+  'UV Index Block': { icon: '😎', blockColor: '#ab47bc', slug: 'uv-block', group: 'Weather', plugin: 'weather' },
+  'Hour Progress Block': { icon: '⏱', blockColor: '#26a69a', slug: 'hour-progress-block', group: 'Date' },
+  'Day Progress Block': { icon: '🕛', blockColor: '#26a69a', slug: 'day-progress-block', group: 'Date' },
+  'Week Progress Block': { icon: '📆', blockColor: '#00897b', slug: 'week-progress-block', group: 'Date' },
+  'Year Progress Block': { icon: '📆', blockColor: '#00796b', slug: 'year-progress-block', group: 'Date' },
+  'Next Event Block (SCHEDULE)': { icon: '📅', blockColor: '#3498db', slug: 'event-block', group: 'Calendar', plugin: 'calendar' },
 
   // the wide ones that fill a row, and the full ones that fill a 2x2 block
   'Daylight Bar (DAYLIGHT)':        { icon: '🌅', blockColor: '#fbc02d', slug: 'daylight-bar', group: 'Sky', plugin: 'weather' },
@@ -103,9 +123,9 @@ const moduleMeta: Record<string, LcarsModuleMeta> = {
   '4-Day Forecast Board':   { icon: '📅', blockColor: '#1976d2', slug: 'forecast-daily', group: 'Weather', plugin: 'weather' },
 };
 
-// the panel shapes this face's thumbnails come in: one ops slot, the tall block filling two cells of
-// the left column, a wide panel filling a row, or a full one filling a 2x2 block. embed-thumbnails.ts
-// refuses a png in any other size
+// the panel shapes this face's thumbnails come in: one ops slot, a block filling two cells of a
+// column, a wide panel filling a row, or a full one filling a 2x2 block. embed-thumbnails.ts refuses a
+// png in any other size
 export const thumbnailSizes = ['slot', 'tall', 'wide', 'full'];
 
 export default moduleMeta;

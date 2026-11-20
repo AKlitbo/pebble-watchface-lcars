@@ -235,6 +235,111 @@
           }
         }
       ]
+    },
+    "tall": {
+      "clock": "15:47",
+      "date": "2026-10-28",
+      "steps": [
+        {
+          "settings": {
+            "APPEARANCE_THEME": 0,
+            "APPEARANCE_SLOT_LEFT_TOP": 64,
+            "APPEARANCE_SLOT_LEFT_BOTTOM": 20,
+            "APPEARANCE_SLOT_RIGHT_TOP": 65,
+            "APPEARANCE_SLOT_RIGHT_BOTTOM": 20
+          }
+        },
+        {
+          "settings": {
+            "APPEARANCE_THEME": 0,
+            "APPEARANCE_SLOT_LEFT_TOP": 66,
+            "APPEARANCE_SLOT_LEFT_BOTTOM": 20,
+            "APPEARANCE_SLOT_RIGHT_TOP": 67,
+            "APPEARANCE_SLOT_RIGHT_BOTTOM": 20
+          }
+        },
+        {
+          "settings": {
+            "APPEARANCE_THEME": 0,
+            "APPEARANCE_SLOT_LEFT_TOP": 68,
+            "APPEARANCE_SLOT_LEFT_BOTTOM": 20,
+            "APPEARANCE_SLOT_RIGHT_TOP": 69,
+            "APPEARANCE_SLOT_RIGHT_BOTTOM": 20
+          }
+        },
+        {
+          "settings": {
+            "APPEARANCE_THEME": 0,
+            "APPEARANCE_SLOT_LEFT_TOP": 70,
+            "APPEARANCE_SLOT_LEFT_BOTTOM": 20,
+            "APPEARANCE_SLOT_RIGHT_TOP": 71,
+            "APPEARANCE_SLOT_RIGHT_BOTTOM": 20
+          }
+        },
+        {
+          "settings": {
+            "APPEARANCE_THEME": 0,
+            "APPEARANCE_SLOT_LEFT_TOP": 72,
+            "APPEARANCE_SLOT_LEFT_BOTTOM": 20,
+            "APPEARANCE_SLOT_RIGHT_TOP": 73,
+            "APPEARANCE_SLOT_RIGHT_BOTTOM": 20
+          }
+        },
+        {
+          "settings": {
+            "APPEARANCE_THEME": 0,
+            "APPEARANCE_SLOT_LEFT_TOP": 74,
+            "APPEARANCE_SLOT_LEFT_BOTTOM": 20,
+            "APPEARANCE_SLOT_RIGHT_TOP": 75,
+            "APPEARANCE_SLOT_RIGHT_BOTTOM": 20
+          }
+        },
+        {
+          "settings": {
+            "APPEARANCE_THEME": 0,
+            "APPEARANCE_SLOT_LEFT_TOP": 76,
+            "APPEARANCE_SLOT_LEFT_BOTTOM": 20,
+            "APPEARANCE_SLOT_RIGHT_TOP": 77,
+            "APPEARANCE_SLOT_RIGHT_BOTTOM": 20
+          }
+        },
+        {
+          "settings": {
+            "APPEARANCE_THEME": 0,
+            "APPEARANCE_SLOT_LEFT_TOP": 78,
+            "APPEARANCE_SLOT_LEFT_BOTTOM": 20,
+            "APPEARANCE_SLOT_RIGHT_TOP": 79,
+            "APPEARANCE_SLOT_RIGHT_BOTTOM": 20
+          }
+        },
+        {
+          "settings": {
+            "APPEARANCE_THEME": 0,
+            "APPEARANCE_SLOT_LEFT_TOP": 80,
+            "APPEARANCE_SLOT_LEFT_BOTTOM": 20,
+            "APPEARANCE_SLOT_RIGHT_TOP": 81,
+            "APPEARANCE_SLOT_RIGHT_BOTTOM": 20
+          }
+        },
+        {
+          "settings": {
+            "APPEARANCE_THEME": 0,
+            "APPEARANCE_SLOT_LEFT_TOP": 82,
+            "APPEARANCE_SLOT_LEFT_BOTTOM": 20,
+            "APPEARANCE_SLOT_RIGHT_TOP": 83,
+            "APPEARANCE_SLOT_RIGHT_BOTTOM": 20
+          }
+        },
+        {
+          "settings": {
+            "APPEARANCE_THEME": 0,
+            "APPEARANCE_SLOT_LEFT_TOP": 69,
+            "APPEARANCE_SLOT_LEFT_BOTTOM": 20,
+            "APPEARANCE_SLOT_RIGHT_TOP": 23,
+            "APPEARANCE_SLOT_RIGHT_BOTTOM": 20
+          }
+        }
+      ]
     }
   },
   "stores": {

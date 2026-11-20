@@ -128,6 +128,50 @@ void ops_text_next_alarm(char *out, size_t n)
     snprintf(out, n, "%02d:%02d", lt.tm_hour, lt.tm_min);
 }
 
+int ops_alarm_minutes(void)
+{
+    time_t alarm = 0;
+    if (!system_store_next_alarm(&alarm))
+    {
+        return -1;
+    }
+
+    long minutes = (long)(alarm - time(NULL)) / 60;
+    return minutes < 0 ? 0 : (int)minutes;
+}
+
+void ops_text_alarm_left(char *out, size_t n)
+{
+    int minutes = ops_alarm_minutes();
+    if (minutes < 0)
+    {
+        out[0] = '\0';
+        return;
+    }
+
+    if (minutes >= 60)
+    {
+        snprintf(out, n, "%dH %02dM", minutes / 60, minutes % 60);
+        return;
+    }
+
+    snprintf(out, n, "%dM", minutes);
+}
+
+void ops_text_alarm_until(char *out, size_t n)
+{
+    char left[16];
+    ops_text_alarm_left(left, sizeof(left));
+
+    if (left[0] == '\0')
+    {
+        out[0] = '\0';
+        return;
+    }
+
+    snprintf(out, n, "IN %s", left);
+}
+
 // --- health ---
 
 void ops_text_calories(char *out, size_t n)
@@ -198,6 +242,39 @@ uint32_t ops_moon_icon(void)
 const char *ops_moon_next_label(void)
 {
     return moon_next_is_full() ? "FULL IN" : "NEW IN";
+}
+
+/** @brief FULL or NEW, whichever the countdown is running to. */
+static const char *moon_next_word(void)
+{
+    return moon_next_is_full() ? "FULL" : "NEW";
+}
+
+void ops_text_moon_countdown(char *out, size_t n)
+{
+    char days[12];
+    ops_text_moon_next(days, sizeof(days));
+
+    // on the day itself the word loses its IN, so it reads FULL NOW or NEW NOW
+    if (strcmp(days, "NOW") == 0)
+    {
+        snprintf(out, n, "%s NOW", moon_next_word());
+        return;
+    }
+
+    snprintf(out, n, "%s %s", ops_moon_next_label(), days);
+}
+
+void ops_text_moon_countdown_short(char *out, size_t n)
+{
+    int days = moon_days_to_phase(time(NULL), moon_next_is_full());
+    if (days == 0)
+    {
+        snprintf(out, n, "%s NOW", moon_next_word());
+        return;
+    }
+
+    snprintf(out, n, "%s %dD", moon_next_word(), days);
 }
 
 // --- sun ---
@@ -574,6 +651,33 @@ int ops_progress_pct(OpsPeriod period)
         case OPS_PERIOD_YEAR:
         default:
             return progress_year_pct(tm->tm_year + 1900, tm->tm_yday, tm->tm_hour, tm->tm_min, tm->tm_sec);
+    }
+}
+
+void ops_text_period_count(OpsPeriod period, char *out, size_t n)
+{
+    const struct tm *tm = time_store_tm();
+    int year = tm->tm_year + 1900;
+
+    switch (period)
+    {
+        case OPS_PERIOD_HOUR:
+            snprintf(out, n, "MIN %d/60", tm->tm_min + 1);
+            break;
+        case OPS_PERIOD_DAY:
+            snprintf(out, n, "HOUR %d/24", tm->tm_hour + 1);
+            break;
+        case OPS_PERIOD_WEEK:
+            snprintf(out, n, "DAY %d/7", progress_week_day(tm->tm_wday, WEEK_START_MONDAY));
+            break;
+        case OPS_PERIOD_YEAR:
+        default:
+        {
+            // the day under way plus the days still to come is the year's length, leap years included
+            int day = date_day_of_year(tm->tm_yday);
+            snprintf(out, n, "DAY %d/%d", day, day + date_days_left_in_year(year, tm->tm_yday));
+            break;
+        }
     }
 }
 

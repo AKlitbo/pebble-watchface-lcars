@@ -26,17 +26,11 @@
 // each one has a WIDE twin for a readout that carries no glyph. it reaches left
 // over the space the glyph would have taken. left-aligned text sitting beside an
 // empty icon box looks like a picture that failed to load
-//
-// ZONE_WEATHER and ZONE_COND are the composite left column. one pick fills both
-// left rows. only one of the two left presentations is ever built so the slot
-// count stays at ten
 enum
 {
     ZONE_TIME,
     ZONE_MERIDIEM,
     ZONE_DATE,
-    ZONE_WEATHER,
-    ZONE_COND,
     ZONE_LT,
     ZONE_LT_WIDE,
     ZONE_LB,
@@ -57,8 +51,6 @@ enum
 #define SLOT_BANNER_XS GRect(53, 22, 142, 42)  // wider date fallback vertically centred (Antonio 28)
 #define SLOT_BANNER_XXS GRect(53, 24, 142, 40) // widest date fallback, fits the .beats formats (Antonio 24)
 #define SLOT_MERIDIEM GRect(150, 95, 45, 14)   // AM/PM top-right of clock and right-aligned (Antonio 10)
-#define SLOT_WEATHER GRect(72, 202, 49, 24)    // temp left-aligned next to thermometer
-#define SLOT_COND GRect(77, 180, 42, 18)       // condition abbrev next to weather icon
 // --- Ops slot geometry ---
 // all four slots are the same shape so it gets described once here and stamped
 // out per column and row. every offset is measured from the slot's bar origin
@@ -109,14 +101,20 @@ enum
 #define SLOT_LAT GRect(0, 166, 43, 22)  // top block (coral)
 #define SLOT_LON GRect(0, 203, 43, 22)  // bottom block (peach)
 
-// --- Icons ---
-// sized 1:1 to match bitmap
-#define WX_ICON GRect(51, 176, 24, 24)      // centred above thermometer
+// --- Sensors Block ---
+// the tall weather block, measured from its column's bar so it sits the same in either column. the
+// glyphs are sized 1:1 to their bitmaps
+#define SENSORS_WX_ICON(x, y) GRect((x) - 1, (y) + 10, 24, 24)  // the condition glyph, centred above the thermometer
+#define SENSORS_COND(x, y)    GRect((x) + 25, (y) + 14, 42, 18) // the condition word beside it (Antonio 16)
+#define SENSORS_THERMO(x, y)  GRect((x) + 4, (y) + 38, 13, 17)  // the thermometer, centred below the condition glyph
+#define SENSORS_TEMP(x, y)    GRect((x) + 20, (y) + 36, 49, 24) // the temperature beside it (Antonio 20)
 // the weather glyphs are not all cut to the same margin. any whose art starts
 // higher than this inside its box gets nudged down to it. that keeps the whole
 // set clear of the bar overhead
 #define WX_MIN_TOP 2
-#define THERMO_ICON GRect(56, 204, 13, 17)  // centred below weather icon
+
+// --- Icons ---
+// sized 1:1 to match bitmap
 #define BT_ICON GRect(30, 95, 14, 14)       // bluetooth status in the first left-rail block
 #define QT_ICON GRect(15, 95, 14, 14)       // quiet-time status, just left of the bluetooth glyph
 

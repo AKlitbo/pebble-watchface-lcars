@@ -70,6 +70,26 @@ export const ID_WIDE_CALORIE_GOAL = 60;
 export const ID_WIDE_ACTIVE_GOAL = 61;
 export const ID_WIDE_SLEEP_GOAL = 62;
 export const ID_WIDE_SUN_NEXT = 63;
+export const ID_TALL_STEP_GOAL = 64;
+export const ID_TALL_DISTANCE_GOAL = 65;
+export const ID_TALL_CALORIE_GOAL = 66;
+export const ID_TALL_ACTIVE_GOAL = 67;
+export const ID_TALL_SLEEP_GOAL = 68;
+export const ID_TALL_HEART = 69;
+export const ID_TALL_STEPS_HOURS = 70;
+export const ID_TALL_HEART_HOURS = 71;
+export const ID_TALL_BATTERY = 72;
+export const ID_TALL_ALARM = 73;
+export const ID_TALL_BEATS = 74;
+export const ID_TALL_SUN_NEXT = 75;
+export const ID_TALL_DAYLIGHT = 76;
+export const ID_TALL_MOON = 77;
+export const ID_TALL_UV = 78;
+export const ID_TALL_HOUR_PROGRESS = 79;
+export const ID_TALL_DAY_PROGRESS = 80;
+export const ID_TALL_WEEK_PROGRESS = 81;
+export const ID_TALL_YEAR_PROGRESS = 82;
+export const ID_TALL_EVENT = 83;
 
 /** How much of the grid a readout fills. */
 export const SHAPE_SINGLE = 'single';
@@ -111,6 +131,26 @@ const SHAPES: Record<number, Shape> = {
   [ID_WIDE_SUN_NEXT]: SHAPE_WIDE,
   [ID_FULL_FORECAST_HOURLY]: SHAPE_FULL,
   [ID_FULL_FORECAST_DAILY]: SHAPE_FULL,
+  [ID_TALL_STEP_GOAL]: SHAPE_TALL,
+  [ID_TALL_DISTANCE_GOAL]: SHAPE_TALL,
+  [ID_TALL_CALORIE_GOAL]: SHAPE_TALL,
+  [ID_TALL_ACTIVE_GOAL]: SHAPE_TALL,
+  [ID_TALL_SLEEP_GOAL]: SHAPE_TALL,
+  [ID_TALL_HEART]: SHAPE_TALL,
+  [ID_TALL_STEPS_HOURS]: SHAPE_TALL,
+  [ID_TALL_HEART_HOURS]: SHAPE_TALL,
+  [ID_TALL_BATTERY]: SHAPE_TALL,
+  [ID_TALL_ALARM]: SHAPE_TALL,
+  [ID_TALL_BEATS]: SHAPE_TALL,
+  [ID_TALL_SUN_NEXT]: SHAPE_TALL,
+  [ID_TALL_DAYLIGHT]: SHAPE_TALL,
+  [ID_TALL_MOON]: SHAPE_TALL,
+  [ID_TALL_UV]: SHAPE_TALL,
+  [ID_TALL_HOUR_PROGRESS]: SHAPE_TALL,
+  [ID_TALL_DAY_PROGRESS]: SHAPE_TALL,
+  [ID_TALL_WEEK_PROGRESS]: SHAPE_TALL,
+  [ID_TALL_YEAR_PROGRESS]: SHAPE_TALL,
+  [ID_TALL_EVENT]: SHAPE_TALL,
 };
 
 /** A slot's message key, in slot order. The first is the component's own. */
@@ -160,9 +200,9 @@ export function spanOf(shape: Shape): { cols: number; rows: number } {
  * The cells a readout fills when it starts from a cell, or null when it does not fit there.
  *
  * The first cell is always the one it starts from. A big readout only starts from a cell where the
- * watch draws it: the tall block and a full panel from the left column, and a wide panel from the
- * left of its row. The firmware makes the same check, so a hand-edited setting cannot put one
- * anywhere else.
+ * watch draws it: a tall panel from the top of either column, a full panel from the left column,
+ * and a wide panel from the left of its row. The firmware makes the same check, so a hand-edited
+ * setting cannot put one anywhere else.
  *
  * @param id The readout.
  * @param slot The cell it starts from.
@@ -174,11 +214,6 @@ export function cellsFor(id: number, slot: number, grid: Grid): number[] | null 
   const col0 = colOf(slot, grid);
   const row0 = rowOf(slot, grid);
   const cells = [];
-
-  // the watch draws the tall block in the left column only
-  if (shapeOf(id) === SHAPE_TALL && col0 !== 0) {
-    return null;
-  }
 
   for (let col = 0; col < span.cols; col++) {
     for (let row = 0; row < span.rows; row++) {

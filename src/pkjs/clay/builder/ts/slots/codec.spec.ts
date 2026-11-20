@@ -16,6 +16,7 @@ import {
   SLOT_LT, SLOT_LB, SLOT_RT, SLOT_RB,
   ID_HEART, ID_STEPS,
   ID_EMPTY, ID_SENSORS, ID_WIDE_DAYLIGHT, ID_FULL_HEART,
+  ID_TALL_HEART, ID_TALL_BATTERY,
 } from './geometry';
 
 /** Puts the three hidden stores on the page the way the config template does. */
@@ -179,11 +180,25 @@ describe('sanitize', () => {
     expect(result).toEqual([ID_SENSORS, ID_EMPTY, ID_HEART, ID_STEPS]);
   });
 
-  /** A tall pick outside its column renders as a labelled panel with nothing in it, so it is cleared rather than shown. */
-  test('empties a tall pick that is not in the upper left', () => {
+  /** A tall pick on the bottom row would run off the screen, so it is cleared rather than shown. */
+  test('empties a tall pick on the bottom row', () => {
     const result = sanitize([ID_HEART, ID_SENSORS, ID_STEPS, ID_EMPTY], GRID);
 
     expect(result).toEqual([ID_HEART, ID_EMPTY, ID_STEPS, ID_EMPTY]);
+  });
+
+  /** Two blocks side by side are a real face, so neither one is cleared and their lower cells read as empty. */
+  test('keeps a block in each column', () => {
+    const result = sanitize([ID_TALL_HEART, ID_HEART, ID_TALL_BATTERY, ID_STEPS], GRID);
+
+    expect(result).toEqual([ID_TALL_HEART, ID_EMPTY, ID_TALL_BATTERY, ID_EMPTY]);
+  });
+
+  /** The sensors block saved on the right is a real face, so it stays and the pick saved under it is cleared. */
+  test('keeps a sensors block saved in the right column', () => {
+    const result = sanitize([ID_HEART, ID_STEPS, ID_SENSORS, ID_HEART], GRID);
+
+    expect(result).toEqual([ID_HEART, ID_STEPS, ID_SENSORS, ID_EMPTY]);
   });
 
   /** A pick saved in a cell a wide panel covers would draw underneath it on a face that read it, so it is cleared. */

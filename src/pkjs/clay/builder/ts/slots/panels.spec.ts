@@ -74,6 +74,12 @@ describe('the module-meta rows', () => {
       .filter((label) => moduleMeta[label].plugin === 'music' || moduleMeta[label].plugin === 'calendar')
       .sort();
 
-    expect(result).toEqual(['Agenda (SCHEDULE)', 'Next Event (SCHEDULE)', 'Now Playing (AUDIO)', 'Now Playing with Art (AUDIO)']);
+    expect(result).toEqual([
+      'Agenda (SCHEDULE)',
+      'Next Event (SCHEDULE)',
+      'Next Event Block (SCHEDULE)',
+      'Now Playing (AUDIO)',
+      'Now Playing with Art (AUDIO)',
+    ]);
   });
 });

@@ -29,7 +29,6 @@ typedef struct
     uint32_t    icon[OPS_CELLS_MAX];    ///< Glyph resource per slot, 0 for none
     OpsShape    shape[OPS_CELLS_MAX];   ///< How much of the grid each slot's pick fills
     bool        covered[OPS_CELLS_MAX]; ///< A bigger panel covers the slot, so it draws no chrome of its own
-    bool        left_composite; ///< The left column is the one tall weather block, not two slots
 } OpsChrome;
 
 /**
@@ -51,8 +50,8 @@ void widgets_unload(void);
  * @brief Draw the LCARS header bars in the current theme's colours.
  *
  * The frame artwork leaves their space empty, so these are painted before anything that sits on
- * top of them (the label holder boxes). A column showing the tall weather block gets one bar
- * across its top row instead of two, and a wide or full panel gets one bar across both columns.
+ * top of them (the label holder boxes). A column showing a tall panel gets one bar across its top
+ * row instead of two, and a wide or full panel gets one bar across both columns.
  *
  * @param ctx The graphics context.
  * @param chrome What the four slots resolved to.
@@ -81,19 +80,16 @@ void widgets_draw_battery(GContext *ctx, int level);
 /**
  * @brief Draw the slot glyphs plus the bluetooth and quiet-time glyphs.
  *
- * A left column showing the tall weather block draws the big condition glyph and the thermometer
- * instead of two slot glyphs. The glyphs come from the shared icon cache, so each one loads a
- * single time.
+ * The glyphs come from the shared icon cache, so each one loads a single time.
  *
  * @param ctx The graphics context.
  * @param chrome What the four slots resolved to.
- * @param condition The weather condition token (drives the big weather glyph).
  * @param bt_show True to draw the bluetooth glyph (the show/hide setting).
  * @param bt_connected True when the phone link is up (connected vs slashed glyph).
  * @param qt_show True to allow the quiet-time glyph (the show/hide setting).
  * @param qt_active True while Quiet Time holds (draws the muted speaker; nothing otherwise).
  */
-void widgets_draw_glyphs(GContext *ctx, const OpsChrome *chrome, const char *condition,
-                         bool bt_show, bool bt_connected, bool qt_show, bool qt_active);
+void widgets_draw_glyphs(GContext *ctx, const OpsChrome *chrome, bool bt_show, bool bt_connected, bool qt_show,
+                         bool qt_active);
 
 /** @} */

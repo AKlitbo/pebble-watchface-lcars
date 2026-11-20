@@ -1,7 +1,7 @@
 /**
  * @file widgets.c
- * @brief Painted overlays: battery gauge, bar labels, weather/heart/feet/bluetooth glyphs,
- * drawn over the baked frame by the engine's overlays draw-slot.
+ * @brief Painted overlays: battery gauge, bar labels, the slot glyphs, and the bluetooth and
+ * quiet-time glyphs, drawn over the baked frame by the engine's overlays draw-slot.
  *
  * @ingroup watchface-lcars
  */
@@ -10,7 +10,6 @@
 #include "layout.h"
 #include "theme/theme.h"
 #include "ui/icon_cache.h"
-#include "ui/weather/icons.h"
 
 static GFont s_font_label;  // Antonio 10 bar labels
 
@@ -225,7 +224,7 @@ static int span_width(const OpsChrome *chrome)
  * @brief Whether a slot draws its own chrome at all.
  *
  * A slot a bigger panel covers does not. Its bar, word and glyph all belong to the panel, such as
- * the lower left under the tall weather block.
+ * the lower slot under a tall panel.
  *
  * @param chrome What the slots resolved to.
  * @param slot The slot index.
@@ -310,28 +309,10 @@ void widgets_draw_battery(GContext *ctx, int level)
     lcars_battery_gauge(ctx, GRect(6, 4, 32, 12), level, accent, fill);
 }
 
-void widgets_draw_glyphs(GContext *ctx, const OpsChrome *chrome, const char *condition,
-                         bool bt_show, bool bt_connected, bool qt_show, bool qt_active)
+void widgets_draw_glyphs(GContext *ctx, const OpsChrome *chrome, bool bt_show, bool bt_connected, bool qt_show,
+                         bool qt_active)
 {
     // the cache loads each glyph once and hands back the same picture on later paints
-    if (chrome->left_composite)
-    {
-        // partly-cloudy's sun reaches the very top of its box. every other glyph
-        // sits a couple of pixels in so that one alone would touch the bar overhead
-        // any glyph sitting too high gets pushed down to the shared minimum
-        // the check goes off its measured margin rather than its name
-        uint32_t wx = wx_resource_for(condition);
-        GRect wx_at = WX_ICON;
-        int wx_top = icon_margins(wx).n;
-        if (wx_top < WX_MIN_TOP)
-        {
-            wx_at.origin.y += WX_MIN_TOP - wx_top;
-        }
-
-        draw_icon(ctx, icon_get(wx), wx_at);
-        draw_icon(ctx, icon_get(RESOURCE_ID_ICON_THERMOMETER), THERMO_ICON);
-    }
-
     for (int slot = 0; slot < ops_cell_count(chrome->grid); slot++)
     {
         // a slot showing nothing hands over 0 and the cache has no picture for that

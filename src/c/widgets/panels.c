@@ -17,10 +17,13 @@
 #include "widgets/widgets.h"
 #include "health/goals.h"
 #include "health/hr_day.h"
+#include "clock/moon.h"
 #include "clock/progress.h"
 #include "clock/solar.h"
 #include "clock/weekday.h"
 #include "ui/fonts.h"
+#include "ui/icon_cache.h"
+#include "ui/weather/icons.h"
 #include "ui/readouts.h"
 #include "io/stores/health_store.h"
 #include "io/stores/time_store.h"
@@ -84,19 +87,25 @@
  * @brief Where a panel's body sits, under its bar.
  *
  * It runs down to the next row's bar under the rows it fills, or to the grid's foot when it fills
- * the last row.
+ * the last row. A tall panel keeps to its own column, and a wide or full one spans both.
  *
  * @param grid The ops grid.
  * @param slot The slot the panel starts from.
- * @param id The OpsId, for how many rows it fills.
+ * @param id The OpsId, for how many rows and columns it fills.
  * @return The body's box.
  */
 static GRect body_for(const OpsGrid *grid, int slot, uint8_t id)
 {
+    OpsShape shape = ops_shape(id);
     int row = slot % grid->rows;
-    int last = row + (ops_shape(id) == OPS_SHAPE_FULL ? 2 : 1);
+    int last = row + (shape == OPS_SHAPE_FULL || shape == OPS_SHAPE_TALL ? 2 : 1);
     int top = grid->row_y[row] + PANEL_BAR_GAP;
     int bottom = last < grid->rows ? grid->row_y[last] : grid->bottom;
+
+    if (shape == OPS_SHAPE_TALL)
+    {
+        return GRect(grid->col_x[slot / grid->rows], top, OPS_BAR(0, 0).size.w, bottom - top);
+    }
 
     return GRect(grid->col_x[0], top, PANEL_W, bottom - top);
 }
@@ -124,6 +133,37 @@ static GColor segment_lit(uint8_t theme)
     return gcolor_equal(body, GColorDarkGray) ? panel_accent_for_theme(theme) : body;
 }
 
+/** @brief How wide a line of text draws in a font. */
+static int text_width(const char *text, FontId font)
+{
+    // the box is tall enough for the biggest font a panel draws, since a line that does not fit the
+    // box's height measures as nothing
+    return graphics_text_layout_get_content_size(text, fonts_get(font), GRect(0, 0, 200, 40), GTextOverflowModeFill,
+                                                 GTextAlignmentLeft).w;
+}
+
+/**
+ * @brief The first of a list of fonts, biggest first, that a reading fits at.
+ *
+ * @param text The reading.
+ * @param width The room it has.
+ * @param sizes The fonts to try, biggest first.
+ * @param count How many there are.
+ * @return The font to draw it in, the last one when none fits.
+ */
+static FontId fit_from(const char *text, int width, const FontId *sizes, int count)
+{
+    for (int i = 0; i < count - 1; i++)
+    {
+        if (text_width(text, sizes[i]) <= width)
+        {
+            return sizes[i];
+        }
+    }
+
+    return sizes[count - 1];
+}
+
 /**
  * @brief The biggest of Antonio 16, 14, and 12 a reading fits at.
  *
@@ -133,27 +173,9 @@ static GColor segment_lit(uint8_t theme)
  */
 static FontId fit_font(const char *text, int width)
 {
-    static const FontId sizes[] = {FONT_ANTONIO_16, FONT_ANTONIO_14};
+    static const FontId sizes[] = {FONT_ANTONIO_16, FONT_ANTONIO_14, FONT_ANTONIO_12};
 
-    for (unsigned i = 0; i < ARRAY_LENGTH(sizes); i++)
-    {
-        GSize size = graphics_text_layout_get_content_size(text, fonts_get(sizes[i]), GRect(0, 0, 200, 20),
-                                                           GTextOverflowModeFill, GTextAlignmentLeft);
-
-        if (size.w <= width)
-        {
-            return sizes[i];
-        }
-    }
-
-    return FONT_ANTONIO_12;
-}
-
-/** @brief How wide a line of text draws in a font. */
-static int text_width(const char *text, FontId font)
-{
-    return graphics_text_layout_get_content_size(text, fonts_get(font), GRect(0, 0, 200, 20), GTextOverflowModeFill,
-                                                 GTextAlignmentLeft).w;
+    return fit_from(text, width, sizes, ARRAY_LENGTH(sizes));
 }
 
 /**
@@ -243,12 +265,29 @@ static int hour_now(void)
 // --- the daylight bar ---
 
 /**
- * @brief Sunrise on the left, sunset on the right, and a segmented bar between them.
+ * @brief How many of a daylight bar's segments are lit, and in which colour.
  *
- * By day the bar fills with how far through the daylight it is. By night it fills in the bar's end
- * colour with how far through the night it is, so it counts towards the next sunrise. With no sun
- * times yet it stays empty.
+ * By day the bar fills with how far through the daylight it is, in the bar's body colour. By night
+ * it fills in the bar's end colour with how far through the night it is, so it counts towards the
+ * next sunrise. With no sun times yet it stays empty.
+ *
+ * @param theme The active theme.
+ * @param segments How many segments the bar has.
+ * @param lit_color Receives the lit segments' colour.
+ * @return How many whole segments are lit.
  */
+static int daylight_lit(uint8_t theme, int segments, GColor *lit_color)
+{
+    int now = hour_now() * 60 + time_store_tm()->tm_min;
+    int day = solar_day_progress(weather_store_sunrise(), weather_store_sunset(), now);
+    int night = solar_night_progress(weather_store_sunrise(), weather_store_sunset(), now);
+    int pct = day >= 0 ? day : night;
+
+    *lit_color = day >= 0 ? bar_body_for_theme(theme) : bar_cap_for_theme(theme);
+    return pct < 0 ? 0 : (pct * segments + 50) / 100;
+}
+
+/** @brief Sunrise on the left, sunset on the right, and the daylight bar between them. */
 static void draw_daylight(GContext *ctx, GRect body, uint8_t theme)
 {
     char rise[8];
@@ -263,12 +302,8 @@ static void draw_daylight(GContext *ctx, GRect body, uint8_t theme)
     put_text(ctx, set, FONT_ANTONIO_16, GRect(body.origin.x + body.size.w - WIDE_RIGHT - SUN_TEXT_W, text_y, SUN_TEXT_W, 18),
              GTextAlignmentRight, GColorWhite);
 
-    int now = hour_now() * 60 + time_store_tm()->tm_min;
-    int day = solar_day_progress(weather_store_sunrise(), weather_store_sunset(), now);
-    int night = solar_night_progress(weather_store_sunrise(), weather_store_sunset(), now);
-    int pct = day >= 0 ? day : night;
-    GColor lit_color = day >= 0 ? bar_body_for_theme(theme) : bar_cap_for_theme(theme);
-    int lit = pct < 0 ? 0 : (pct * SUN_SEGMENTS + 50) / 100;
+    GColor lit_color;
+    int lit = daylight_lit(theme, SUN_SEGMENTS, &lit_color);
 
     // the bar is centred in the room between the two times as drawn, not in the body, so it keeps an
     // even gap either side whichever of the two is the wider
@@ -306,14 +341,12 @@ static void draw_daylight(GContext *ctx, GRect body, uint8_t theme)
  * @param x0 The bar's left edge.
  * @param y The bar's top.
  * @param span Room the segments and the gaps between them share.
- * @param theme The active theme.
  * @param segments How many segments.
  * @param lit How far the bar is lit, in hundredths of a segment, so 250 lights two and a half.
+ * @param lit_color The lit part's colour.
  */
-static void draw_segments(GContext *ctx, int x0, int y, int span, uint8_t theme, int segments, int lit)
+static void draw_segments_in(GContext *ctx, int x0, int y, int span, int segments, int lit, GColor lit_color)
 {
-    GColor lit_color = segment_lit(theme);
-
     for (int i = 0; i < segments; i++)
     {
         // the edges are spread over the span, so a count that does not divide it evenly, like the
@@ -358,6 +391,22 @@ static void draw_segments(GContext *ctx, int x0, int y, int span, uint8_t theme,
         graphics_context_set_fill_color(ctx, lit_color);
         graphics_fill_rect(ctx, GRect(left, y, lit_w, PROGRESS_BAR_H), radius, lit_corners);
     }
+}
+
+/**
+ * @brief A segmented bar lit as far as it is told, in the theme's lit colour.
+ *
+ * @param ctx The graphics context.
+ * @param x0 The bar's left edge.
+ * @param y The bar's top.
+ * @param span Room the segments and the gaps between them share.
+ * @param theme The active theme.
+ * @param segments How many segments.
+ * @param lit How far the bar is lit, in hundredths of a segment.
+ */
+static void draw_segments(GContext *ctx, int x0, int y, int span, uint8_t theme, int segments, int lit)
+{
+    draw_segments_in(ctx, x0, y, span, segments, lit, segment_lit(theme));
 }
 
 /**
@@ -442,18 +491,54 @@ static void draw_beats(GContext *ctx, GRect body, uint8_t theme)
     draw_segment_bar(ctx, body, theme, text, BEATS_SEGMENTS, units_swatch_beats());
 }
 
-// --- the daily goals ---
+// --- the noted bars: the daily goals, the moon, and the next alarm ---
 
-#define GOAL_SEGMENTS 10 ///< A goal bar's segments, ten percent of the goal each
-#define GOAL_SPAN 60     ///< Room the goal bar's segments and gaps share, five pixels a segment like the daylight bar's, which leaves the goal room beside the reading
-#define GOAL_GAP 3       ///< Between today's reading and the goal after it
-#define GOAL_DROP 3      ///< Antonio 12 sits higher in its box than Antonio 16, so the goal drops to share the reading's line
+#define NOTE_SEGMENTS 10 ///< A noted bar's segments when its reading has no units of its own, ten percent each
+#define NOTE_SPAN 60     ///< Room a noted bar's segments and gaps share, five pixels a segment like the daylight bar's, which leaves the note room beside the reading
+#define NOTE_GAP 3       ///< Between the reading and the note after it
+#define NOTE_DROP 3      ///< Antonio 12 sits higher in its box than Antonio 16, so the note drops to share the reading's line
+
+/**
+ * @brief A reading, a smaller note after it, and a bar lit as far as it is told.
+ *
+ * The note is written smaller and in the label colour, so the reading stays the biggest thing on the
+ * row. The reading gets the room the note leaves, and steps down a size if that runs short.
+ *
+ * @param ctx The graphics context.
+ * @param body The panel's body.
+ * @param theme The active theme.
+ * @param text The reading.
+ * @param note The note after it, or "" to leave it off.
+ * @param segments How many segments.
+ * @param lit How far the bar is lit, in hundredths of a segment.
+ */
+static void draw_noted_bar(GContext *ctx, GRect body, uint8_t theme, const char *text, const char *note, int segments,
+                           int lit)
+{
+    int x0 = body.origin.x + body.size.w - WIDE_RIGHT - (NOTE_SPAN - 1);
+    int text_x = body.origin.x + 3;
+    int text_y = body.origin.y - TEXT_LIFT;
+    int room = x0 - 4 - text_x;
+    int note_w = note[0] != '\0' ? text_width(note, FONT_ANTONIO_12) : 0;
+
+    int text_w = note_w > 0 ? room - note_w - NOTE_GAP : room;
+    FontId font = fit_font(text, text_w);
+    put_text(ctx, text, font, GRect(text_x, text_y, text_w, 18), GTextAlignmentLeft, GColorWhite);
+
+    if (note_w > 0)
+    {
+        // the note follows the reading as drawn, so a short reading keeps the two together
+        int drawn_w = text_width(text, font);
+        int note_x = text_x + (drawn_w < text_w ? drawn_w : text_w) + NOTE_GAP;
+        put_text(ctx, note, FONT_ANTONIO_12, GRect(note_x, text_y + NOTE_DROP, note_w + 2, 16), GTextAlignmentLeft,
+                 label_color_for_theme(theme));
+    }
+
+    draw_segments(ctx, x0, body.origin.y + 4, NOTE_SPAN, theme, segments, lit);
+}
 
 /**
  * @brief Today's reading, the goal after it, and a bar lit as far towards the goal as it has come.
- *
- * The goal is written smaller and in the label colour, so the reading stays the biggest thing on the
- * row. The reading gets the room the goal leaves, and steps down a size if that runs short.
  *
  * A met goal fills the bar and stops there. No reading yet writes two dashes and lights nothing.
  *
@@ -468,40 +553,105 @@ static void draw_beats(GContext *ctx, GRect body, uint8_t theme)
 static void draw_goal(GContext *ctx, GRect body, uint8_t theme, const char *text, int value, const char *goal_text,
                       int goal)
 {
-    int x0 = body.origin.x + body.size.w - WIDE_RIGHT - (GOAL_SPAN - 1);
-    int text_x = body.origin.x + 3;
-    int text_y = body.origin.y - TEXT_LIFT;
-    int room = x0 - 4 - text_x;
-
     char of[20] = "";
-    int of_w = 0;
     if (goal_text[0] != '\0')
     {
         snprintf(of, sizeof(of), "/%s", goal_text);
-        of_w = text_width(of, FONT_ANTONIO_12);
     }
 
-    int text_w = of_w > 0 ? room - of_w - GOAL_GAP : room;
-    FontId font = fit_font(text, text_w);
-    put_text(ctx, text, font, GRect(text_x, text_y, text_w, 18), GTextAlignmentLeft, GColorWhite);
+    draw_noted_bar(ctx, body, theme, text, of, NOTE_SEGMENTS, pct_of(value, goal) * NOTE_SEGMENTS);
+}
 
-    if (of_w > 0)
+/** @brief A daily goal's reading and the wearer's goal, written the way the goal panels show them. */
+typedef struct
+{
+    char text[16];      ///< Today's reading
+    char goal_text[16]; ///< The goal, or "" when there is none
+    int  value;         ///< Today's reading in the goal's unit, below zero for none
+    int  goal;          ///< The goal in the reading's unit
+} GoalReading;
+
+/**
+ * @brief The reading and goal a goal panel stands for, wide or tall.
+ *
+ * Each goal is written in its reading's unit, so distance follows the Distance Unit, sleep reads in
+ * hours, and active time in minutes.
+ *
+ * @param id The OpsId, one of the goal panels.
+ * @param out Receives the reading and the goal.
+ * @return False for a pick that is not a goal panel.
+ */
+static bool goal_reading(uint8_t id, GoalReading *out)
+{
+    switch (id)
     {
-        // the goal follows the reading as drawn, so a short reading keeps the two together
-        int drawn_w = text_width(text, font);
-        int of_x = text_x + (drawn_w < text_w ? drawn_w : text_w) + GOAL_GAP;
-        put_text(ctx, of, FONT_ANTONIO_12, GRect(of_x, text_y + GOAL_DROP, of_w + 2, 16), GTextAlignmentLeft,
-                 label_color_for_theme(theme));
+        case OPS_WIDE_STEP_GOAL:
+        case OPS_TALL_STEP_GOAL:
+            out->value = health_store_steps();
+            out->goal = goals_steps(settings_u8(SETTING_GOAL_STEPS));
+            write_number(out->text, sizeof(out->text), out->value);
+            snprintf(out->goal_text, sizeof(out->goal_text), "%d", out->goal);
+            break;
+        case OPS_WIDE_DISTANCE_GOAL:
+        case OPS_TALL_DISTANCE_GOAL:
+        {
+            bool miles = settings_u8(SETTING_DISTANCE_UNIT) == DISTANCE_UNIT_MILES;
+
+            // the distance reads 0 rather than -1 with no reading, so the step count tells the two
+            // apart, the way the steps readout does
+            out->value = health_store_steps() < 0 ? -1 : health_store_distance_m();
+            out->goal = goals_distance_m(settings_u8(SETTING_GOAL_DISTANCE));
+            if (out->value < 0)
+            {
+                snprintf(out->text, sizeof(out->text), "--");
+            }
+            else
+            {
+                // the goal carries the unit for both, the way the active minutes' does. with the unit
+                // on each, a 25.3 KM walk beside a 20.0 KM goal has no room left at any size
+                units_format_distance_value(out->text, sizeof(out->text), out->value, miles);
+            }
+
+            units_format_distance(out->goal_text, sizeof(out->goal_text), out->goal, miles);
+            break;
+        }
+        case OPS_WIDE_CALORIE_GOAL:
+        case OPS_TALL_CALORIE_GOAL:
+            out->value = health_store_calories();
+            out->goal = goals_calories(settings_u8(SETTING_GOAL_CALORIES));
+            ops_text_calories(out->text, sizeof(out->text));
+            snprintf(out->goal_text, sizeof(out->goal_text), "%d", out->goal);
+            break;
+        case OPS_WIDE_ACTIVE_GOAL:
+        case OPS_TALL_ACTIVE_GOAL:
+            out->value = health_store_active_min();
+            out->goal = goals_active_min(settings_u8(SETTING_GOAL_ACTIVE));
+            ops_text_active(out->text, sizeof(out->text));
+            // the reading is a bare count, so the goal carries the unit for both
+            snprintf(out->goal_text, sizeof(out->goal_text), "%d MIN", out->goal);
+            break;
+        case OPS_WIDE_SLEEP_GOAL:
+        case OPS_TALL_SLEEP_GOAL:
+            out->value = health_store_sleep_min();
+            out->goal = goals_sleep_min(settings_u8(SETTING_GOAL_SLEEP));
+            ops_text_sleep(out->text, sizeof(out->text));
+            // the settings page only offers whole hours
+            snprintf(out->goal_text, sizeof(out->goal_text), "%dH", out->goal / 60);
+            break;
+        default:
+            return false;
     }
 
-    draw_segments(ctx, x0, body.origin.y + 4, GOAL_SPAN, theme, GOAL_SEGMENTS, pct_of(value, goal) * GOAL_SEGMENTS);
+    if (out->goal <= 0)
+    {
+        out->goal_text[0] = '\0';
+    }
+
+    return true;
 }
 
 /**
  * @brief The goal bar a pick stands for, with its reading and the wearer's goal.
- *
- * Each goal is written in its reading's unit, so distance follows the Distance Unit, sleep reads in
- * hours, and active time in minutes.
  *
  * @param ctx The graphics context.
  * @param body The panel's body.
@@ -510,66 +660,13 @@ static void draw_goal(GContext *ctx, GRect body, uint8_t theme, const char *text
  */
 static void draw_goal_for(GContext *ctx, GRect body, uint8_t theme, uint8_t id)
 {
-    char text[16];
-    char goal_text[16];
-    int value;
-    int goal;
-
-    switch (id)
+    GoalReading reading;
+    if (!goal_reading(id, &reading))
     {
-        case OPS_WIDE_STEP_GOAL:
-            value = health_store_steps();
-            goal = goals_steps(settings_u8(SETTING_GOAL_STEPS));
-            write_number(text, sizeof(text), value);
-            snprintf(goal_text, sizeof(goal_text), "%d", goal);
-            break;
-        case OPS_WIDE_DISTANCE_GOAL:
-        {
-            bool miles = settings_u8(SETTING_DISTANCE_UNIT) == DISTANCE_UNIT_MILES;
-
-            // the distance reads 0 rather than -1 with no reading, so the step count tells the two
-            // apart, the way the steps readout does
-            value = health_store_steps() < 0 ? -1 : health_store_distance_m();
-            goal = goals_distance_m(settings_u8(SETTING_GOAL_DISTANCE));
-            if (value < 0)
-            {
-                snprintf(text, sizeof(text), "--");
-            }
-            else
-            {
-                // the goal after it carries the unit for both, the way the active minutes' does. with
-                // the unit on each, a 25.3 KM walk beside a 20.0 KM goal has no room left at any size
-                units_format_distance_value(text, sizeof(text), value, miles);
-            }
-
-            units_format_distance(goal_text, sizeof(goal_text), goal, miles);
-            break;
-        }
-        case OPS_WIDE_CALORIE_GOAL:
-            value = health_store_calories();
-            goal = goals_calories(settings_u8(SETTING_GOAL_CALORIES));
-            ops_text_calories(text, sizeof(text));
-            snprintf(goal_text, sizeof(goal_text), "%d", goal);
-            break;
-        case OPS_WIDE_ACTIVE_GOAL:
-            value = health_store_active_min();
-            goal = goals_active_min(settings_u8(SETTING_GOAL_ACTIVE));
-            ops_text_active(text, sizeof(text));
-            // the reading is a bare count, so the goal carries the unit for both
-            snprintf(goal_text, sizeof(goal_text), "%d MIN", goal);
-            break;
-        case OPS_WIDE_SLEEP_GOAL:
-            value = health_store_sleep_min();
-            goal = goals_sleep_min(settings_u8(SETTING_GOAL_SLEEP));
-            ops_text_sleep(text, sizeof(text));
-            // the settings page only offers whole hours
-            snprintf(goal_text, sizeof(goal_text), "%dH", goal / 60);
-            break;
-        default:
-            return;
+        return;
     }
 
-    draw_goal(ctx, body, theme, text, value, goal > 0 ? goal_text : "", goal);
+    draw_goal(ctx, body, theme, reading.text, reading.value, reading.goal_text, reading.goal);
 }
 
 // --- the days of the week ---
@@ -1220,8 +1317,7 @@ static void draw_agenda_full(GContext *ctx, GRect body, uint8_t theme)
 /**
  * @brief A glyph and a reading on the left, and a second reading set against the right edge.
  *
- * The right reading keeps Antonio 16, and the left one steps down a size when it would run into it,
- * as a long phase name like WAXING GIBBOUS does.
+ * The right reading keeps Antonio 16, and the left one steps down a size when it would run into it.
  *
  * @param ctx The graphics context.
  * @param body The panel's body.
@@ -1244,8 +1340,50 @@ static void draw_pair(GContext *ctx, GRect body, uint8_t theme, uint32_t glyph, 
              GTextAlignmentLeft, label_color_for_theme(theme));
 }
 
+#define ALARM_SEGMENTS 12 ///< The alarm bar's segments, two hours each across the day before it rings
+
 /**
- * @brief The moon's phase beside its glyph, and how long until the next full or new moon.
+ * @brief How much of the moon is lit, and how far a bar of it is lit, for the moon's bar and block.
+ *
+ * @param text Receives the percent, such as "74%".
+ * @param n Its size.
+ * @param segments How many segments the bar has.
+ * @return How far the bar is lit, in hundredths of a segment.
+ */
+static int moon_lit(char *text, size_t n, int segments)
+{
+    int pct = moon_illumination_pct(time(NULL));
+
+    snprintf(text, n, "%d%%", pct);
+    return pct * segments;
+}
+
+/**
+ * @brief When the next alarm rings, and how far a bar that fills over the day before it is lit, for
+ * the alarm's bar and block.
+ *
+ * An alarm more than a day off lights nothing, and so does no alarm at all.
+ *
+ * @param text Receives the time, or two dashes with no alarm set.
+ * @param n Its size.
+ * @param segments How many segments the bar has.
+ * @return How far the bar is lit, in hundredths of a segment.
+ */
+static int alarm_lit(char *text, size_t n, int segments)
+{
+    ops_text_next_alarm(text, n);
+
+    int minutes = ops_alarm_minutes();
+    return minutes < 0 || minutes > 1440 ? 0 : (1440 - minutes) * segments * 100 / 1440;
+}
+
+/**
+ * @brief How much of the moon is lit, how long until the next full or new moon, and a bar of the
+ * same.
+ *
+ * The countdown is cut short, as FULL 4D, since FULL IN 4 DAYS leaves the percent no room beside the
+ * bar. The row leaves the glyph off the way the goal bars do, since its room is what the two need and
+ * the bar's word already says LUNAR.
  *
  * @param ctx The graphics context.
  * @param body The panel's body.
@@ -1253,29 +1391,18 @@ static void draw_pair(GContext *ctx, GRect body, uint8_t theme, uint32_t glyph, 
  */
 static void draw_moon(GContext *ctx, GRect body, uint8_t theme)
 {
-    char phase[24];
-    char days[12];
-    char next[24];
+    char text[8];
+    char next[16];
 
-    ops_text_moon_phase(phase, sizeof(phase));
-    ops_text_moon_next(days, sizeof(days));
-
-    // the countdown reads FULL IN 6 DAYS, or FULL NOW on the day itself
-    const char *label = ops_moon_next_label();
-    if (strcmp(days, "NOW") == 0)
-    {
-        snprintf(next, sizeof(next), "%.4s NOW", label);
-    }
-    else
-    {
-        snprintf(next, sizeof(next), "%s %s", label, days);
-    }
-
-    draw_pair(ctx, body, theme, ops_moon_icon(), phase, next);
+    int lit = moon_lit(text, sizeof(text), NOTE_SEGMENTS);
+    ops_text_moon_countdown_short(next, sizeof(next));
+    draw_noted_bar(ctx, body, theme, text, next, NOTE_SEGMENTS, lit);
 }
 
 /**
- * @brief The next alarm's time beside the alarm glyph, and how long until it rings.
+ * @brief The next alarm's time, how long until it rings, and a bar that fills over the day before it.
+ *
+ * The countdown drops its IN, as 4H 15M, so it fits beside the time and the bar.
  *
  * @param ctx The graphics context.
  * @param body The panel's body.
@@ -1284,30 +1411,11 @@ static void draw_moon(GContext *ctx, GRect body, uint8_t theme)
 static void draw_alarm(GContext *ctx, GRect body, uint8_t theme)
 {
     char when[12];
-    char until[16] = "";
+    char left[16];
 
-    ops_text_next_alarm(when, sizeof(when));
-
-    time_t alarm = 0;
-    if (system_store_next_alarm(&alarm))
-    {
-        long minutes = (long)(alarm - time(NULL)) / 60;
-        if (minutes < 0)
-        {
-            minutes = 0;
-        }
-
-        if (minutes >= 60)
-        {
-            snprintf(until, sizeof(until), "IN %ldH %02ldM", minutes / 60, minutes % 60);
-        }
-        else
-        {
-            snprintf(until, sizeof(until), "IN %ldM", minutes);
-        }
-    }
-
-    draw_pair(ctx, body, theme, RESOURCE_ID_ICON_ALARM, when, until);
+    int lit = alarm_lit(when, sizeof(when), ALARM_SEGMENTS);
+    ops_text_alarm_left(left, sizeof(left));
+    draw_noted_bar(ctx, body, theme, when, left, ALARM_SEGMENTS, lit);
 }
 
 /**
@@ -1329,11 +1437,563 @@ static void draw_sun_next(GContext *ctx, GRect body, uint8_t theme)
     draw_pair(ctx, body, theme, ops_sun_next_icon(), until, at);
 }
 
+// --- the tall panels ---
+
+/**
+ * @brief The Sensors Block: the condition glyph over the thermometer, with the condition and a bigger
+ * temperature beside them.
+ *
+ * Everything is placed from the column's bar, so it sits the same in either column.
+ *
+ * @param ctx The graphics context.
+ * @param body The panel's body.
+ */
+static void draw_sensors(GContext *ctx, GRect body)
+{
+    int x = body.origin.x;
+    int y = body.origin.y - PANEL_BAR_GAP;
+
+    // partly-cloudy's sun reaches the very top of its box. every other glyph
+    // sits a couple of pixels in so that one alone would touch the bar overhead
+    // any glyph sitting too high gets pushed down to the shared minimum
+    // the check goes off its measured margin rather than its name
+    uint32_t wx = wx_resource_for(weather_store_cond());
+    GRect wx_at = SENSORS_WX_ICON(x, y);
+    int wx_top = icon_margins(wx).n;
+    if (wx_top < WX_MIN_TOP)
+    {
+        wx_at.origin.y += WX_MIN_TOP - wx_top;
+    }
+
+    widgets_draw_glyph(ctx, wx, wx_at);
+    widgets_draw_glyph(ctx, RESOURCE_ID_ICON_THERMOMETER, SENSORS_THERMO(x, y));
+
+    char text[16];
+    graphics_context_set_text_color(ctx, GColorWhite);
+
+    // word wrap, the way a text layer draws, so the two readings land where the face has always drawn them
+    readout_weather_cond(text, sizeof(text));
+    graphics_draw_text(ctx, text, fonts_get(FONT_ANTONIO_16), SENSORS_COND(x, y), GTextOverflowModeWordWrap,
+                       GTextAlignmentLeft, NULL);
+
+    readout_weather_temp(text, sizeof(text));
+    graphics_draw_text(ctx, text, fonts_get(FONT_ANTONIO_20), SENSORS_TEMP(x, y), GTextOverflowModeWordWrap,
+                       GTextAlignmentLeft, NULL);
+}
+
+#define TALL_PAD 3        ///< A tall panel keeps its readings this far in from either end of its bar, the single readouts' gap
+#define TALL_BIG_FOOT 21  ///< Where the big reading's capitals end, down from the top of the body
+#define TALL_SUB_FOOT 33  ///< Where the line under the big reading ends
+#define TALL_BAR_Y 38     ///< The bar's top, down from the top of the body
+#define TALL_GLYPH 14     ///< The glyph beside a reading
+#define TALL_SEGMENTS 10  ///< The bar's segments when its reading has no units of its own
+#define TALL_TOP_FOOT 16  ///< Where a first line of Antonio 16 ends, for a panel that stacks smaller lines
+#define TALL_CHART_BASE 47 ///< The line the hourly bars stand on, down from the top of the body
+#define TALL_CHART_H 27   ///< The tallest an hourly bar may be
+
+/**
+ * @brief How far down its box a font's capitals end.
+ *
+ * Text sits at the top of its box, so readings in different sizes only share a line when each box
+ * is lifted by its own font's amount.
+ *
+ * @param font The font.
+ * @return The rows from the top of the box to the foot of the capitals.
+ */
+static int cap_foot(FontId font)
+{
+    switch (font)
+    {
+        case FONT_ANTONIO_28:
+            return 27;
+        case FONT_ANTONIO_24:
+            return 23;
+        case FONT_ANTONIO_20:
+            return 19;
+        case FONT_ANTONIO_16:
+            return 15;
+        case FONT_ANTONIO_14:
+            return 13;
+        case FONT_ANTONIO_12:
+            return 11;
+        default:
+            return 9;
+    }
+}
+
+/** @brief Draw a line of text with the foot of its capitals on a line, so mixed sizes share it. */
+static void put_on_line(GContext *ctx, const char *text, FontId font, GRect span, int foot, GTextAlignment align,
+                        GColor color)
+{
+    put_text(ctx, text, font, GRect(span.origin.x, foot - cap_foot(font), span.size.w, 32), align, color);
+}
+
+/**
+ * @brief The biggest of Antonio 28, 24, 20, 16, and 14 a big reading fits at.
+ *
+ * @param text The reading.
+ * @param width The room it has.
+ * @param most The biggest font it may take, so a panel with a chart under it can keep it smaller.
+ * @return The font to draw it in.
+ */
+static FontId fit_big(const char *text, int width, FontId most)
+{
+    static const FontId sizes[] = {FONT_ANTONIO_28, FONT_ANTONIO_24, FONT_ANTONIO_20, FONT_ANTONIO_16, FONT_ANTONIO_14};
+    int first = 0;
+
+    while (first < (int)ARRAY_LENGTH(sizes) - 1 && sizes[first] != most)
+    {
+        first++;
+    }
+
+    return fit_from(text, width, sizes + first, ARRAY_LENGTH(sizes) - first);
+}
+
+/** @brief A tall panel's text room, from its left pad to the same pad short of its right end. */
+static GRect tall_span(GRect body)
+{
+    return GRect(body.origin.x + TALL_PAD, body.origin.y, body.size.w - TALL_PAD * 2, body.size.h);
+}
+
+/**
+ * @brief A big reading on a line, centred in the panel with its glyph when it has one.
+ *
+ * The glyph and the reading are centred together as one, so a panel with a glyph and one without
+ * share the same middle. A reading stepped down to a smaller font rises to the middle of the room the
+ * biggest font would fill, rather than sitting on its foot with a gap above it.
+ *
+ * @param ctx The graphics context.
+ * @param body The panel's body.
+ * @param glyph The glyph's resource, 0 for none.
+ * @param text The reading.
+ * @param foot Where its capitals end.
+ * @param most The biggest font it may take.
+ * @param color The reading's colour.
+ */
+static void tall_big(GContext *ctx, GRect body, uint32_t glyph, const char *text, int foot, FontId most, GColor color)
+{
+    GRect span = tall_span(body);
+    int glyph_room = glyph ? TALL_GLYPH + OPS_TEXT_GAP : 0;
+    int room = span.size.w - glyph_room;
+
+    FontId font = fit_big(text, room, most);
+    int drawn = text_width(text, font);
+    if (drawn > room)
+    {
+        drawn = room;
+    }
+
+    int left = span.origin.x + (room - drawn) / 2;
+    foot -= (cap_foot(most) - cap_foot(font)) / 2;
+
+    if (glyph)
+    {
+        // the glyph sits level with the middle of a capital the size of Antonio 20's
+        widgets_draw_glyph(ctx, glyph, GRect(left, foot - 8 - TALL_GLYPH / 2, TALL_GLYPH, TALL_GLYPH));
+        left += glyph_room;
+    }
+
+    put_on_line(ctx, text, font, GRect(left, 0, drawn + 1, 0), foot, GTextAlignmentLeft, color);
+}
+
+/**
+ * @brief A line of the theme's label colour, centred under the big reading, stepped down to Antonio 10
+ * when it runs long.
+ */
+static void tall_note(GContext *ctx, GRect body, uint8_t theme, const char *text, int foot)
+{
+    static const FontId sizes[] = {FONT_ANTONIO_12, FONT_ANTONIO_10};
+    GRect span = tall_span(body);
+
+    put_on_line(ctx, text, fit_from(text, span.size.w, sizes, ARRAY_LENGTH(sizes)), span, foot, GTextAlignmentCenter,
+                label_color_for_theme(theme));
+}
+
+/**
+ * @brief A segmented bar across the foot of a tall panel.
+ *
+ * Every segment takes the same whole number of pixels and the bar is centred in what is left, so
+ * its two rounded ends always match.
+ *
+ * @param ctx The graphics context.
+ * @param body The panel's body.
+ * @param segments How many segments.
+ * @param lit How far the bar is lit, in hundredths of a segment.
+ * @param lit_color The lit part's colour.
+ */
+static void tall_bar(GContext *ctx, GRect body, int segments, int lit, GColor lit_color)
+{
+    GRect span = tall_span(body);
+    int room = span.size.w + 1;
+    int bar = room / segments * segments;
+
+    draw_segments_in(ctx, span.origin.x + (room - bar) / 2, body.origin.y + TALL_BAR_Y, bar, segments, lit, lit_color);
+}
+
+/**
+ * @brief The tall panels' usual layout: a big reading, a line under it, and a segmented bar at the foot.
+ *
+ * @param ctx The graphics context.
+ * @param body The panel's body.
+ * @param theme The active theme.
+ * @param glyph A glyph beside the big reading, or 0 for none.
+ * @param big The big reading.
+ * @param note The line under it, in the theme's label colour, or "" for none.
+ * @param segments How many segments the bar has.
+ * @param lit How far the bar is lit, in hundredths of a segment.
+ */
+static void draw_tall(GContext *ctx, GRect body, uint8_t theme, uint32_t glyph, const char *big, const char *note,
+                      int segments, int lit)
+{
+    tall_big(ctx, body, glyph, big, body.origin.y + TALL_BIG_FOOT, FONT_ANTONIO_24, GColorWhite);
+    tall_note(ctx, body, theme, note, body.origin.y + TALL_SUB_FOOT);
+    tall_bar(ctx, body, segments, lit, segment_lit(theme));
+}
+
+/**
+ * @brief Today's reading, the wearer's goal under it, and a bar of how close it has come.
+ *
+ * @param ctx The graphics context.
+ * @param body The panel's body.
+ * @param theme The active theme.
+ * @param id The OpsId, one of the tall goal panels.
+ */
+static void draw_tall_goal(GContext *ctx, GRect body, uint8_t theme, uint8_t id)
+{
+    GoalReading reading;
+    if (!goal_reading(id, &reading))
+    {
+        return;
+    }
+
+    // the bar's word names the reading, so the line under it only needs the goal
+    char note[24] = "";
+    if (reading.goal_text[0] != '\0')
+    {
+        snprintf(note, sizeof(note), "OF %s", reading.goal_text);
+    }
+
+    draw_tall(ctx, body, theme, 0, reading.text, note, TALL_SEGMENTS,
+              pct_of(reading.value, reading.goal) * TALL_SEGMENTS);
+}
+
+/**
+ * @brief The heart rate now, today's range under it, and a bar of where the reading sits in that range.
+ *
+ * @param ctx The graphics context.
+ * @param body The panel's body.
+ * @param theme The active theme.
+ */
+static void draw_tall_heart(GContext *ctx, GRect body, uint8_t theme)
+{
+    // room for two readings of any int, the dash between them, and the unit
+    char text[24];
+    readout_hr(text, sizeof(text));
+    tall_big(ctx, body, RESOURCE_ID_ICON_HEART, text, body.origin.y + TALL_BIG_FOOT, FONT_ANTONIO_24, GColorWhite);
+
+    // the chart's day is where the range comes from, so the range and the hourly charts always agree
+    int heights[CHART_HOURS];
+    int low;
+    int avg;
+    int high;
+    heart_heights(heights, 1, &low, &avg, &high);
+
+    if (low < 0)
+    {
+        snprintf(text, sizeof(text), "-- BPM");
+    }
+    else
+    {
+        snprintf(text, sizeof(text), "%d-%d BPM", low, high);
+    }
+
+    tall_note(ctx, body, theme, text, body.origin.y + TALL_SUB_FOOT);
+
+    // a reading at the day's low lights nothing and one at its high fills the bar, and with no range
+    // yet the bar stays dark
+    int hr = health_store_hr();
+    int lit = 0;
+    if (low >= 0 && high > low && hr > 0)
+    {
+        int clamped = hr < low ? low : (hr > high ? high : hr);
+        lit = (clamped - low) * TALL_SEGMENTS * 100 / (high - low);
+    }
+
+    tall_bar(ctx, body, TALL_SEGMENTS, lit, segment_lit(theme));
+}
+
+/**
+ * @brief A reading beside its glyph, with a small bar for each hour of the day under it.
+ *
+ * The 24 bars take 71 pixels, so they run a pixel past the bar's ends either side.
+ *
+ * @param ctx The graphics context.
+ * @param body The panel's body.
+ * @param glyph The reading's glyph.
+ * @param text The reading.
+ * @param heights Each hour's height, or -1 for an hour with no reading.
+ * @param now The last hour to draw a reading for.
+ * @param bar The past hours' colour.
+ */
+static void draw_tall_hours(GContext *ctx, GRect body, uint32_t glyph, const char *text, const int heights[CHART_HOURS],
+                            int now, GColor bar)
+{
+    tall_big(ctx, body, glyph, text, body.origin.y + TALL_TOP_FOOT, FONT_ANTONIO_16, GColorWhite);
+    draw_hours(ctx, body.origin.x - 1, body.origin.y + TALL_CHART_BASE, TALL_CHART_H, heights, now, bar);
+}
+
+/** @brief Today's steps beside the step glyph, with a small bar for each hour under them. */
+static void draw_tall_steps_hours(GContext *ctx, GRect body, uint8_t theme)
+{
+    char steps[16];
+    readout_steps(steps, sizeof(steps));
+
+    int heights[CHART_HOURS];
+    int peak;
+    int hours = step_heights(heights, TALL_CHART_H, &peak);
+
+    draw_tall_hours(ctx, body, RESOURCE_ID_ICON_FEET, steps, heights, hours - 1, bar_body_for_theme(theme));
+}
+
+/** @brief The heart rate now beside the heart glyph, with a small bar for each hour under it. */
+static void draw_tall_heart_hours(GContext *ctx, GRect body, uint8_t theme)
+{
+    char hr[8];
+    readout_hr(hr, sizeof(hr));
+
+    int heights[CHART_HOURS];
+    int low;
+    int avg;
+    int high;
+    heart_heights(heights, TALL_CHART_H, &low, &avg, &high);
+
+    draw_tall_hours(ctx, body, RESOURCE_ID_ICON_HEART, hr, heights, hour_now(), bar_body_for_theme(theme));
+}
+
+/**
+ * @brief The battery's charge, whether it is charging, and a bar of the charge.
+ *
+ * @param ctx The graphics context.
+ * @param body The panel's body.
+ * @param theme The active theme.
+ */
+static void draw_tall_battery(GContext *ctx, GRect body, uint8_t theme)
+{
+    char text[8];
+    ops_text_battery(text, sizeof(text));
+
+    int level = system_store_battery();
+    draw_tall(ctx, body, theme, 0, text, system_store_charging() ? "CHARGING" : "REMAINING", TALL_SEGMENTS,
+              level * TALL_SEGMENTS);
+}
+
+/**
+ * @brief The next alarm's time, how long until it rings, and a bar that fills over the day before it.
+ *
+ * @param ctx The graphics context.
+ * @param body The panel's body.
+ * @param theme The active theme.
+ */
+static void draw_tall_alarm(GContext *ctx, GRect body, uint8_t theme)
+{
+    char when[12];
+    char until[16];
+
+    int lit = alarm_lit(when, sizeof(when), ALARM_SEGMENTS);
+    ops_text_alarm_until(until, sizeof(until));
+
+    draw_tall(ctx, body, theme, RESOURCE_ID_ICON_ALARM, when, until, ALARM_SEGMENTS, lit);
+}
+
+/**
+ * @brief The Swatch beat, out of the thousand in a day, and a bar of the beat day.
+ *
+ * @param ctx The graphics context.
+ * @param body The panel's body.
+ * @param theme The active theme.
+ */
+static void draw_tall_beats(GContext *ctx, GRect body, uint8_t theme)
+{
+    char text[8];
+    ops_text_beats(text, sizeof(text));
+
+    // a thousand beats over ten segments is a hundred a segment, so the beat is the hundredths lit
+    draw_tall(ctx, body, theme, 0, text, "OF 1000", BEATS_SEGMENTS, units_swatch_beats());
+}
+
+/**
+ * @brief The countdown to the next sunrise or sunset, the two times, and the daylight bar.
+ *
+ * The bar's word says which of the two is next, so the countdown needs no word of its own.
+ *
+ * @param ctx The graphics context.
+ * @param body The panel's body.
+ * @param theme The active theme.
+ */
+static void draw_tall_sun_next(GContext *ctx, GRect body, uint8_t theme)
+{
+    char until[16];
+    char rise[8];
+    char set[8];
+
+    ops_text_sun_next(until, sizeof(until));
+    ops_text_sunrise(rise, sizeof(rise));
+    ops_text_sunset(set, sizeof(set));
+
+    tall_big(ctx, body, ops_sun_next_icon(), until, body.origin.y + TALL_BIG_FOOT, FONT_ANTONIO_24, GColorWhite);
+
+    char times[20];
+    snprintf(times, sizeof(times), "%s - %s", rise, set);
+    tall_note(ctx, body, theme, times, body.origin.y + TALL_SUB_FOOT);
+
+    GColor lit_color;
+    int lit = daylight_lit(theme, SUN_SEGMENTS, &lit_color);
+    tall_bar(ctx, body, SUN_SEGMENTS, lit * 100, lit_color);
+}
+
+/**
+ * @brief The day's length, the sunrise and sunset under it, and the daylight bar.
+ *
+ * @param ctx The graphics context.
+ * @param body The panel's body.
+ * @param theme The active theme.
+ */
+static void draw_tall_daylight(GContext *ctx, GRect body, uint8_t theme)
+{
+    char length[16];
+    char rise[8];
+    char set[8];
+    char times[20];
+
+    ops_text_daylight(length, sizeof(length));
+    ops_text_sunrise(rise, sizeof(rise));
+    ops_text_sunset(set, sizeof(set));
+    snprintf(times, sizeof(times), "%s - %s", rise, set);
+
+    tall_big(ctx, body, 0, length, body.origin.y + TALL_BIG_FOOT, FONT_ANTONIO_24, GColorWhite);
+    tall_note(ctx, body, theme, times, body.origin.y + TALL_SUB_FOOT);
+
+    GColor lit_color;
+    int lit = daylight_lit(theme, SUN_SEGMENTS, &lit_color);
+    tall_bar(ctx, body, SUN_SEGMENTS, lit * 100, lit_color);
+}
+
+/**
+ * @brief How much of the moon is lit beside its phase glyph, the countdown to the next full or new
+ * moon, and a bar of the same.
+ *
+ * The percent leads rather than the phase's name, since a name like Waxing Gibbous only fits a column
+ * cut short, and the glyph already shows the phase.
+ *
+ * @param ctx The graphics context.
+ * @param body The panel's body.
+ * @param theme The active theme.
+ */
+static void draw_tall_moon(GContext *ctx, GRect body, uint8_t theme)
+{
+    char lit_text[8];
+    char next[24];
+
+    int lit = moon_lit(lit_text, sizeof(lit_text), TALL_SEGMENTS);
+    ops_text_moon_countdown(next, sizeof(next));
+    draw_tall(ctx, body, theme, ops_moon_icon(), lit_text, next, TALL_SEGMENTS, lit);
+}
+
+/**
+ * @brief The UV index and its risk, and a bar with a segment for each step up to 11+.
+ *
+ * @param ctx The graphics context.
+ * @param body The panel's body.
+ * @param theme The active theme.
+ */
+static void draw_tall_uv(GContext *ctx, GRect body, uint8_t theme)
+{
+    char text[16];
+    ops_text_uv(text, sizeof(text));
+
+    // no reading yet lights nothing, and anything past the scale fills it
+    int uv = weather_store_uv();
+    int steps = uv < 0 ? 0 : (uv > UV_SEGMENTS ? UV_SEGMENTS : uv);
+    draw_tall(ctx, body, theme, 0, text, "OF 11+", UV_SEGMENTS, steps * 100);
+}
+
+/**
+ * @brief A period's percent, which unit of it the clock is in, and a bar with a segment for each of
+ * its own units.
+ *
+ * @param ctx The graphics context.
+ * @param body The panel's body.
+ * @param theme The active theme.
+ * @param period Which period.
+ * @param segments How many segments, such as 12 for the five minute steps of an hour.
+ */
+static void draw_tall_progress(GContext *ctx, GRect body, uint8_t theme, OpsPeriod period, int segments)
+{
+    int pct = ops_progress_pct(period);
+
+    char text[8];
+    char count[16];
+    snprintf(text, sizeof(text), "%d%%", pct);
+    ops_text_period_count(period, count, sizeof(count));
+
+    draw_tall(ctx, body, theme, 0, text, count, segments, pct * segments);
+}
+
+#define EVENT_TIME_DROP 3  ///< How much lower than the other tall panels' readings the event's bigger time ends
+#define EVENT_TITLE_GAP 5  ///< From the foot of the event's time to the top of its title, at the most
+#define EVENT_TITLE_FOOT 2 ///< Room left under the event's title, where a font's descenders would go
+
+/**
+ * @brief When the next event is, big and centred, with its title centred over the two lines under it.
+ *
+ * @param ctx The graphics context.
+ * @param body The panel's body.
+ * @param theme The active theme.
+ */
+static void draw_tall_event(GContext *ctx, GRect body, uint8_t theme)
+{
+    GColor label = label_color_for_theme(theme);
+    int foot = body.origin.y + TALL_BIG_FOOT;
+    time_t now = time(NULL);
+    const CalendarEvent *next[1];
+
+    if (upcoming(next, 1, now) == 0)
+    {
+        tall_note(ctx, body, theme, "NO EVENTS", body.origin.y + TALL_SUB_FOOT);
+        return;
+    }
+
+    char when[12];
+    event_when(next[0], now, when, sizeof(when));
+    tall_big(ctx, body, 0, when, foot + EVENT_TIME_DROP, FONT_ANTONIO_28, GColorWhite);
+
+    char title[48];
+    shout(title, sizeof(title), next[0]->title);
+
+    // up to two centred lines of Antonio 12, sat on the body's foot where the other panels' bars sit, so a
+    // short title lines up with them. a title longer than two lines is cut at the foot of the body
+    // rather than run over the screen's edge
+    GRect span = tall_span(body);
+    int top = foot + EVENT_TIME_DROP + EVENT_TITLE_GAP;
+    int bottom = body.origin.y + body.size.h;
+    GRect room = GRect(span.origin.x, top, span.size.w, bottom - top);
+    GSize used = graphics_text_layout_get_content_size(title, fonts_get(FONT_ANTONIO_12), room,
+                                                       GTextOverflowModeFill, GTextAlignmentCenter);
+
+    if (used.h < room.size.h)
+    {
+        room.origin.y = bottom - EVENT_TITLE_FOOT - used.h;
+        room.size.h = used.h + EVENT_TITLE_FOOT;
+    }
+
+    put_text(ctx, title, FONT_ANTONIO_12, room, GTextAlignmentCenter, label);
+}
+
 bool panels_paints(uint8_t id)
 {
     OpsShape shape = ops_shape(id);
 
-    return shape == OPS_SHAPE_WIDE || shape == OPS_SHAPE_FULL || id == OPS_WEEKDAYS;
+    return shape == OPS_SHAPE_TALL || shape == OPS_SHAPE_WIDE || shape == OPS_SHAPE_FULL || id == OPS_WEEKDAYS;
 }
 
 void panels_draw(GContext *ctx, const OpsGrid *grid, uint8_t id, int slot)
@@ -1421,6 +2081,63 @@ void panels_draw(GContext *ctx, const OpsGrid *grid, uint8_t id, int slot)
             break;
         case OPS_WIDE_SUN_NEXT:
             draw_sun_next(ctx, body, theme);
+            break;
+        case OPS_SENSORS:
+            draw_sensors(ctx, body);
+            break;
+        case OPS_TALL_STEP_GOAL:
+        case OPS_TALL_DISTANCE_GOAL:
+        case OPS_TALL_CALORIE_GOAL:
+        case OPS_TALL_ACTIVE_GOAL:
+        case OPS_TALL_SLEEP_GOAL:
+            draw_tall_goal(ctx, body, theme, id);
+            break;
+        case OPS_TALL_HEART:
+            draw_tall_heart(ctx, body, theme);
+            break;
+        case OPS_TALL_STEPS_HOURS:
+            draw_tall_steps_hours(ctx, body, theme);
+            break;
+        case OPS_TALL_HEART_HOURS:
+            draw_tall_heart_hours(ctx, body, theme);
+            break;
+        case OPS_TALL_BATTERY:
+            draw_tall_battery(ctx, body, theme);
+            break;
+        case OPS_TALL_ALARM:
+            draw_tall_alarm(ctx, body, theme);
+            break;
+        case OPS_TALL_BEATS:
+            draw_tall_beats(ctx, body, theme);
+            break;
+        case OPS_TALL_SUN_NEXT:
+            draw_tall_sun_next(ctx, body, theme);
+            break;
+        case OPS_TALL_DAYLIGHT:
+            draw_tall_daylight(ctx, body, theme);
+            break;
+        case OPS_TALL_MOON:
+            draw_tall_moon(ctx, body, theme);
+            break;
+        case OPS_TALL_UV:
+            draw_tall_uv(ctx, body, theme);
+            break;
+        // the hour, the week, and the year keep their own units. a day's 24 hours would leave a
+        // column's segments a pixel or two wide, so its tall bar takes a segment each two hours
+        case OPS_TALL_HOUR_PROGRESS:
+            draw_tall_progress(ctx, body, theme, OPS_PERIOD_HOUR, 12);
+            break;
+        case OPS_TALL_DAY_PROGRESS:
+            draw_tall_progress(ctx, body, theme, OPS_PERIOD_DAY, 12);
+            break;
+        case OPS_TALL_WEEK_PROGRESS:
+            draw_tall_progress(ctx, body, theme, OPS_PERIOD_WEEK, 7);
+            break;
+        case OPS_TALL_YEAR_PROGRESS:
+            draw_tall_progress(ctx, body, theme, OPS_PERIOD_YEAR, 12);
+            break;
+        case OPS_TALL_EVENT:
+            draw_tall_event(ctx, body, theme);
             break;
         default:
             break;

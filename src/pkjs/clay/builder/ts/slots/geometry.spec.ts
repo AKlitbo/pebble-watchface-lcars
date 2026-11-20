@@ -21,8 +21,37 @@ import {
   ID_WIDE_UV, ID_WIDE_MOON, ID_WIDE_ALARM, ID_WIDE_BEATS,
   ID_WIDE_STEP_GOAL, ID_WIDE_DISTANCE_GOAL, ID_WIDE_CALORIE_GOAL, ID_WIDE_ACTIVE_GOAL, ID_WIDE_SLEEP_GOAL,
   ID_WIDE_SUN_NEXT,
+  ID_TALL_STEP_GOAL, ID_TALL_DISTANCE_GOAL, ID_TALL_CALORIE_GOAL, ID_TALL_ACTIVE_GOAL, ID_TALL_SLEEP_GOAL,
+  ID_TALL_HEART, ID_TALL_STEPS_HOURS, ID_TALL_HEART_HOURS, ID_TALL_BATTERY, ID_TALL_ALARM, ID_TALL_BEATS,
+  ID_TALL_SUN_NEXT, ID_TALL_DAYLIGHT, ID_TALL_MOON, ID_TALL_UV,
+  ID_TALL_HOUR_PROGRESS, ID_TALL_DAY_PROGRESS, ID_TALL_WEEK_PROGRESS, ID_TALL_YEAR_PROGRESS, ID_TALL_EVENT,
   SHAPE_SINGLE, SHAPE_TALL, SHAPE_WIDE, SHAPE_FULL,
 } from './geometry';
+
+// every block the watch's catalogue draws down a column, by its OpsId there
+const TALL_BLOCKS: Array<[string, number]> = [
+  ['the sensors block', ID_SENSORS],
+  ['the step goal block', ID_TALL_STEP_GOAL],
+  ['the distance goal block', ID_TALL_DISTANCE_GOAL],
+  ['the calorie goal block', ID_TALL_CALORIE_GOAL],
+  ['the active minutes goal block', ID_TALL_ACTIVE_GOAL],
+  ['the sleep goal block', ID_TALL_SLEEP_GOAL],
+  ['the heart rate block', ID_TALL_HEART],
+  ['the steps by the hour block', ID_TALL_STEPS_HOURS],
+  ['the heart rate by the hour block', ID_TALL_HEART_HOURS],
+  ['the battery block', ID_TALL_BATTERY],
+  ['the alarm block', ID_TALL_ALARM],
+  ['the beats block', ID_TALL_BEATS],
+  ['the sun countdown block', ID_TALL_SUN_NEXT],
+  ['the daylight block', ID_TALL_DAYLIGHT],
+  ['the moon block', ID_TALL_MOON],
+  ['the uv block', ID_TALL_UV],
+  ['the hour progress block', ID_TALL_HOUR_PROGRESS],
+  ['the day progress block', ID_TALL_DAY_PROGRESS],
+  ['the week progress block', ID_TALL_WEEK_PROGRESS],
+  ['the year progress block', ID_TALL_YEAR_PROGRESS],
+  ['the next event block', ID_TALL_EVENT],
+];
 
 describe('slotAt', () => {
   /** The slots are numbered down each column, and reading them across instead would send a trade to the wrong cell. */
@@ -98,11 +127,21 @@ describe('cellsFor', () => {
     expect(result).toEqual([null, null]);
   });
 
-  /** The watch draws the sensors block in the left column only, so the right column has to refuse it even though it would fit there. */
-  test('refuses the tall block in the right column', () => {
-    const result = cellsFor(ID_SENSORS, SLOT_RT, GRID);
+  /**
+   * The watch paints these blocks under their own bar in either column. Missing one here drops it in
+   * one cell, and refusing the right column would turn away a place the watch draws it.
+   */
+  test.each(TALL_BLOCKS)('fills either column with %s', (_name, id) => {
+    const result = [cellsFor(id, SLOT_LT, GRID), cellsFor(id, SLOT_RT, GRID)];
 
-    expect(result).toBeNull();
+    expect(result).toEqual([[SLOT_LT, SLOT_LB], [SLOT_RT, SLOT_RB]]);
+  });
+
+  /** A block started on the bottom row would run off the screen, so it fits from the top of a column only. */
+  test('refuses a block on the bottom row', () => {
+    const result = [cellsFor(ID_TALL_STEP_GOAL, SLOT_LB, GRID), cellsFor(ID_TALL_STEP_GOAL, SLOT_RB, GRID)];
+
+    expect(result).toEqual([null, null]);
   });
 
   /** A full panel anywhere but the upper left runs off the 2x2, so it fits one place only. */
@@ -134,6 +173,27 @@ describe('owners', () => {
     const result = owners([ID_SENSORS, ID_WIDE_DAYLIGHT, ID_HEART, ID_EMPTY], GRID);
 
     expect(result).toEqual([SLOT_LT, SLOT_LT, SLOT_RT, -1]);
+  });
+
+  /** Two blocks side by side each own their own column, so neither hides the other. */
+  test('gives two blocks a column each', () => {
+    const result = owners([ID_TALL_HEART, ID_EMPTY, ID_TALL_BATTERY, ID_EMPTY], GRID);
+
+    expect(result).toEqual([SLOT_LT, SLOT_LT, SLOT_RT, SLOT_RT]);
+  });
+
+  /** The sensors block on the right owns its whole column, so whatever was saved under it is hidden rather than drawn over. */
+  test('gives a sensors block on the right its whole column', () => {
+    const result = owners([ID_HEART, ID_STEPS, ID_SENSORS, ID_HEART], GRID);
+
+    expect(result).toEqual([SLOT_LT, SLOT_LB, SLOT_RT, SLOT_RT]);
+  });
+
+  /** The layout the face ships with, the sensors block on the left, reads as it always has. */
+  test('gives the shipped sensors block the left column', () => {
+    const result = owners([ID_SENSORS, ID_EMPTY, ID_HEART, ID_STEPS], GRID);
+
+    expect(result).toEqual([SLOT_LT, SLOT_LT, SLOT_RT, SLOT_RB]);
   });
 
   /** A big pick where it does not fit owns nothing, rather than spilling over cells it was never meant to cover. */

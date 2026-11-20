@@ -112,38 +112,46 @@ Any of these can go in any of the four panels.
 
 Alternate Time Zone labels its bar with the city you pick, and reads ZONE 1 until you pick one. The week readouts start the week on Monday. Weekday Dots lights today among the seven days.
 
-### Sensors Block
+### Tall Panels
 
-| |
-|:--:|
-| **Sensors Block**<br>![](resources/thumbnails/sensors-tall.png) |
+These fill the top and bottom panels of a column. They go in either column, so two can sit side by side, and each one's name on the settings page ends in Block.
 
-The Sensors Block shows the weather glyph, the conditions, and a bigger temperature. It only goes in the top left, and takes the bottom left panel with it.
+| | | | | |
+|:--:|:--:|:--:|:--:|:--:|
+| **Sensors Block**<br>![](resources/thumbnails/sensors-tall.png) | **Step Goal Block**<br>![](resources/thumbnails/step-goal-block-tall.png) | **Distance Goal Block**<br>![](resources/thumbnails/distance-goal-block-tall.png) | **Calorie Goal Block**<br>![](resources/thumbnails/calorie-goal-block-tall.png) | **Active Minutes Goal Block**<br>![](resources/thumbnails/active-goal-block-tall.png) |
+| **Sleep Goal Block**<br>![](resources/thumbnails/sleep-goal-block-tall.png) | **Heart Rate Block**<br>![](resources/thumbnails/heart-block-tall.png) | **Steps by the Hour Block**<br>![](resources/thumbnails/steps-hours-block-tall.png) | **Heart Rate by the Hour Block**<br>![](resources/thumbnails/heart-hours-block-tall.png) | **Battery Block**<br>![](resources/thumbnails/battery-block-tall.png) |
+| **Next Alarm Block**<br>![](resources/thumbnails/alarm-block-tall.png) | **Swatch Beats Block**<br>![](resources/thumbnails/beats-block-tall.png) | **Countdown to Sunrise / Sunset Block**<br>![](resources/thumbnails/sun-next-block-tall.png) | **Daylight Block**<br>![](resources/thumbnails/daylight-block-tall.png) | **Moon Block**<br>![](resources/thumbnails/moon-block-tall.png) |
+| **UV Index Block**<br>![](resources/thumbnails/uv-block-tall.png) | **Hour Progress Block**<br>![](resources/thumbnails/hour-progress-block-tall.png) | **Day Progress Block**<br>![](resources/thumbnails/day-progress-block-tall.png) | **Week Progress Block**<br>![](resources/thumbnails/week-progress-block-tall.png) | **Year Progress Block**<br>![](resources/thumbnails/year-progress-block-tall.png) |
+| **Next Event Block**<br>![](resources/thumbnails/event-block-tall.png) | | | | |
+
+The Sensors Block shows the weather glyph, the conditions, and a bigger temperature. The goal blocks show today's reading over your daily goal. The Heart Rate Block's bar shows where the reading sits in today's range, and the Next Alarm Block's fills over the day before it rings. The Countdown to Sunrise / Sunset Block's bar reads DAWN IN or DUSK IN.
 
 ### Wide Panels
 
 These fill a row, the top or the bottom.
 
-- **Daylight Bar:** the sunrise and sunset with a bar between them that fills through the day. After dark it fills towards the next sunrise in the bar's end colour.
-- **Steps by the Hour:** your steps or distance, with a small bar for each hour of the day so far.
-- **Heart Rate by the Hour:** your heart rate now, with a small bar for each hour of the day so far.
-- **Now Playing:** the song playing on your phone, with a play or pause mark. It needs a Pebble app music plugin.
-- **Next Event:** your next calendar event, with when it starts.
-- **Hour, Day, Week, and Year Progress Bars:** how far through the period it is, with a segment for each five minutes, hour, day, or month.
-- **UV Index Bar and Swatch Beats Bar:** the UV index on a bar up to 11+, or the beat on a bar of the beat day.
-- **Moon Phase and Countdown, and Next Alarm and Countdown:** the moon's phase with the days to the next full or new moon, or the next alarm with how long until it rings.
-- **Step, Distance, Calorie, Active Minutes, and Sleep Goal Bars:** today's reading and your daily goal, with a bar of how close you are.
-- **Next Sunrise / Sunset and Countdown:** how long until the next sunrise or sunset, and the time it comes. Its bar reads DAWN IN or DUSK IN.
+| | | |
+|:--:|:--:|:--:|
+| **Daylight Bar**<br>![](resources/thumbnails/daylight-bar-wide.png) | **Steps by the Hour**<br>![](resources/thumbnails/steps-hours-wide.png) | **Heart Rate by the Hour**<br>![](resources/thumbnails/heart-hours-wide.png) |
+| **Now Playing**<br>![](resources/thumbnails/music-wide.png) | **Next Event**<br>![](resources/thumbnails/event-wide.png) | **Hour Progress Bar**<br>![](resources/thumbnails/hour-progress-bar-wide.png) |
+| **Day Progress Bar**<br>![](resources/thumbnails/day-progress-bar-wide.png) | **Week Progress Bar**<br>![](resources/thumbnails/week-progress-bar-wide.png) | **Year Progress Bar**<br>![](resources/thumbnails/year-progress-bar-wide.png) |
+| **UV Index Bar**<br>![](resources/thumbnails/uv-bar-wide.png) | **Moon Phase and Countdown**<br>![](resources/thumbnails/moon-wide-wide.png) | **Next Alarm and Countdown**<br>![](resources/thumbnails/alarm-wide-wide.png) |
+| **Swatch Beats Bar**<br>![](resources/thumbnails/beats-bar-wide.png) | **Step Goal Bar**<br>![](resources/thumbnails/step-goal-bar-wide.png) | **Distance Goal Bar**<br>![](resources/thumbnails/distance-goal-bar-wide.png) |
+| **Calorie Goal Bar**<br>![](resources/thumbnails/calorie-goal-bar-wide.png) | **Active Minutes Goal Bar**<br>![](resources/thumbnails/active-goal-bar-wide.png) | **Sleep Goal Bar**<br>![](resources/thumbnails/sleep-goal-bar-wide.png) |
+| **Next Sunrise / Sunset and Countdown**<br>![](resources/thumbnails/sun-next-wide-wide.png) | | |
+
+After dark the Daylight Bar fills towards the next sunrise in the bar's end colour. Now Playing needs a Pebble app music plugin. The goal bars show today's reading and your daily goal. The Moon Phase and Countdown bar shows how much of the moon is lit, and the Next Alarm and Countdown bar fills over the day before it rings. The Next Sunrise / Sunset bar reads DAWN IN or DUSK IN.
 
 ### Full Panels
 
 These fill all four panels.
 
-- **Heart Rate Today:** your heart rate for each hour of the day so far, with the day's high, average, and low, and your heart rate now.
-- **Steps Today:** your steps for each hour of the day so far, with the total, your busiest hour, this hour, and your active minutes.
-- **Now Playing with Art:** the album art, the song's title, and the artist beside a play or pause mark.
-- **Agenda:** your next few calendar events, each with when it is.
-- **Hourly Forecast Board and 4-Day Forecast Board:** the next six hours, or the next four days with each day's high and low.
+| | | |
+|:--:|:--:|:--:|
+| **Now Playing with Art**<br>![](resources/thumbnails/music-art-full.png) | **Agenda**<br>![](resources/thumbnails/agenda-full.png) | **Heart Rate Today**<br>![](resources/thumbnails/heart-today-full.png) |
+| **Steps Today**<br>![](resources/thumbnails/steps-today-full.png) | **Hourly Forecast Board**<br>![](resources/thumbnails/forecast-hourly-full.png) | **4-Day Forecast Board**<br>![](resources/thumbnails/forecast-daily-full.png) |
+
+Heart Rate Today shows the day's high, average, and low beside your heart rate now. Steps Today shows the total, your busiest hour, this hour, and your active minutes. The Agenda shows your next few calendar events.
 
 ## Themes
 

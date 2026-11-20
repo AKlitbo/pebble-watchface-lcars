@@ -14,9 +14,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Added Now Playing with Art and an Agenda across four panels, showing the album art with the song and artist, or your next few events. The calendar panels take their events from a Pebble app calendar plugin or a private iCal link you paste under Calendar Preferences.
 - Added a note under the panel builder when a panel you placed needs a Pebble app plugin your phone cannot use yet, such as Now Playing while plugins are off.
 - Added Hour, Day, Week, and Year Progress as a percent or as a segmented bar, Precipitation, Feels Like, Pressure, Dew Point, Days Left, Weeks Left, and Weekday Dots readouts, and an Hourly and a 4-Day Forecast across four panels.
-- Added a UV Index Bar, a Swatch Beats Bar, and the moon's phase and the next alarm with their countdowns, each across two panels.
+- Added a UV Index Bar, a Swatch Beats Bar, and bars for the moon and the next alarm, each across two panels. The moon's shows how much is lit and counts down to the next full or new moon, and the alarm's fills over the day before it rings.
 - Added the countdown to the next sunrise or sunset across two panels, with the time it comes.
 - Added daily goals for steps, distance, calories, active minutes, and sleep, and Goal Bars for each across two panels, showing today's reading and your goal beside a bar of how close you are.
+- Added tall panels that fill both panels of a column, each a big reading over a bar or a chart, for the daily goals, your heart rate, the battery, the next alarm, the sun and moon, the next event, and more. They go in either column, so two can sit side by side, and the Sensors Block can now sit on the right too.
 - Added a Distance Unit for the Distance Goal Bar, which starts on the unit your Steps Readout shows.
 - Added a Goal Met Vibration, which buzzes the first time each day you reach your step, distance, calorie, or activity goal. Pick Short, Long, Double, or a Custom pattern of your own.
 

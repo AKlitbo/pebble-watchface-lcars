@@ -44,7 +44,7 @@ static bool s_music_live;
 /** @brief Whether a panel that shows the calendar is placed. */
 static bool calendar_shown(void)
 {
-    return stardate_ops_shows(OPS_FULL_AGENDA) || stardate_ops_shows(OPS_WIDE_EVENT);
+    return stardate_ops_shows(OPS_FULL_AGENDA) || stardate_ops_shows(OPS_WIDE_EVENT) || stardate_ops_shows(OPS_TALL_EVENT);
 }
 
 /** @brief Whether a panel that shows what is playing is placed. */
@@ -96,8 +96,11 @@ static void apply_phone_feeds(bool first)
  */
 static HealthConfig health_cfg(void)
 {
-    bool step_chart = stardate_ops_shows(OPS_WIDE_STEPS) || stardate_ops_shows(OPS_FULL_STEPS);
-    bool heart_chart = stardate_ops_shows(OPS_WIDE_HEART) || stardate_ops_shows(OPS_FULL_HEART);
+    bool step_chart = stardate_ops_shows(OPS_WIDE_STEPS) || stardate_ops_shows(OPS_FULL_STEPS) ||
+                      stardate_ops_shows(OPS_TALL_STEPS_HOURS);
+    // the tall heart panel shows no chart, but its range and average come from the same day of hours
+    bool heart_chart = stardate_ops_shows(OPS_WIDE_HEART) || stardate_ops_shows(OPS_FULL_HEART) ||
+                       stardate_ops_shows(OPS_TALL_HEART_HOURS) || stardate_ops_shows(OPS_TALL_HEART);
 
     return (HealthConfig){
         .live = true,

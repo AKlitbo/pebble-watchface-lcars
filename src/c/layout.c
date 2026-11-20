@@ -55,8 +55,6 @@ static const Zone s_zones[ZONE_COUNT] = {
                        .font_id_fallback = FONT_ANTONIO_32, .rect_fallback = SLOT_BANNER_SM,
                        .font_id_fallback2 = FONT_ANTONIO_28, .rect_fallback2 = SLOT_BANNER_XS,
                        .font_id_fallback3 = FONT_ANTONIO_24, .rect_fallback3 = SLOT_BANNER_XXS},
-    [ZONE_WEATHER]  = {.rect = SLOT_WEATHER,  .font_id = FONT_ANTONIO_20, .align = GTextAlignmentLeft,   .color = GColorWhite},
-    [ZONE_COND]     = {.rect = SLOT_COND,     .font_id = FONT_ANTONIO_16, .align = GTextAlignmentLeft,   .color = GColorWhite},
     [ZONE_LT]       = OPS_ZONE(OPS_COL_L, OPS_ROW_T, OPS_R_L),
     [ZONE_LT_WIDE]  = OPS_ZONE_WIDE(OPS_COL_L, OPS_ROW_T, OPS_R_L),
     [ZONE_LB]       = OPS_ZONE(OPS_COL_L, OPS_ROW_B, OPS_R_L),
@@ -134,12 +132,6 @@ static uint8_t pick(int slot)
     return ids[slot];
 }
 
-/** @brief Whether the left column is showing the one tall weather block instead of two slots. */
-static bool left_is_composite(void)
-{
-    return ops_shape(pick(SLOT_LT)) == OPS_SHAPE_TALL;
-}
-
 bool stardate_ops_shows(uint8_t id)
 {
     uint8_t ids[OPS_CELLS_MAX];
@@ -160,9 +152,9 @@ bool stardate_ops_shows(uint8_t id)
 
 bool stardate_ops_shows_beats(void)
 {
-    // the single panel and the wide bar both count beats, and a slot another panel covers reads
-    // as empty, so the tall block's covered left picks never turn the ticker on
-    return stardate_ops_shows(OPS_BEATS) || stardate_ops_shows(OPS_WIDE_BEATS);
+    // the single panel and the wide and tall bars all count beats, and a slot another panel covers
+    // reads as empty, so a covered pick never turns the ticker on
+    return stardate_ops_shows(OPS_BEATS) || stardate_ops_shows(OPS_WIDE_BEATS) || stardate_ops_shows(OPS_TALL_BEATS);
 }
 
 /**
@@ -312,7 +304,7 @@ static void draw_overlays(GContext *ctx, GRect bounds, const void *data)
     int8_t owner[OPS_CELLS_MAX];
     resolve(ids, owner);
 
-    OpsChrome chrome = {.grid = &s_grid, .left_composite = ops_shape(ids[SLOT_LT]) == OPS_SHAPE_TALL};
+    OpsChrome chrome = {.grid = &s_grid};
 
     for (int slot = 0; slot < OPS_CELLS_MAX; slot++)
     {
@@ -340,8 +332,7 @@ static void draw_overlays(GContext *ctx, GRect bounds, const void *data)
     // quiet-time glyph reads the live SDK state (no change event, so it refreshes on the tick)
     bool bt_show = settings_u8(SETTING_BLUETOOTH_ICON);
     bool qt_show = settings_u8(SETTING_QUIET_TIME_ICON);
-    widgets_draw_glyphs(ctx, &chrome, weather_store_cond(),
-                        bt_show, system_store_bluetooth(), qt_show, quiet_time_is_active());
+    widgets_draw_glyphs(ctx, &chrome, bt_show, system_store_bluetooth(), qt_show, quiet_time_is_active());
 }
 
 void stardate_setup(Window *window)
@@ -374,20 +365,10 @@ uint8_t stardate_build(EngineSlot *out, uint8_t max, GRect bounds)
     out[i++] = (EngineSlot){.zone = &s_zones[ZONE_MERIDIEM], .text = readout_meridiem};
     out[i++] = (EngineSlot){.zone = &s_zones[ZONE_DATE],     .text = readout_date};
 
-    // the left column is either the one tall weather block or two slots and never
-    // both. either way it costs two text layers so the whole face stays inside
-    // ENGINE_SLOTS_MAX
-    if (left_is_composite())
-    {
-        out[i++] = (EngineSlot){.zone = &s_zones[ZONE_COND],    .text = readout_weather_cond};
-        out[i++] = (EngineSlot){.zone = &s_zones[ZONE_WEATHER], .text = readout_weather_temp};
-    }
-    else
-    {
-        out[i++] = (EngineSlot){.zone = ops_zone(SLOT_LT), .text = lt_text};
-        out[i++] = (EngineSlot){.zone = ops_zone(SLOT_LB), .text = lb_text};
-    }
-
+    // a slot under a tall, wide, or full panel keeps its text layer and reads as empty, since the
+    // panel paints itself over the overlays
+    out[i++] = (EngineSlot){.zone = ops_zone(SLOT_LT),       .text = lt_text};
+    out[i++] = (EngineSlot){.zone = ops_zone(SLOT_LB),       .text = lb_text};
     out[i++] = (EngineSlot){.zone = ops_zone(SLOT_RT),       .text = rt_text};
     out[i++] = (EngineSlot){.zone = ops_zone(SLOT_RB),       .text = rb_text};
     out[i++] = (EngineSlot){.zone = &s_zones[ZONE_LAT],      .text = readout_lat};

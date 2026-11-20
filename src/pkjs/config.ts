@@ -52,11 +52,31 @@ const OPS_OPTIONS = [
   { label: 'Empty', value: 20 },
 ];
 
-// the bigger panels. the weather block fills two cells of the left column, a wide panel fills a row,
-// and a full panel fills a 2x2 block. each is only offered where it starts, and the watch reads it as
-// Empty anywhere else
+// the bigger panels. a block fills two cells of a column, a wide panel fills a row, and a full panel
+// fills a 2x2 block. each is only offered where it starts, and the watch reads it as Empty anywhere
+// else. a block goes in either column
 const BIG_PANELS = [
   { label: 'Sensors Block (weather + temperature)', value: 23 },
+  { label: 'Step Goal Block (TRAVERSAL)', value: 64 },
+  { label: 'Distance Goal Block (DISTANCE)', value: 65 },
+  { label: 'Calorie Goal Block (METABOLIC)', value: 66 },
+  { label: 'Active Minutes Goal Block (EXERTION)', value: 67 },
+  { label: 'Sleep Goal Block (REGEN)', value: 68 },
+  { label: 'Heart Rate Block (VITALS)', value: 69 },
+  { label: 'Steps by the Hour Block (TRAVERSAL)', value: 70 },
+  { label: 'Heart Rate by the Hour Block (VITALS)', value: 71 },
+  { label: 'Battery Block (POWER)', value: 72 },
+  { label: 'Next Alarm Block (ALARM)', value: 73 },
+  { label: 'Swatch Beats Block', value: 74 },
+  { label: 'Countdown to Sunrise / Sunset Block', value: 75 },
+  { label: 'Daylight Block (DAYLIGHT)', value: 76 },
+  { label: 'Moon Block (LUNAR)', value: 77 },
+  { label: 'UV Index Block', value: 78 },
+  { label: 'Hour Progress Block', value: 79 },
+  { label: 'Day Progress Block', value: 80 },
+  { label: 'Week Progress Block', value: 81 },
+  { label: 'Year Progress Block', value: 82 },
+  { label: 'Next Event Block (SCHEDULE)', value: 83 },
   { label: 'Daylight Bar (DAYLIGHT)', value: 28 },
   { label: 'Steps by the Hour (TRAVERSAL)', value: 29 },
   { label: 'Heart Rate by the Hour (VITALS)', value: 32 },

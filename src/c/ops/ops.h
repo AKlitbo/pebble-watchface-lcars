@@ -85,8 +85,8 @@ typedef enum
     // the hourly and four day forecasts, each across all four
     OPS_FULL_FORECAST_HOURLY,
     OPS_FULL_FORECAST_DAILY,
-    // a row each: the UV index and the beat day as segmented bars, the moon's phase with its
-    // countdown, and the next alarm with how long until it
+    // a row each as segmented bars: the UV index, how much of the moon is lit with its countdown,
+    // the next alarm with how long until it, and the beat day
     OPS_WIDE_UV,
     OPS_WIDE_MOON,
     OPS_WIDE_ALARM,
@@ -99,6 +99,29 @@ typedef enum
     OPS_WIDE_SLEEP_GOAL,
     // a row with the countdown to the next sunrise or sunset, and when it is
     OPS_WIDE_SUN_NEXT,
+    // a column each, either column: the daily goals, the heart rate and its charts, the battery, the
+    // alarm, .beats, the sun, the moon, UV, the progress of the hour, day, week, and year, and the
+    // next event
+    OPS_TALL_STEP_GOAL,
+    OPS_TALL_DISTANCE_GOAL,
+    OPS_TALL_CALORIE_GOAL,
+    OPS_TALL_ACTIVE_GOAL,
+    OPS_TALL_SLEEP_GOAL,
+    OPS_TALL_HEART,
+    OPS_TALL_STEPS_HOURS,
+    OPS_TALL_HEART_HOURS,
+    OPS_TALL_BATTERY,
+    OPS_TALL_ALARM,
+    OPS_TALL_BEATS,
+    OPS_TALL_SUN_NEXT,
+    OPS_TALL_DAYLIGHT,
+    OPS_TALL_MOON,
+    OPS_TALL_UV,
+    OPS_TALL_HOUR_PROGRESS,
+    OPS_TALL_DAY_PROGRESS,
+    OPS_TALL_WEEK_PROGRESS,
+    OPS_TALL_YEAR_PROGRESS,
+    OPS_TALL_EVENT,
     OPS_COUNT
 } OpsId;
 
@@ -140,7 +163,7 @@ static inline int ops_cell_count(const OpsGrid *grid)
 typedef enum
 {
     OPS_SHAPE_SINGLE, ///< One slot
-    OPS_SHAPE_TALL,   ///< The left column, starting upper left
+    OPS_SHAPE_TALL,   ///< A column, starting from its top slot
     OPS_SHAPE_WIDE,   ///< A row, starting from its left slot
     OPS_SHAPE_FULL,   ///< All four, starting upper left
 } OpsShape;
@@ -209,8 +232,8 @@ OpsShape ops_shape(uint8_t id);
 /**
  * @brief Which cell fills each cell of a grid, from the saved picks.
  *
- * A big pick only counts in a cell where the face draws it: the tall block in the left column, a
- * full panel from the left column, and a wide panel from the left of its row. When two picks claim a
+ * A big pick only counts in a cell where the face draws it: a tall panel from the top of either
+ * column, a full panel from the left column, and a wide panel from the left of its row. When two picks claim a
  * cell the earlier one keeps it, and a big pick that does not fit owns nothing. The settings page's
  * slot builder makes the same calls, so the watch never shows a different face from the one the
  * builder drew.

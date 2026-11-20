@@ -22,8 +22,8 @@ enum
     FONT_ANTONIO_36,  // date banner
     FONT_ANTONIO_32,  // date banner fallback for wide formats
     FONT_ANTONIO_28,  // date banner fallback for the wider formats
-    FONT_ANTONIO_24,  // date banner fallback for the widest formats
-    FONT_ANTONIO_20,  // weather temp
+    FONT_ANTONIO_24,  // date banner fallback for the widest formats, and the tall panels' big readings
+    FONT_ANTONIO_20,  // weather temp, and a tall panel's big reading stepped down
     FONT_ANTONIO_16,  // ops values / condition
     FONT_ANTONIO_14,  // ops value fallback for the longer readings
     FONT_ANTONIO_12,  // lat / lon, and the ops fallback for the longest readings
