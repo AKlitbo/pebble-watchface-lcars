@@ -249,17 +249,41 @@ void ops_text_daylight(char *out, size_t n)
     write_duration(out, n, span);
 }
 
-void ops_text_sun_next(char *out, size_t n)
+/**
+ * @brief How long until the next sunrise or sunset, which one it is, and when.
+ *
+ * The countdown, its word, its glyph, and the time on the wide panel all ask here, so they can never
+ * disagree about which event comes next.
+ *
+ * @param is_sunrise Receives whether the next event is a sunrise. Untouched when there is no reading.
+ * @param at Receives the event's time, minutes past midnight. Untouched when there is no reading.
+ * @return Minutes until it, or -1 when there are no sun times.
+ */
+static int sun_next(bool *is_sunrise, int *at)
 {
     int rise, set;
     if (!sun_minutes(&rise, &set))
     {
-        no_data(out, n);
-        return;
+        return -1;
     }
 
+    bool sunrise = false;
+    int minutes = solar_next_event(rise, set, now_minutes(), &sunrise);
+    if (minutes < 0)
+    {
+        return -1;
+    }
+
+    *is_sunrise = sunrise;
+    *at = sunrise ? rise : set;
+    return minutes;
+}
+
+void ops_text_sun_next(char *out, size_t n)
+{
     bool is_sunrise = false;
-    int minutes = solar_next_event(rise, set, now_minutes(), &is_sunrise);
+    int at = -1;
+    int minutes = sun_next(&is_sunrise, &at);
     if (minutes < 0)
     {
         no_data(out, n);
@@ -269,16 +293,19 @@ void ops_text_sun_next(char *out, size_t n)
     write_duration(out, n, minutes);
 }
 
+void ops_text_sun_next_at(char *out, size_t n)
+{
+    bool is_sunrise = false;
+    int at = -1;
+    sun_next(&is_sunrise, &at);
+    sun_time(out, n, at);
+}
+
 const char *ops_sun_next_label(void)
 {
-    int rise, set;
-    if (!sun_minutes(&rise, &set))
-    {
-        return "SOLAR";
-    }
-
     bool is_sunrise = false;
-    if (solar_next_event(rise, set, now_minutes(), &is_sunrise) < 0)
+    int at = -1;
+    if (sun_next(&is_sunrise, &at) < 0)
     {
         return "SOLAR";
     }
@@ -288,14 +315,9 @@ const char *ops_sun_next_label(void)
 
 uint32_t ops_sun_next_icon(void)
 {
-    int rise, set;
-    if (!sun_minutes(&rise, &set))
-    {
-        return RESOURCE_ID_ICON_SUN;
-    }
-
     bool is_sunrise = false;
-    if (solar_next_event(rise, set, now_minutes(), &is_sunrise) < 0)
+    int at = -1;
+    if (sun_next(&is_sunrise, &at) < 0)
     {
         return RESOURCE_ID_ICON_SUN;
     }
@@ -524,10 +546,7 @@ void ops_text_days_left(char *out, size_t n)
 void ops_text_weeks_left(char *out, size_t n)
 {
     const struct tm *tm = time_store_tm();
-
-    // TODO: a weeks left count belongs in the framework's clock/date.h beside date_days_left_in_year,
-    // and this division goes once it is there
-    snprintf(out, n, "%d", date_days_left_in_year(tm->tm_year + 1900, tm->tm_yday) / 7);
+    snprintf(out, n, "%d", date_weeks_left_in_year(tm->tm_year + 1900, tm->tm_yday));
 }
 
 // --- progress ---

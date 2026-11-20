@@ -1,10 +1,10 @@
 /**
  * @file panels.h
  * @brief Painters for the ops panels bigger than one slot: the daylight bar, steps and heart rate by
- * the hour, now playing, the next event, the hour, day, week, and year progress bars, today's heart
- * rate and steps, now playing with its art, the agenda, and the hourly and four day forecasts across
- * all four. The weekday readout is painted here too,
- * though it fills one slot, since its days are drawn rather than written.
+ * the hour, now playing, the next event, the hour, day, week, and year progress bars, the daily goal
+ * bars, the countdown to the next sunrise or sunset, today's heart rate and steps, now playing with
+ * its art, the agenda, and the hourly and four day forecasts across all four. The weekday readout is
+ * painted here too, though it fills one slot, since its days are drawn rather than written.
  *
  * @ingroup watchface-lcars
  */

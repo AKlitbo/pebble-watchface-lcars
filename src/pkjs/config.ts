@@ -70,6 +70,12 @@ const BIG_PANELS = [
   { label: 'Moon Phase and Countdown', value: 55 },
   { label: 'Next Alarm and Countdown', value: 56 },
   { label: 'Swatch Beats Bar', value: 57 },
+  { label: 'Step Goal Bar (TRAVERSAL GOAL)', value: 58 },
+  { label: 'Distance Goal Bar', value: 59 },
+  { label: 'Calorie Goal Bar (METABOLIC GOAL)', value: 60 },
+  { label: 'Active Minutes Goal Bar (EXERTION GOAL)', value: 61 },
+  { label: 'Sleep Goal Bar (REGEN GOAL)', value: 62 },
+  { label: 'Next Sunrise / Sunset and Countdown', value: 63 },
   { label: 'Now Playing with Art (AUDIO)', value: 34 },
   { label: 'Agenda (SCHEDULE)', value: 35 },
   { label: 'Hourly Forecast Board', value: 52 },
@@ -104,6 +110,7 @@ const THEME_OPTIONS = [
 ];
 
 export default buildConfig({
+  heading: 'Watchface Configuration',
   // the framework's default intro leaves weather out, and this face has it
   intro: 'Personalize your layout, dial in your weather preferences, and make this watchface your own.',
   theme: {
@@ -200,10 +207,11 @@ export default buildConfig({
       ],
     },
   ],
-  // the date line runs through readout_date, so it can end in a .beats reading
-  date: { beats: true },
-  location: { gpsDefault: false },
-  clock: { timeZone: true },
+  // the date line runs through readout_date, so it can end in a .beats reading. it opens on the
+  // numeric stardate-style date
+  date: { beats: true, default: '%Y.%m%d' },
+  location: { gpsDefault: false, placeholder: 'Search a city, e.g. Phoenix' },
+  clock: { timeZone: true, timeZonePlaceholder: 'e.g. Phoenix, UTC, or Europe/London' },
   weather: {},
   calendar: {},
   temperature: {},
@@ -212,5 +220,10 @@ export default buildConfig({
   steps: {
     label: 'Steps Readout',
     description: 'Whether a panel set to Steps counts steps or shows the distance walked.',
+  },
+  // no panel draws a heart rate bar, so the Heart Rate Limit stays off
+  goals: {
+    distanceUnit: { description: 'The unit the Distance Goal Bar reads in. It starts on your Steps Readout unit.' },
+    alerts: { custom: true },
   },
 });

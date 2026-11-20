@@ -15,11 +15,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Added a note under the panel builder when a panel you placed needs a Pebble app plugin your phone cannot use yet, such as Now Playing while plugins are off.
 - Added Hour, Day, Week, and Year Progress as a percent or as a segmented bar, Precipitation, Feels Like, Pressure, Dew Point, Days Left, Weeks Left, and Weekday Dots readouts, and an Hourly and a 4-Day Forecast across four panels.
 - Added a UV Index Bar, a Swatch Beats Bar, and the moon's phase and the next alarm with their countdowns, each across two panels.
+- Added the countdown to the next sunrise or sunset across two panels, with the time it comes.
+- Added daily goals for steps, distance, calories, active minutes, and sleep, and Goal Bars for each across two panels, showing today's reading and your goal beside a bar of how close you are.
+- Added a Distance Unit for the Distance Goal Bar, which starts on the unit your Steps Readout shows.
+- Added a Goal Met Vibration, which buzzes the first time each day you reach your step, distance, calorie, or activity goal. Pick Short, Long, Double, or a Custom pattern of your own.
 
 ### Changed
 
 - Changed the panels to sit evenly between the left rail and the screen's edge.
 - Changed the panel builder's list of readouts into tabs by size, named width by height from 1x1 to 2x2, with a row of groups such as Health and Weather under each. A readout already on the face is dimmed in the list.
+- Changed the plugin notes on the settings page to say "this face" rather than "this watchface".
+
+### Notes
+
+- This release lists Pebble Health among the watchface's permissions, with the reason "To show your Pebble Health readings". If the Pebble app is set to ask before older apps use permissions, it asks you once after the update to allow health.
 
 ## [1.15.1] - 2026-11-14
 

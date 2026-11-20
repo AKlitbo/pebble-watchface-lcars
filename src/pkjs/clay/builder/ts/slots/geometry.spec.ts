@@ -19,6 +19,8 @@ import {
   ID_WIDE_HOUR_PROGRESS, ID_WIDE_DAY_PROGRESS, ID_WIDE_WEEK_PROGRESS, ID_WIDE_YEAR_PROGRESS,
   ID_FULL_FORECAST_HOURLY, ID_FULL_FORECAST_DAILY,
   ID_WIDE_UV, ID_WIDE_MOON, ID_WIDE_ALARM, ID_WIDE_BEATS,
+  ID_WIDE_STEP_GOAL, ID_WIDE_DISTANCE_GOAL, ID_WIDE_CALORIE_GOAL, ID_WIDE_ACTIVE_GOAL, ID_WIDE_SLEEP_GOAL,
+  ID_WIDE_SUN_NEXT,
   SHAPE_SINGLE, SHAPE_TALL, SHAPE_WIDE, SHAPE_FULL,
 } from './geometry';
 
@@ -68,6 +70,12 @@ describe('cellsFor', () => {
     ['the moon strip', ID_WIDE_MOON, [SLOT_LT, SLOT_RT]],
     ['the alarm strip', ID_WIDE_ALARM, [SLOT_LT, SLOT_RT]],
     ['the beats bar', ID_WIDE_BEATS, [SLOT_LT, SLOT_RT]],
+    ['the step goal bar', ID_WIDE_STEP_GOAL, [SLOT_LT, SLOT_RT]],
+    ['the distance goal bar', ID_WIDE_DISTANCE_GOAL, [SLOT_LT, SLOT_RT]],
+    ['the calorie goal bar', ID_WIDE_CALORIE_GOAL, [SLOT_LT, SLOT_RT]],
+    ['the active minutes goal bar', ID_WIDE_ACTIVE_GOAL, [SLOT_LT, SLOT_RT]],
+    ['the sleep goal bar', ID_WIDE_SLEEP_GOAL, [SLOT_LT, SLOT_RT]],
+    ['the sun countdown strip', ID_WIDE_SUN_NEXT, [SLOT_LT, SLOT_RT]],
     ['the hourly forecast board', ID_FULL_FORECAST_HOURLY, [SLOT_LT, SLOT_LB, SLOT_RT, SLOT_RB]],
     ['the four day forecast board', ID_FULL_FORECAST_DAILY, [SLOT_LT, SLOT_LB, SLOT_RT, SLOT_RB]],
   ])('fills the cells the watch draws %s across', (_name, id, cells) => {

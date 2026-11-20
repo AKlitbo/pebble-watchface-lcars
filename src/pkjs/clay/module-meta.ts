@@ -93,6 +93,12 @@ const moduleMeta: Record<string, LcarsModuleMeta> = {
   'Moon Phase and Countdown': { icon: '🌗', blockColor: '#7e57c2', slug: 'moon-wide', group: 'Sky' },
   'Next Alarm and Countdown': { icon: '🔔', blockColor: '#ef5350', slug: 'alarm-wide', group: 'Status' },
   'Swatch Beats Bar':         { icon: '🌐', blockColor: '#e91e63', slug: 'beats-bar', group: 'Clock' },
+  'Step Goal Bar (TRAVERSAL GOAL)':          { icon: '👟', blockColor: '#2ecc71', slug: 'step-goal-bar', group: 'Health' },
+  'Distance Goal Bar':                       { icon: '📏', blockColor: '#27ae60', slug: 'distance-goal-bar', group: 'Health' },
+  'Calorie Goal Bar (METABOLIC GOAL)':       { icon: '🔥', blockColor: '#e67e22', slug: 'calorie-goal-bar', group: 'Health' },
+  'Active Minutes Goal Bar (EXERTION GOAL)': { icon: '🏃', blockColor: '#1abc9c', slug: 'active-goal-bar', group: 'Health' },
+  'Sleep Goal Bar (REGEN GOAL)':             { icon: '😴', blockColor: '#4a5568', slug: 'sleep-goal-bar', group: 'Health' },
+  'Next Sunrise / Sunset and Countdown': { icon: '⏳', blockColor: '#ff8f00', slug: 'sun-next-wide', group: 'Sky', plugin: 'weather' },
   'Hourly Forecast Board': { icon: '⛅', blockColor: '#2196f3', slug: 'forecast-hourly', group: 'Weather', plugin: 'weather' },
   '4-Day Forecast Board':   { icon: '📅', blockColor: '#1976d2', slug: 'forecast-daily', group: 'Weather', plugin: 'weather' },
 };

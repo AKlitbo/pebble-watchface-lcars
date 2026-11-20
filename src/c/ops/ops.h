@@ -91,6 +91,14 @@ typedef enum
     OPS_WIDE_MOON,
     OPS_WIDE_ALARM,
     OPS_WIDE_BEATS,
+    // a row each: today's steps, distance, calories, active minutes, and sleep against the daily goals
+    OPS_WIDE_STEP_GOAL,
+    OPS_WIDE_DISTANCE_GOAL,
+    OPS_WIDE_CALORIE_GOAL,
+    OPS_WIDE_ACTIVE_GOAL,
+    OPS_WIDE_SLEEP_GOAL,
+    // a row with the countdown to the next sunrise or sunset, and when it is
+    OPS_WIDE_SUN_NEXT,
     OPS_COUNT
 } OpsId;
 

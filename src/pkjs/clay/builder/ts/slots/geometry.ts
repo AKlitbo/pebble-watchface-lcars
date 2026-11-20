@@ -64,6 +64,12 @@ export const ID_WIDE_UV = 54;
 export const ID_WIDE_MOON = 55;
 export const ID_WIDE_ALARM = 56;
 export const ID_WIDE_BEATS = 57;
+export const ID_WIDE_STEP_GOAL = 58;
+export const ID_WIDE_DISTANCE_GOAL = 59;
+export const ID_WIDE_CALORIE_GOAL = 60;
+export const ID_WIDE_ACTIVE_GOAL = 61;
+export const ID_WIDE_SLEEP_GOAL = 62;
+export const ID_WIDE_SUN_NEXT = 63;
 
 /** How much of the grid a readout fills. */
 export const SHAPE_SINGLE = 'single';
@@ -97,6 +103,12 @@ const SHAPES: Record<number, Shape> = {
   [ID_WIDE_MOON]: SHAPE_WIDE,
   [ID_WIDE_ALARM]: SHAPE_WIDE,
   [ID_WIDE_BEATS]: SHAPE_WIDE,
+  [ID_WIDE_STEP_GOAL]: SHAPE_WIDE,
+  [ID_WIDE_DISTANCE_GOAL]: SHAPE_WIDE,
+  [ID_WIDE_CALORIE_GOAL]: SHAPE_WIDE,
+  [ID_WIDE_ACTIVE_GOAL]: SHAPE_WIDE,
+  [ID_WIDE_SLEEP_GOAL]: SHAPE_WIDE,
+  [ID_WIDE_SUN_NEXT]: SHAPE_WIDE,
   [ID_FULL_FORECAST_HOURLY]: SHAPE_FULL,
   [ID_FULL_FORECAST_DAILY]: SHAPE_FULL,
 };

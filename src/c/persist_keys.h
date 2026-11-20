@@ -16,6 +16,7 @@
 
 // --- settings blobs (low band, owned by settings_schema.c) ---
 #define LCARS_SETTINGS_KEY 5
+#define LCARS_GOALS_KEY    6 // the daily goals and the goal buzz, chained on after key 5
 
 // --- store snapshots (high band, handed to each store's init) ---
 // 254 (stock) is left reserved, since this face does not wire it. 249 holds the framework's own
@@ -27,3 +28,4 @@
 
 // a stray edit that lets the two bands meet breaks the build instead of a watch in the field
 _Static_assert(LCARS_SETTINGS_KEY < CALENDAR_STORE_KEY, "settings keys must stay below the store keys");
+_Static_assert(LCARS_GOALS_KEY < CALENDAR_STORE_KEY, "settings keys must stay below the store keys");

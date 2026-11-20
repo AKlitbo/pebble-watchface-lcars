@@ -62,6 +62,9 @@ Open LCARS Stardate's settings in the Pebble app.
 | Setting | What It Does |
 | :-- | :-- |
 | Steps Readout | Steps, the default, or the distance walked in miles or kilometres. |
+| Step, Distance, Calorie, Activity, and Sleep Goals | The daily goals the goal bars measure against. 10,000 steps, 5 km, 2000 kcal, 30 active minutes, and 8 hours by default. |
+| Distance Unit | Kilometres or miles, for the Distance Goal Bar. It starts on your Steps Readout's unit, so miles when your steps show miles and kilometres otherwise. |
+| Goal Met Vibration | A buzz the first time each day you reach your step, distance, calorie, or activity goal, except during Quiet Time. Short, Long, Double, or Custom, which plays the Custom Vibration Pattern you type. None by default. |
 
 ### Weather
 
@@ -79,7 +82,7 @@ Open LCARS Stardate's settings in the Pebble app.
 | Fallback to Manual Location | Uses the Manual Location when GPS cannot find you. On by default. |
 | Manual Location | The city the weather is for when GPS is off or cannot find you. |
 
-**Plugins This Watchface Supports.** A closed panel at the foot of the page lists the weather plugins tested with LCARS Stardate and marks the ones on your phone.
+**Plugins This Face Supports.** A closed panel at the foot of the page lists the weather plugins tested with LCARS Stardate and marks the ones on your phone.
 
 ## Permissions
 
@@ -88,6 +91,7 @@ The Pebble app asks for these while Plugins / permissions preview is on. None is
 - **Location:** for Enable Phone GPS and for a weather plugin. Without it, a plugin's weather reads NO PERMISSION.
 - **Internet for `open-meteo.com`:** for Open-Meteo, what the other sources leave out, and the searches on the settings page.
 - **Internet for `openweathermap.org` and `weatherapi.com`:** only while that one is your Data Source.
+- **Health:** for the heart rate, steps, calorie, sleep, and goal panels.
 
 ## Panels
 
@@ -128,6 +132,8 @@ These fill a row, the top or the bottom.
 - **Hour, Day, Week, and Year Progress Bars:** how far through the period it is, with a segment for each five minutes, hour, day, or month.
 - **UV Index Bar and Swatch Beats Bar:** the UV index on a bar up to 11+, or the beat on a bar of the beat day.
 - **Moon Phase and Countdown, and Next Alarm and Countdown:** the moon's phase with the days to the next full or new moon, or the next alarm with how long until it rings.
+- **Step, Distance, Calorie, Active Minutes, and Sleep Goal Bars:** today's reading and your daily goal, with a bar of how close you are.
+- **Next Sunrise / Sunset and Countdown:** how long until the next sunrise or sunset, and the time it comes. Its bar reads DAWN IN or DUSK IN.
 
 ### Full Panels
 

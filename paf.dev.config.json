@@ -206,6 +206,33 @@
             "APPEARANCE_SLOT_RIGHT_TOP": 20,
             "APPEARANCE_SLOT_RIGHT_BOTTOM": 20
           }
+        },
+        {
+          "settings": {
+            "APPEARANCE_THEME": 0,
+            "APPEARANCE_SLOT_LEFT_TOP": 58,
+            "APPEARANCE_SLOT_LEFT_BOTTOM": 59,
+            "APPEARANCE_SLOT_RIGHT_TOP": 20,
+            "APPEARANCE_SLOT_RIGHT_BOTTOM": 20
+          }
+        },
+        {
+          "settings": {
+            "APPEARANCE_THEME": 0,
+            "APPEARANCE_SLOT_LEFT_TOP": 60,
+            "APPEARANCE_SLOT_LEFT_BOTTOM": 61,
+            "APPEARANCE_SLOT_RIGHT_TOP": 20,
+            "APPEARANCE_SLOT_RIGHT_BOTTOM": 20
+          }
+        },
+        {
+          "settings": {
+            "APPEARANCE_THEME": 0,
+            "APPEARANCE_SLOT_LEFT_TOP": 62,
+            "APPEARANCE_SLOT_LEFT_BOTTOM": 63,
+            "APPEARANCE_SLOT_RIGHT_TOP": 20,
+            "APPEARANCE_SLOT_RIGHT_BOTTOM": 20
+          }
         }
       ]
     }
@@ -249,6 +276,12 @@
         [78, 82, 80],
         [62, 66, 64]
       ]
+    },
+    "system": {
+      "battery": 64,
+      "charging": false,
+      "bluetooth": true,
+      "alarmIn": 255
     },
     "music": {
       "title": "Nights in Ten Forward",

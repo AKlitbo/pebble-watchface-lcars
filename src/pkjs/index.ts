@@ -13,6 +13,7 @@ import type { WeatherResult } from '../../paf/ts/weather/util';
 import hiddenStoreComponent from '../../paf/ts/clay/hidden-store-component';
 import clayConfig from './config';
 import slotComponent from './clay/slot-component.g';
+import distanceUnit from './distance-unit';
 
 /**
  * Formats a decimal coordinate in LCARS dash style.
@@ -41,5 +42,7 @@ app.startPebbleApp({
     calendar,
     // the art fills the full Now Playing panel's square
     music.withArtwork({ w: 48, h: 48 }),
+    // a Distance Unit never saved starts on the Steps Readout unit, so the Distance Goal Bar matches the steps
+    distanceUnit,
   ],
 });

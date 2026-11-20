@@ -47,6 +47,14 @@ void ops_text_sunset(char *out, size_t n);
 void ops_text_daylight(char *out, size_t n);
 void ops_text_sun_next(char *out, size_t n);
 
+/**
+ * @brief When the next sunrise or sunset is, as 24 hour HH:MM.
+ *
+ * @param out Output buffer.
+ * @param n Buffer size.
+ */
+void ops_text_sun_next_at(char *out, size_t n);
+
 /** @brief DAWN IN or DUSK IN, whichever event comes next. */
 const char *ops_sun_next_label(void);
 

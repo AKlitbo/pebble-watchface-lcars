@@ -15,6 +15,7 @@
 #include "ops/ops_text.h"
 #include "theme/theme.h"
 #include "widgets/widgets.h"
+#include "health/goals.h"
 #include "health/hr_day.h"
 #include "clock/progress.h"
 #include "clock/solar.h"
@@ -27,6 +28,9 @@
 #include "io/stores/calendar_store.h"
 #include "io/stores/music_store.h"
 #include "io/stores/system_store.h"
+#include "math/pct.h"
+#include "system/settings/settings.h"
+#include "system/settings/setting_values.h"
 #include "system/units/units.h"
 #include "text/text_case.h"
 
@@ -143,6 +147,13 @@ static FontId fit_font(const char *text, int width)
     }
 
     return FONT_ANTONIO_12;
+}
+
+/** @brief How wide a line of text draws in a font. */
+static int text_width(const char *text, FontId font)
+{
+    return graphics_text_layout_get_content_size(text, fonts_get(font), GRect(0, 0, 200, 20), GTextOverflowModeFill,
+                                                 GTextAlignmentLeft).w;
 }
 
 /**
@@ -286,34 +297,29 @@ static void draw_daylight(GContext *ctx, GRect body, uint8_t theme)
 // --- the progress bars ---
 
 /**
- * @brief A reading on the left, and a segmented bar to its right lit as far as it is told.
+ * @brief A segmented bar lit as far as it is told.
  *
  * A segment that is only part way lit lights that part of its width, the way the bar would read
  * with no gaps in it.
  *
  * @param ctx The graphics context.
- * @param body The panel's body.
+ * @param x0 The bar's left edge.
+ * @param y The bar's top.
+ * @param span Room the segments and the gaps between them share.
  * @param theme The active theme.
- * @param text The reading on the left.
  * @param segments How many segments.
  * @param lit How far the bar is lit, in hundredths of a segment, so 250 lights two and a half.
  */
-static void draw_segment_bar(GContext *ctx, GRect body, uint8_t theme, const char *text, int segments, int lit)
+static void draw_segments(GContext *ctx, int x0, int y, int span, uint8_t theme, int segments, int lit)
 {
-    int x0 = body.origin.x + body.size.w - WIDE_RIGHT - (PROGRESS_SPAN - 1);
-    int text_w = x0 - body.origin.x - 3 - 4;
-    put_text(ctx, text, fit_font(text, text_w), GRect(body.origin.x + 3, body.origin.y - TEXT_LIFT, text_w, 18),
-             GTextAlignmentLeft, GColorWhite);
-
-    int y = body.origin.y + 4;
     GColor lit_color = segment_lit(theme);
 
     for (int i = 0; i < segments; i++)
     {
         // the edges are spread over the span, so a count that does not divide it evenly, like the
         // week's seven, gets segments a pixel apart in width rather than a bar that falls short
-        int left = x0 + i * PROGRESS_SPAN / segments;
-        int width = x0 + (i + 1) * PROGRESS_SPAN / segments - 1 - left;
+        int left = x0 + i * span / segments;
+        int width = x0 + (i + 1) * span / segments - 1 - left;
         int share = lit - i * 100;
 
         if (share < 0)
@@ -328,8 +334,9 @@ static void draw_segment_bar(GContext *ctx, GRect body, uint8_t theme, const cha
 
         int lit_w = width * share / 100;
 
-        // a three pixel wide end segment on the day bar only has room for a one pixel round
-        int radius = width >= PROGRESS_RADIUS * 2 ? PROGRESS_RADIUS : 1;
+        // a three pixel wide end segment on the day bar only has room for a one pixel round. the goal
+        // bar's five pixel segments take the full round, the way the daylight bar's do
+        int radius = width >= SUN_SEG_W ? PROGRESS_RADIUS : 1;
         GCornerMask corners = i == 0 ? GCornersLeft : (i == segments - 1 ? GCornersRight : GCornerNone);
 
         graphics_context_set_fill_color(ctx, GColorDarkGray);
@@ -351,6 +358,26 @@ static void draw_segment_bar(GContext *ctx, GRect body, uint8_t theme, const cha
         graphics_context_set_fill_color(ctx, lit_color);
         graphics_fill_rect(ctx, GRect(left, y, lit_w, PROGRESS_BAR_H), radius, lit_corners);
     }
+}
+
+/**
+ * @brief A reading on the left, and a segmented bar to its right lit as far as it is told.
+ *
+ * @param ctx The graphics context.
+ * @param body The panel's body.
+ * @param theme The active theme.
+ * @param text The reading on the left.
+ * @param segments How many segments.
+ * @param lit How far the bar is lit, in hundredths of a segment, so 250 lights two and a half.
+ */
+static void draw_segment_bar(GContext *ctx, GRect body, uint8_t theme, const char *text, int segments, int lit)
+{
+    int x0 = body.origin.x + body.size.w - WIDE_RIGHT - (PROGRESS_SPAN - 1);
+    int text_w = x0 - body.origin.x - 3 - 4;
+    put_text(ctx, text, fit_font(text, text_w), GRect(body.origin.x + 3, body.origin.y - TEXT_LIFT, text_w, 18),
+             GTextAlignmentLeft, GColorWhite);
+
+    draw_segments(ctx, x0, body.origin.y + 4, PROGRESS_SPAN, theme, segments, lit);
 }
 
 /**
@@ -413,6 +440,136 @@ static void draw_beats(GContext *ctx, GRect body, uint8_t theme)
 
     // a thousand beats over ten segments is a hundred a segment, so the beat is the hundredths lit
     draw_segment_bar(ctx, body, theme, text, BEATS_SEGMENTS, units_swatch_beats());
+}
+
+// --- the daily goals ---
+
+#define GOAL_SEGMENTS 10 ///< A goal bar's segments, ten percent of the goal each
+#define GOAL_SPAN 60     ///< Room the goal bar's segments and gaps share, five pixels a segment like the daylight bar's, which leaves the goal room beside the reading
+#define GOAL_GAP 3       ///< Between today's reading and the goal after it
+#define GOAL_DROP 3      ///< Antonio 12 sits higher in its box than Antonio 16, so the goal drops to share the reading's line
+
+/**
+ * @brief Today's reading, the goal after it, and a bar lit as far towards the goal as it has come.
+ *
+ * The goal is written smaller and in the label colour, so the reading stays the biggest thing on the
+ * row. The reading gets the room the goal leaves, and steps down a size if that runs short.
+ *
+ * A met goal fills the bar and stops there. No reading yet writes two dashes and lights nothing.
+ *
+ * @param ctx The graphics context.
+ * @param body The panel's body.
+ * @param theme The active theme.
+ * @param text The reading, already written the way the panel shows it.
+ * @param value The reading in the goal's own unit, below zero for none.
+ * @param goal_text The goal, already written, or "" to leave it off.
+ * @param goal The goal in the reading's unit.
+ */
+static void draw_goal(GContext *ctx, GRect body, uint8_t theme, const char *text, int value, const char *goal_text,
+                      int goal)
+{
+    int x0 = body.origin.x + body.size.w - WIDE_RIGHT - (GOAL_SPAN - 1);
+    int text_x = body.origin.x + 3;
+    int text_y = body.origin.y - TEXT_LIFT;
+    int room = x0 - 4 - text_x;
+
+    char of[20] = "";
+    int of_w = 0;
+    if (goal_text[0] != '\0')
+    {
+        snprintf(of, sizeof(of), "/%s", goal_text);
+        of_w = text_width(of, FONT_ANTONIO_12);
+    }
+
+    int text_w = of_w > 0 ? room - of_w - GOAL_GAP : room;
+    FontId font = fit_font(text, text_w);
+    put_text(ctx, text, font, GRect(text_x, text_y, text_w, 18), GTextAlignmentLeft, GColorWhite);
+
+    if (of_w > 0)
+    {
+        // the goal follows the reading as drawn, so a short reading keeps the two together
+        int drawn_w = text_width(text, font);
+        int of_x = text_x + (drawn_w < text_w ? drawn_w : text_w) + GOAL_GAP;
+        put_text(ctx, of, FONT_ANTONIO_12, GRect(of_x, text_y + GOAL_DROP, of_w + 2, 16), GTextAlignmentLeft,
+                 label_color_for_theme(theme));
+    }
+
+    draw_segments(ctx, x0, body.origin.y + 4, GOAL_SPAN, theme, GOAL_SEGMENTS, pct_of(value, goal) * GOAL_SEGMENTS);
+}
+
+/**
+ * @brief The goal bar a pick stands for, with its reading and the wearer's goal.
+ *
+ * Each goal is written in its reading's unit, so distance follows the Distance Unit, sleep reads in
+ * hours, and active time in minutes.
+ *
+ * @param ctx The graphics context.
+ * @param body The panel's body.
+ * @param theme The active theme.
+ * @param id The OpsId, one of the goal bars.
+ */
+static void draw_goal_for(GContext *ctx, GRect body, uint8_t theme, uint8_t id)
+{
+    char text[16];
+    char goal_text[16];
+    int value;
+    int goal;
+
+    switch (id)
+    {
+        case OPS_WIDE_STEP_GOAL:
+            value = health_store_steps();
+            goal = goals_steps(settings_u8(SETTING_GOAL_STEPS));
+            write_number(text, sizeof(text), value);
+            snprintf(goal_text, sizeof(goal_text), "%d", goal);
+            break;
+        case OPS_WIDE_DISTANCE_GOAL:
+        {
+            bool miles = settings_u8(SETTING_DISTANCE_UNIT) == DISTANCE_UNIT_MILES;
+
+            // the distance reads 0 rather than -1 with no reading, so the step count tells the two
+            // apart, the way the steps readout does
+            value = health_store_steps() < 0 ? -1 : health_store_distance_m();
+            goal = goals_distance_m(settings_u8(SETTING_GOAL_DISTANCE));
+            if (value < 0)
+            {
+                snprintf(text, sizeof(text), "--");
+            }
+            else
+            {
+                // the goal after it carries the unit for both, the way the active minutes' does. with
+                // the unit on each, a 25.3 KM walk beside a 20.0 KM goal has no room left at any size
+                units_format_distance_value(text, sizeof(text), value, miles);
+            }
+
+            units_format_distance(goal_text, sizeof(goal_text), goal, miles);
+            break;
+        }
+        case OPS_WIDE_CALORIE_GOAL:
+            value = health_store_calories();
+            goal = goals_calories(settings_u8(SETTING_GOAL_CALORIES));
+            ops_text_calories(text, sizeof(text));
+            snprintf(goal_text, sizeof(goal_text), "%d", goal);
+            break;
+        case OPS_WIDE_ACTIVE_GOAL:
+            value = health_store_active_min();
+            goal = goals_active_min(settings_u8(SETTING_GOAL_ACTIVE));
+            ops_text_active(text, sizeof(text));
+            // the reading is a bare count, so the goal carries the unit for both
+            snprintf(goal_text, sizeof(goal_text), "%d MIN", goal);
+            break;
+        case OPS_WIDE_SLEEP_GOAL:
+            value = health_store_sleep_min();
+            goal = goals_sleep_min(settings_u8(SETTING_GOAL_SLEEP));
+            ops_text_sleep(text, sizeof(text));
+            // the settings page only offers whole hours
+            snprintf(goal_text, sizeof(goal_text), "%dH", goal / 60);
+            break;
+        default:
+            return;
+    }
+
+    draw_goal(ctx, body, theme, text, value, goal > 0 ? goal_text : "", goal);
 }
 
 // --- the days of the week ---
@@ -958,13 +1115,6 @@ static void event_when(const CalendarEvent *event, time_t now, char *out, size_t
     snprintf(out, n, "%s %02d:%02d", day, start.tm_hour, start.tm_min);
 }
 
-/** @brief How wide a line of text draws in a font. */
-static int text_width(const char *text, FontId font)
-{
-    return graphics_text_layout_get_content_size(text, fonts_get(font), GRect(0, 0, 200, 20), GTextOverflowModeFill,
-                                                 GTextAlignmentLeft).w;
-}
-
 /**
  * @brief The events still to come or still on, in the order the phone sent them.
  *
@@ -1065,7 +1215,7 @@ static void draw_agenda_full(GContext *ctx, GRect body, uint8_t theme)
     }
 }
 
-// --- the moon and the next alarm ---
+// --- the moon, the next alarm, and the next sunrise or sunset ---
 
 /**
  * @brief A glyph and a reading on the left, and a second reading set against the right edge.
@@ -1160,6 +1310,25 @@ static void draw_alarm(GContext *ctx, GRect body, uint8_t theme)
     draw_pair(ctx, body, theme, RESOURCE_ID_ICON_ALARM, when, until);
 }
 
+/**
+ * @brief The countdown to the next sunrise or sunset beside its glyph, and the time it comes at.
+ *
+ * The bar's word says which of the two it is, so the row only needs how long and when.
+ *
+ * @param ctx The graphics context.
+ * @param body The panel's body.
+ * @param theme The active theme.
+ */
+static void draw_sun_next(GContext *ctx, GRect body, uint8_t theme)
+{
+    char until[16];
+    char at[8];
+
+    ops_text_sun_next(until, sizeof(until));
+    ops_text_sun_next_at(at, sizeof(at));
+    draw_pair(ctx, body, theme, ops_sun_next_icon(), until, at);
+}
+
 bool panels_paints(uint8_t id)
 {
     OpsShape shape = ops_shape(id);
@@ -1242,6 +1411,16 @@ void panels_draw(GContext *ctx, const OpsGrid *grid, uint8_t id, int slot)
             break;
         case OPS_WIDE_BEATS:
             draw_beats(ctx, body, theme);
+            break;
+        case OPS_WIDE_STEP_GOAL:
+        case OPS_WIDE_DISTANCE_GOAL:
+        case OPS_WIDE_CALORIE_GOAL:
+        case OPS_WIDE_ACTIVE_GOAL:
+        case OPS_WIDE_SLEEP_GOAL:
+            draw_goal_for(ctx, body, theme, id);
+            break;
+        case OPS_WIDE_SUN_NEXT:
+            draw_sun_next(ctx, body, theme);
             break;
         default:
             break;

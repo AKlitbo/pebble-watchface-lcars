@@ -3,7 +3,8 @@
  * @brief The face's settings schema, the struct its settings are saved in and read back from.
  *
  * Key 5 and the 21-byte v1 size never change, since changing either makes every watch
- * already running the face lose its settings.
+ * already running the face lose its settings. The daily goals sit in a second struct on key 6,
+ * chained on after it.
  *
  * @ingroup watchface-lcars
  */
@@ -12,6 +13,7 @@
 #include "system/settings/settings_catalog.h"
 #include "system/settings/setting_values.h"
 #include "clock/zone_setting.h"
+#include "health/goals.h"
 #include "persist_keys.h"
 
 #include <stddef.h>
@@ -91,7 +93,7 @@ static LcarsSettings s_settings;
 // its default from the settings page, so the date opens on the numeric stardate-style "%Y.%m%d"
 static const SettingField s_fields[] = {
     KNOWN_TEMPERATURE_UNIT(offsetof(LcarsSettings, temperature_unit)),
-    KNOWN_DATE_FORMAT(offsetof(LcarsSettings, date_format)),
+    KNOWN_DATE_FORMAT(LcarsSettings, date_format),
     KNOWN_THEME(offsetof(LcarsSettings, theme), LCARS_THEME_COUNT),
     KNOWN_STEPS_MODE(offsetof(LcarsSettings, steps_mode)),
     KNOWN_TIME_FORMAT(offsetof(LcarsSettings, time_format)),
@@ -185,6 +187,54 @@ static bool lcars_migrate(int stored_size)
     return true;
 }
 
+#define LCARS_GOALS_VERSION 1
+
+/**
+ * @brief The daily goals and the goal buzz, saved on their own key beside the main blob.
+ *
+ * Keeping them apart leaves the main blob at its frozen layout, so a saved watch reads back every
+ * setting it holds. Like the main one, members may be renamed but only ever appended.
+ */
+typedef struct LcarsGoalSettings
+{
+    uint8_t version;               ///< the goals blob's own version
+    uint8_t goal_steps;            ///< an index into goals_steps
+    uint8_t goal_distance;         ///< an index into goals_distance_m
+    uint8_t goal_calories;         ///< an index into goals_calories
+    uint8_t goal_active;           ///< an index into goals_active_min
+    uint8_t goal_sleep;            ///< an index into goals_sleep_min
+    uint8_t distance_unit;         ///< a DistanceUnit, for the Distance Goal Bar
+    char    goal_vibe[64];         ///< the Goal Met Vibration pick
+    char    goal_vibe_custom[122]; ///< the Custom Vibration Pattern
+} LcarsGoalSettings;
+
+// the goals blob's first size. fields are append-only so this never changes
+#define LCARS_GOALS_V1_SIZE 193
+
+_Static_assert(sizeof(LcarsGoalSettings) == LCARS_GOALS_V1_SIZE, "lcars goals blob size is frozen at 193 bytes (v1)");
+
+static LcarsGoalSettings s_goals;
+
+// the heart rate limit is left out, since no panel here draws a heart rate bar against it
+static const SettingField s_goal_fields[] = {
+    KNOWN_GOAL_STEPS(offsetof(LcarsGoalSettings, goal_steps)),
+    KNOWN_GOAL_DISTANCE(offsetof(LcarsGoalSettings, goal_distance)),
+    KNOWN_GOAL_CALORIES(offsetof(LcarsGoalSettings, goal_calories)),
+    KNOWN_GOAL_ACTIVE(offsetof(LcarsGoalSettings, goal_active)),
+    KNOWN_GOAL_SLEEP(offsetof(LcarsGoalSettings, goal_sleep)),
+    KNOWN_DISTANCE_UNIT(offsetof(LcarsGoalSettings, distance_unit)),
+    KNOWN_GOAL_VIBE(LcarsGoalSettings, goal_vibe),
+    KNOWN_GOAL_VIBE_CUSTOM(LcarsGoalSettings, goal_vibe_custom),
+};
+
+static const SettingsSchema s_goals_schema = {
+    .key = LCARS_GOALS_KEY,
+    .version = LCARS_GOALS_VERSION,
+    SETTINGS_BLOB(s_goals, LCARS_GOALS_V1_SIZE),
+    .fields = s_goal_fields,
+    .field_count = ARRAY_LENGTH(s_goal_fields),
+};
+
 static const SettingsSchema s_schema = {
     .key = LCARS_SETTINGS_KEY,
     .version = LCARS_SETTINGS_VERSION,
@@ -192,6 +242,7 @@ static const SettingsSchema s_schema = {
     .fields = s_fields,
     .field_count = ARRAY_LENGTH(s_fields),
     .migrate = lcars_migrate,
+    .companion = &s_goals_schema,
 };
 
 const SettingsSchema *lcars_settings_schema(void)

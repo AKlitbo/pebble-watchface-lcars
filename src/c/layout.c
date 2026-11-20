@@ -160,19 +160,9 @@ bool stardate_ops_shows(uint8_t id)
 
 bool stardate_ops_shows_beats(void)
 {
-    if (pick(SLOT_RT) == OPS_BEATS || pick(SLOT_RB) == OPS_BEATS)
-    {
-        return true;
-    }
-
-    // the tall block fills the left column, so neither left pick is drawn and neither one
-    // needs the ticker
-    if (left_is_composite())
-    {
-        return false;
-    }
-
-    return pick(SLOT_LT) == OPS_BEATS || pick(SLOT_LB) == OPS_BEATS;
+    // the single panel and the wide bar both count beats, and a slot another panel covers reads
+    // as empty, so the tall block's covered left picks never turn the ticker on
+    return stardate_ops_shows(OPS_BEATS) || stardate_ops_shows(OPS_WIDE_BEATS);
 }
 
 /**

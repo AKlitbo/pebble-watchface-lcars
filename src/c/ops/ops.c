@@ -120,6 +120,17 @@ static const OpsReadout s_catalog[OPS_COUNT] = {
     [OPS_WIDE_MOON]  = {.label = "LUNAR",    .shape = OPS_SHAPE_WIDE},
     [OPS_WIDE_ALARM] = {.label = "ALARM",    .shape = OPS_SHAPE_WIDE},
     [OPS_WIDE_BEATS] = {.label = "BEATS",    .shape = OPS_SHAPE_WIDE},
+
+    // the goal bars keep the words the single health readouts use, except distance, since RANGE
+    // already names the temperature panel
+    [OPS_WIDE_STEP_GOAL]     = {.label = "TRAVERSAL GOAL", .shape = OPS_SHAPE_WIDE},
+    [OPS_WIDE_DISTANCE_GOAL] = {.label = "DISTANCE GOAL",  .shape = OPS_SHAPE_WIDE},
+    [OPS_WIDE_CALORIE_GOAL]  = {.label = "METABOLIC GOAL", .shape = OPS_SHAPE_WIDE},
+    [OPS_WIDE_ACTIVE_GOAL]   = {.label = "EXERTION GOAL",  .shape = OPS_SHAPE_WIDE},
+    [OPS_WIDE_SLEEP_GOAL]    = {.label = "REGEN GOAL",     .shape = OPS_SHAPE_WIDE},
+
+    // the word moves with the countdown the way the single one's does, DAWN IN or DUSK IN
+    [OPS_WIDE_SUN_NEXT] = {.label_for = ops_sun_next_label, .shape = OPS_SHAPE_WIDE},
 };
 
 const OpsReadout *ops_entry(uint8_t id)

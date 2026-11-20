@@ -89,10 +89,10 @@ static void apply_phone_feeds(bool first)
 /**
  * @brief The health store's rules from what the ops panels show.
  *
- * An ops slot can show sleep, active minutes or calories, and those three each cost a read the
- * watch does not cache, so they are always on. The two hourly parts only run while a chart panel
- * draws them. The heart rate one reads the watch's minute log at launch, which is real work for a
- * panel nobody placed.
+ * An ops slot can show sleep, active minutes, calories, or distance, and the goal buzz watches all
+ * but sleep, so those four are always on. Each costs a read the watch does not cache. The two hourly
+ * parts only run while a chart panel draws them. The heart rate one reads the watch's minute log at
+ * launch, which is real work for a panel nobody placed.
  */
 static HealthConfig health_cfg(void)
 {
@@ -179,6 +179,18 @@ static void on_time_tick(void)
     vibe_hourly(time_store_tm(), settings_u8(SETTING_HOURLY_VIBE));
 }
 
+/**
+ * @brief Health store callback: repaint the slots and check the daily goals.
+ *
+ * The store has one subscriber slot, so the goal buzz rides on the repaint. vibe_goal buzzes each
+ * goal once a day, so a call on every reading costs little.
+ */
+static void on_health_changed(void)
+{
+    engine_mark_dirty();
+    vibe_goal();
+}
+
 static void init(void)
 {
     settings_init(lcars_settings_schema());
@@ -201,14 +213,20 @@ static void init(void)
     }
     lcars_dev_seed_stores();
 
+    // health_store_init reads the totals without calling back, so the goals are checked once here,
+    // after both the health and time stores are up. without it a relaunch close to a goal sees the
+    // goal already past on its first check, and that day's buzz is lost
+    vibe_goal();
+
     s_window = window_create();
     stardate_setup(s_window);              // fonts + frame + overlays
     engine_init(s_window, stardate_build); // build the slot layers over the frame
     window_stack_push(s_window, true);
 
-    // any store change repaints all slots. the time tick also drives the hourly vibe
+    // any store change repaints all slots. the time tick also drives the hourly vibe, and a health
+    // reading the goal buzz
     time_store_subscribe(on_time_tick);
-    health_store_subscribe(engine_mark_dirty);
+    health_store_subscribe(on_health_changed);
     calendar_store_subscribe(engine_mark_dirty);
     music_store_subscribe(engine_mark_dirty);
     weather_store_subscribe(engine_mark_dirty);
