@@ -1,0 +1,284 @@
+{
+  "clock": "14:25",
+  "walk": "progress",
+  "settings": {
+    "APPEARANCE_THEME": 0
+  },
+  "walks": {
+    "bigpanels": {
+      "steps": [
+        {
+          "settings": {
+            "APPEARANCE_THEME": 0,
+            "APPEARANCE_SLOT_LEFT_TOP": 35,
+            "APPEARANCE_SLOT_LEFT_BOTTOM": 20,
+            "APPEARANCE_SLOT_RIGHT_TOP": 20,
+            "APPEARANCE_SLOT_RIGHT_BOTTOM": 20
+          }
+        },
+        {
+          "settings": {
+            "APPEARANCE_THEME": 0,
+            "APPEARANCE_SLOT_LEFT_TOP": 33,
+            "APPEARANCE_SLOT_LEFT_BOTTOM": 36,
+            "APPEARANCE_SLOT_RIGHT_TOP": 20,
+            "APPEARANCE_SLOT_RIGHT_BOTTOM": 20
+          }
+        },
+        {
+          "settings": {
+            "APPEARANCE_THEME": 0,
+            "APPEARANCE_SLOT_LEFT_TOP": 34,
+            "APPEARANCE_SLOT_LEFT_BOTTOM": 20,
+            "APPEARANCE_SLOT_RIGHT_TOP": 20,
+            "APPEARANCE_SLOT_RIGHT_BOTTOM": 20
+          }
+        },
+        {
+          "settings": {
+            "APPEARANCE_THEME": 0,
+            "APPEARANCE_SLOT_LEFT_TOP": 28,
+            "APPEARANCE_SLOT_LEFT_BOTTOM": 29,
+            "APPEARANCE_SLOT_RIGHT_TOP": 20,
+            "APPEARANCE_SLOT_RIGHT_BOTTOM": 20
+          }
+        },
+        {
+          "settings": {
+            "APPEARANCE_THEME": 0,
+            "APPEARANCE_SLOT_LEFT_TOP": 32,
+            "APPEARANCE_SLOT_LEFT_BOTTOM": 28,
+            "APPEARANCE_SLOT_RIGHT_TOP": 20,
+            "APPEARANCE_SLOT_RIGHT_BOTTOM": 20
+          }
+        },
+        {
+          "settings": {
+            "APPEARANCE_THEME": 0,
+            "APPEARANCE_SLOT_LEFT_TOP": 30,
+            "APPEARANCE_SLOT_LEFT_BOTTOM": 20,
+            "APPEARANCE_SLOT_RIGHT_TOP": 20,
+            "APPEARANCE_SLOT_RIGHT_BOTTOM": 20
+          }
+        },
+        {
+          "settings": {
+            "APPEARANCE_THEME": 0,
+            "APPEARANCE_SLOT_LEFT_TOP": 31,
+            "APPEARANCE_SLOT_LEFT_BOTTOM": 20,
+            "APPEARANCE_SLOT_RIGHT_TOP": 20,
+            "APPEARANCE_SLOT_RIGHT_BOTTOM": 20
+          }
+        }
+      ]
+    },
+    "progress": {
+      "clock": "15:47",
+      "date": "2026-10-28",
+      "steps": [
+        {
+          "settings": {
+            "APPEARANCE_THEME": 0,
+            "APPEARANCE_SLOT_LEFT_TOP": 37,
+            "APPEARANCE_SLOT_LEFT_BOTTOM": 38,
+            "APPEARANCE_SLOT_RIGHT_TOP": 39,
+            "APPEARANCE_SLOT_RIGHT_BOTTOM": 40
+          }
+        },
+        {
+          "settings": {
+            "APPEARANCE_THEME": 0,
+            "APPEARANCE_SLOT_LEFT_TOP": 41,
+            "APPEARANCE_SLOT_LEFT_BOTTOM": 42,
+            "APPEARANCE_SLOT_RIGHT_TOP": 20,
+            "APPEARANCE_SLOT_RIGHT_BOTTOM": 20
+          }
+        },
+        {
+          "settings": {
+            "APPEARANCE_THEME": 0,
+            "APPEARANCE_SLOT_LEFT_TOP": 43,
+            "APPEARANCE_SLOT_LEFT_BOTTOM": 44,
+            "APPEARANCE_SLOT_RIGHT_TOP": 20,
+            "APPEARANCE_SLOT_RIGHT_BOTTOM": 20
+          }
+        }
+      ]
+    },
+    "extras": {
+      "clock": "15:47",
+      "date": "2026-10-28",
+      "stores": {
+        "weather": {
+          "temp": 18,
+          "cond": "CLEAR",
+          "humidity": 41,
+          "windKmh": 12,
+          "windDir": "NW",
+          "sunrise": "06:31",
+          "sunset": "19:42",
+          "uv": 5,
+          "tempMax": 24,
+          "tempMin": 12,
+          "precipChance": 40,
+          "feelsLike": 16,
+          "pressure": 1016,
+          "dewPoint": 9,
+          "hourly": {
+            "from": 16,
+            "every": 1,
+            "columns": [
+              ["PCLDY", 18],
+              ["CLDY", 17],
+              ["SHWR", 15],
+              ["RAIN", 14],
+              ["RAIN_NIGHT", 12],
+              ["CLDY_NIGHT", 11],
+              ["PCLDY_NIGHT", 10],
+              ["CLEAR_NIGHT", 9]
+            ]
+          },
+          "daily": {
+            "from": "wed",
+            "columns": [
+              ["SHWR", 18, 9],
+              ["CLEAR", 21, 8],
+              ["PCLDY", 16, 7],
+              ["SNOW", 2, -6],
+              ["STRM", 19, 12],
+              ["FOGGY", 11, 4],
+              ["CLDY", 13, 5]
+            ]
+          }
+        }
+      },
+      "steps": [
+        {
+          "settings": {
+            "APPEARANCE_THEME": 0,
+            "APPEARANCE_SLOT_LEFT_TOP": 45,
+            "APPEARANCE_SLOT_LEFT_BOTTOM": 46,
+            "APPEARANCE_SLOT_RIGHT_TOP": 47,
+            "APPEARANCE_SLOT_RIGHT_BOTTOM": 48
+          }
+        },
+        {
+          "settings": {
+            "APPEARANCE_THEME": 0,
+            "APPEARANCE_SLOT_LEFT_TOP": 49,
+            "APPEARANCE_SLOT_LEFT_BOTTOM": 50,
+            "APPEARANCE_SLOT_RIGHT_TOP": 51,
+            "APPEARANCE_SLOT_RIGHT_BOTTOM": 20
+          }
+        },
+        {
+          "settings": {
+            "APPEARANCE_THEME": 0,
+            "APPEARANCE_SLOT_LEFT_TOP": 52,
+            "APPEARANCE_SLOT_LEFT_BOTTOM": 20,
+            "APPEARANCE_SLOT_RIGHT_TOP": 20,
+            "APPEARANCE_SLOT_RIGHT_BOTTOM": 20
+          }
+        },
+        {
+          "settings": {
+            "APPEARANCE_THEME": 0,
+            "APPEARANCE_SLOT_LEFT_TOP": 53,
+            "APPEARANCE_SLOT_LEFT_BOTTOM": 20,
+            "APPEARANCE_SLOT_RIGHT_TOP": 20,
+            "APPEARANCE_SLOT_RIGHT_BOTTOM": 20
+          }
+        },
+        {
+          "settings": {
+            "APPEARANCE_THEME": 0,
+            "APPEARANCE_SLOT_LEFT_TOP": 54,
+            "APPEARANCE_SLOT_LEFT_BOTTOM": 55,
+            "APPEARANCE_SLOT_RIGHT_TOP": 20,
+            "APPEARANCE_SLOT_RIGHT_BOTTOM": 20
+          }
+        },
+        {
+          "settings": {
+            "APPEARANCE_THEME": 0,
+            "APPEARANCE_SLOT_LEFT_TOP": 56,
+            "APPEARANCE_SLOT_LEFT_BOTTOM": 57,
+            "APPEARANCE_SLOT_RIGHT_TOP": 20,
+            "APPEARANCE_SLOT_RIGHT_BOTTOM": 20
+          }
+        }
+      ]
+    }
+  },
+  "stores": {
+    "weather": {
+      "temp": 18,
+      "cond": "CLEAR",
+      "humidity": 41,
+      "windKmh": 12,
+      "windDir": "NW",
+      "sunrise": "06:31",
+      "sunset": "19:42",
+      "uv": 5,
+      "tempMax": 24,
+      "tempMin": 12,
+      "precipChance": 10
+    },
+    "health": {
+      "hr": 64,
+      "steps": 9742,
+      "calories": 420,
+      "sleepMin": 431,
+      "activeMin": 52,
+      "distanceM": 6100,
+      "stepHourly": [0, 0, 0, 0, 0, 0, 120, 840, 1260, 460, 380, 920, 1840, 711, 1211],
+      "hrDay": [
+        [56, 55, 54],
+        [54, 53, 55],
+        [53, 52, 54],
+        [53, 54, 52],
+        [55, 54, 56],
+        [58, 57, 59],
+        [64, 68, 66],
+        [82, 86, 84],
+        [76, 80, 78],
+        [70, 74, 72],
+        [74, 78, 76],
+        [86, 90, 88],
+        [108, 116, 112],
+        [78, 82, 80],
+        [62, 66, 64]
+      ]
+    },
+    "music": {
+      "title": "Nights in Ten Forward",
+      "artist": "The Ops Quartet",
+      "playing": true
+    },
+    "calendar": [
+      {
+        "title": "Staff Meeting",
+        "location": "Bridge",
+        "inMinutes": 35,
+        "minutes": 60
+      },
+      {
+        "title": "Stellar Cartography",
+        "location": "Deck 8",
+        "inMinutes": 150,
+        "minutes": 45
+      },
+      {
+        "title": "Dinner at Guinan's",
+        "location": "Ten Forward",
+        "inMinutes": 1500,
+        "minutes": 90
+      },
+      {
+        "title": "Shore Leave",
+        "allDay": true,
+        "inDays": 2
+      }
+    ]
+  }
+}

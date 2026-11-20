@@ -1,9 +1,12 @@
 /*
-  Slot builder styling. The face is a sketch, not a render: the rail and the clock are there to
-  say where on the watch the panels sit, and only the four panels are interactive.
+  Slot builder styling. The face is a sketch, not a render: the rail is there to say where on the
+  watch the panels sit, and only the panels are interactive.
 
   Colours are the classic LCARS palette so the sketch reads as this watchface rather than as a
   generic grid. The panels themselves show real cropped screenshots, so they carry their own.
+
+  The palette under the face is the framework's, laid out by its palette.css. The colours of its
+  tabs and its box are set here.
 */
 
 .sb {
@@ -11,6 +14,11 @@
   --sb-slot-h: 44px;
   --sb-gap: 4px;
   --sb-label: #ffaa00;
+  /* the section around the builder already pads it, so the palette and the warnings need no gutter
+     of their own */
+  --pf-palette-gutter: 0px;
+  --pf-palette-panel: #0a0a0a;
+  --pf-palette-line: #3a3a44;
 }
 
 .sb-header {
@@ -73,7 +81,7 @@
   background: #ffaa55;
 }
 
-/* --- the four panels --- */
+/* --- the panels --- */
 
 /* the columns give way before the rail does, so a narrow page loses a little panel width rather
    than the shape of the face */
@@ -98,26 +106,8 @@
   justify-content: center;
 }
 
-.sb-slot[data-slot='0'] {
-  grid-area: 1 / 1;
-}
-.sb-slot[data-slot='1'] {
-  grid-area: 2 / 1;
-}
-.sb-slot[data-slot='2'] {
-  grid-area: 1 / 2;
-}
-.sb-slot[data-slot='3'] {
-  grid-area: 2 / 2;
-}
-
-/* the sensors block fills the left column, so its lower neighbour goes away entirely */
-.sb-slots.tall .sb-slot[data-slot='0'] {
-  grid-area: 1 / 1 / span 2 / span 1;
-}
-.sb-slots.tall .sb-slot[data-slot='1'] {
-  display: none;
-}
+/* each panel's grid area is set by the builder from the readout in it. a big readout spans the
+   cells it fills, and the boxes it covers are hidden */
 
 .sb-slot.filled {
   border-style: solid;
@@ -191,59 +181,58 @@
   color: #ffaaaa;
 }
 
-/* --- palette --- */
-
-/* four across, each row tall enough for a panel shot at its own size. the shots are 69x30 crops
-   of the real watch, and scaling them up only softens pixel art that is already the right size */
-.sb-palette {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  grid-auto-rows: 34px;
-  gap: 4px;
-}
-
-/* the sensors block is a whole column on the watch, so it gets two rows here rather than being
-   squashed into a one-row box at the wrong aspect */
-.sb-pal.tall {
-  grid-row: span 2;
-  height: 72px;
-}
-
-.sb-pal {
-  position: relative;
-  height: 34px;
-  border-radius: 3px;
-  overflow: hidden;
-  background: #000;
-  cursor: grab;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  touch-action: none;
-}
-
-/* left at its own size rather than stretched to the cell, so the crop stays pixel for pixel what
-   the watch draws */
-.sb-pal-img {
-  max-width: 100%;
-  max-height: 100%;
-  pointer-events: none;
-  image-rendering: pixelated;
-}
-
-/* the fallback when a readout has no screenshot: its tint plus its emoji and name */
-.sb-pal-fallback {
-  flex-direction: column;
-  gap: 2px;
+/* the fallback when a readout has no screenshot: its tint behind its emoji */
+.sb-fallback {
   color: #fff;
-  font-size: 10px;
-  text-align: center;
-  line-height: 1.1;
-  padding: 2px;
 }
 
-.sb-pal-icon {
+.sb-fallback-icon {
   font-size: 16px;
+}
+
+/* --- the palette's colours --- */
+
+/* the size tabs read as LCARS chips. the one on show takes the amber the labels wear */
+.sb .pf-palette-size {
+  background: #16161c;
+  color: #ffcc88;
+  font-family: 'LcarsAntonio', 'Arial Narrow', sans-serif;
+  font-size: 13px;
+  letter-spacing: 1px;
+  cursor: pointer;
+}
+
+.sb .pf-palette-size.active {
+  background: #ffaa55;
+  color: #000;
+}
+
+.sb .pf-palette-group {
+  background: transparent;
+  color: #8a8a9a;
+  border-bottom-color: #3a3a44;
+  cursor: pointer;
+}
+
+.sb .pf-palette-group[aria-pressed='true'] {
+  color: #ffaa55;
+  border-bottom-color: #ffaa55;
+}
+
+.sb .pf-palette-status {
+  color: #ffcc88;
+}
+
+.sb .pf-palette-all {
+  background: transparent;
+  color: #ffaa55;
+  border-color: #ffaa55;
+  cursor: pointer;
+}
+
+/* the shots are small crops of the real watch, so they scale up as crisp pixels rather than blur */
+.sb .pf-palette-shot {
+  image-rendering: pixelated;
 }
 
 /* --- drag ghost --- */
@@ -262,6 +251,15 @@
 }
 
 .sb-ghost.tall {
+  height: calc(var(--sb-slot-h) * 2 + var(--sb-gap));
+}
+
+.sb-ghost.wide {
+  width: calc(var(--sb-slot-w) * 2 + var(--sb-gap));
+}
+
+.sb-ghost.full {
+  width: calc(var(--sb-slot-w) * 2 + var(--sb-gap));
   height: calc(var(--sb-slot-h) * 2 + var(--sb-gap));
 }
 

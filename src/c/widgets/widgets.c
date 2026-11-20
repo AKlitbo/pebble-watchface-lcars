@@ -178,18 +178,10 @@ static void draw_icon(GContext *ctx, GBitmap *bmp, GRect r)
     graphics_draw_bitmap_in_rect(ctx, bmp, r);
 }
 
-/**
- * @brief Blit a glyph centred in a box, at its own size.
- *
- * The ops glyphs come from the catalogue and are not all cut to the same shape: a thermometer is
- * taller than it is wide. graphics_draw_bitmap_in_rect repeats a bitmap that is smaller than the
- * box it is given, so the destination has to be the picture's own size or the glyph tiles.
- *
- * @param ctx The graphics context.
- * @param res The resource id.
- * @param box The area to centre it in.
- */
-static void draw_icon_centered(GContext *ctx, uint32_t res, GRect box)
+// the ops glyphs come from the catalogue and are not all cut to the same shape: a thermometer is
+// taller than it is wide. graphics_draw_bitmap_in_rect repeats a bitmap that is smaller than the
+// box it is given, so the destination has to be the picture's own size or the glyph tiles
+void widgets_draw_glyph(GContext *ctx, uint32_t res, GRect box)
 {
     GBitmap *bmp = icon_get(res);
     if (!bmp)
@@ -213,36 +205,69 @@ void widgets_unload(void)
     fonts_unload_custom_font(s_font_label);
 }
 
-// where each slot's chrome sits. slot order runs left top then left bottom then
-// right top then right bottom
-static const GRect s_slot_bar[4] = {
-    OPS_BAR(OPS_COL_L, OPS_ROW_T), OPS_BAR(OPS_COL_L, OPS_ROW_B),
-    OPS_BAR(OPS_COL_R, OPS_ROW_T), OPS_BAR(OPS_COL_R, OPS_ROW_B),
-};
+/** @brief Where a slot's bar starts on the screen, from its column and row in the grid. */
+static GPoint slot_origin(const OpsChrome *chrome, int slot)
+{
+    const OpsGrid *grid = chrome->grid;
 
-static const GRect s_slot_label[4] = {
-    OPS_LABEL(OPS_COL_L, OPS_ROW_T), OPS_LABEL(OPS_COL_L, OPS_ROW_B),
-    OPS_LABEL(OPS_COL_R, OPS_ROW_T), OPS_LABEL(OPS_COL_R, OPS_ROW_B),
-};
+    return GPoint(grid->col_x[slot / grid->rows], grid->row_y[slot % grid->rows]);
+}
 
-static const GRect s_slot_glyph[4] = {
-    OPS_GLYPH(OPS_COL_L, OPS_ROW_T), OPS_GLYPH(OPS_COL_L, OPS_ROW_B),
-    OPS_GLYPH(OPS_COL_R, OPS_ROW_T), OPS_GLYPH(OPS_COL_R, OPS_ROW_B),
-};
+/** @brief How wide a bar runs from the left column to the end of the right one, for a wide or full panel. */
+static int span_width(const OpsChrome *chrome)
+{
+    const OpsGrid *grid = chrome->grid;
+
+    return grid->col_x[grid->cols - 1] + OPS_BAR(0, 0).size.w - grid->col_x[0];
+}
 
 /**
  * @brief Whether a slot draws its own chrome at all.
  *
- * The lower left slot does not while the column is one tall weather block: its bar, word and
- * glyph all belong to the block above it.
+ * A slot a bigger panel covers does not. Its bar, word and glyph all belong to the panel, such as
+ * the lower left under the tall weather block.
  *
- * @param chrome What the four slots resolved to.
+ * @param chrome What the slots resolved to.
  * @param slot The slot index.
  * @return True when the slot owns its row.
  */
 static bool slot_draws(const OpsChrome *chrome, int slot)
 {
-    return !(chrome->left_composite && slot == 1);
+    return !chrome->covered[slot];
+}
+
+/** @brief Whether a slot's pick runs across both columns. */
+static bool spans_columns(const OpsChrome *chrome, int slot)
+{
+    return chrome->shape[slot] == OPS_SHAPE_WIDE || chrome->shape[slot] == OPS_SHAPE_FULL;
+}
+
+/** @brief A slot's bar, stretched across both columns for a wide or full panel. */
+static GRect slot_bar(const OpsChrome *chrome, int slot)
+{
+    GPoint at = slot_origin(chrome, slot);
+    GRect bar = OPS_BAR(at.x, at.y);
+
+    if (spans_columns(chrome, slot))
+    {
+        bar.size.w = span_width(chrome);
+    }
+
+    return bar;
+}
+
+/** @brief A slot's label box, with the longer room a stretched bar gives it. */
+static GRect slot_label(const OpsChrome *chrome, int slot)
+{
+    GPoint at = slot_origin(chrome, slot);
+    GRect label = OPS_LABEL(at.x, at.y);
+
+    if (spans_columns(chrome, slot))
+    {
+        label.size.w = span_width(chrome) - (OPS_BAR(at.x, at.y).size.w - label.size.w);
+    }
+
+    return label;
 }
 
 void widgets_draw_bars(GContext *ctx, const OpsChrome *chrome)
@@ -253,11 +278,11 @@ void widgets_draw_bars(GContext *ctx, const OpsChrome *chrome)
 
     lcars_bar(ctx, BAR_STARDATE, cap, body);
 
-    for (int slot = 0; slot < 4; slot++)
+    for (int slot = 0; slot < ops_cell_count(chrome->grid); slot++)
     {
         if (slot_draws(chrome, slot))
         {
-            lcars_bar(ctx, s_slot_bar[slot], cap, body);
+            lcars_bar(ctx, slot_bar(chrome, slot), cap, body);
         }
     }
 }
@@ -268,11 +293,11 @@ void widgets_draw_labels(GContext *ctx, const OpsChrome *chrome)
 
     lcars_label(ctx, LBL_STARDATE, "STARDATE", s_font_label, lbl_color, 3);
 
-    for (int slot = 0; slot < 4; slot++)
+    for (int slot = 0; slot < ops_cell_count(chrome->grid); slot++)
     {
         if (slot_draws(chrome, slot))
         {
-            lcars_label(ctx, s_slot_label[slot], chrome->label[slot], s_font_label, lbl_color, 3);
+            lcars_label(ctx, slot_label(chrome, slot), chrome->label[slot], s_font_label, lbl_color, 3);
         }
     }
 }
@@ -307,12 +332,13 @@ void widgets_draw_glyphs(GContext *ctx, const OpsChrome *chrome, const char *con
         draw_icon(ctx, icon_get(RESOURCE_ID_ICON_THERMOMETER), THERMO_ICON);
     }
 
-    for (int slot = 0; slot < 4; slot++)
+    for (int slot = 0; slot < ops_cell_count(chrome->grid); slot++)
     {
         // a slot showing nothing hands over 0 and the cache has no picture for that
         if (slot_draws(chrome, slot) && chrome->icon[slot])
         {
-            draw_icon_centered(ctx, chrome->icon[slot], s_slot_glyph[slot]);
+            GPoint at = slot_origin(chrome, slot);
+            widgets_draw_glyph(ctx, chrome->icon[slot], OPS_GLYPH(at.x, at.y));
         }
     }
 

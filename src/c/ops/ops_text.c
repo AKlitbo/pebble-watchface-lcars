@@ -15,14 +15,17 @@
 #include "clock/date.h"
 #include "clock/duration.h"
 #include "clock/moon.h"
+#include "clock/progress.h"
 #include "clock/solar.h"
 #include "io/stores/health_store.h"
 #include "io/stores/system_store.h"
 #include "io/stores/time_store.h"
 #include "io/stores/weather_store.h"
 #include "settings_schema.h"
+#include "system/settings/settings.h"
 #include "system/units/units.h"
 #include "text/text_case.h"
+#include "weather/wx_cond.h"
 
 // the eight phase glyphs in cycle order (0 new, 4 full, wrapping back round). the index comes
 // straight from moon_glyph_index so this table only turns it into a resource id
@@ -303,53 +306,81 @@ uint32_t ops_sun_next_icon(void)
 // --- weather ---
 
 // the SENSORS glyphs are cut for a 24px box and an ops slot only has 14. so the
-// small set is a second cut of the same art
+// small set is a second cut of the same art, by day and after dark
 //
-// it mirrors the generated table in ui/weather/icons_table.g.h. that one is built
-// from paf/ts/weather/conditions.ts and only knows the 24px names
-// a new condition added over there needs a row here too. otherwise it falls
-// through to the NA glyph
-uint32_t ops_wx_icon(void)
+// the rows are by the framework's numbering of the conditions, which is also the code a forecast
+// column carries. freezing drizzle and freezing rain share the sleet glyph just like the 24px set
+static const uint32_t s_wx_day[WX_COND_COUNT] = {
+    [WX_COND_CLEAR] = RESOURCE_ID_ICON_WX_SM_CLEAR,
+    [WX_COND_PCLDY] = RESOURCE_ID_ICON_WX_SM_PARTLY_CLOUDY,
+    [WX_COND_CLDY]  = RESOURCE_ID_ICON_WX_SM_CLOUDY,
+    [WX_COND_FOGGY] = RESOURCE_ID_ICON_WX_SM_FOG,
+    [WX_COND_DRZL]  = RESOURCE_ID_ICON_WX_SM_DRIZZLE,
+    [WX_COND_FZDZ]  = RESOURCE_ID_ICON_WX_SM_SLEET,
+    [WX_COND_RAIN]  = RESOURCE_ID_ICON_WX_SM_RAIN,
+    [WX_COND_FZRN]  = RESOURCE_ID_ICON_WX_SM_SLEET,
+    [WX_COND_SNOW]  = RESOURCE_ID_ICON_WX_SM_SNOW,
+    [WX_COND_SHWR]  = RESOURCE_ID_ICON_WX_SM_SHOWERS,
+    [WX_COND_SNSH]  = RESOURCE_ID_ICON_WX_SM_SNOW_WIND,
+    [WX_COND_STRM]  = RESOURCE_ID_ICON_WX_SM_THUNDERSTORM,
+};
+
+static const uint32_t s_wx_night[WX_COND_COUNT] = {
+    [WX_COND_CLEAR] = RESOURCE_ID_ICON_WX_SM_NIGHT_CLEAR,
+    [WX_COND_PCLDY] = RESOURCE_ID_ICON_WX_SM_NIGHT_PARTLY_CLOUDY,
+    [WX_COND_CLDY]  = RESOURCE_ID_ICON_WX_SM_NIGHT_CLOUDY,
+    [WX_COND_FOGGY] = RESOURCE_ID_ICON_WX_SM_NIGHT_FOG,
+    [WX_COND_DRZL]  = RESOURCE_ID_ICON_WX_SM_NIGHT_DRIZZLE,
+    [WX_COND_FZDZ]  = RESOURCE_ID_ICON_WX_SM_NIGHT_SLEET,
+    [WX_COND_RAIN]  = RESOURCE_ID_ICON_WX_SM_NIGHT_RAIN,
+    [WX_COND_FZRN]  = RESOURCE_ID_ICON_WX_SM_NIGHT_SLEET,
+    [WX_COND_SNOW]  = RESOURCE_ID_ICON_WX_SM_NIGHT_SNOW,
+    [WX_COND_SHWR]  = RESOURCE_ID_ICON_WX_SM_NIGHT_SHOWERS,
+    [WX_COND_SNSH]  = RESOURCE_ID_ICON_WX_SM_NIGHT_SNOW_WIND,
+    [WX_COND_STRM]  = RESOURCE_ID_ICON_WX_SM_NIGHT_THUNDERSTORM,
+};
+
+// a condition added to the framework's list needs a row in both tables above
+// this stops the build until it has one, rather than letting it draw no glyph at all
+_Static_assert(WX_COND_COUNT == 12, "a new weather condition needs a small glyph in s_wx_day and s_wx_night");
+
+uint32_t ops_wx_icon_for(WxCond cond, bool night)
 {
-    const char *cond = weather_store_cond();
-
-    static const struct { const char *token; uint32_t res; } map[] = {
-        {"CLEAR",       RESOURCE_ID_ICON_WX_SM_CLEAR},
-        {"CLEAR_NIGHT", RESOURCE_ID_ICON_WX_SM_NIGHT_CLEAR},
-        {"PCLDY",       RESOURCE_ID_ICON_WX_SM_PARTLY_CLOUDY},
-        {"PCLDY_NIGHT", RESOURCE_ID_ICON_WX_SM_NIGHT_PARTLY_CLOUDY},
-        {"CLDY",        RESOURCE_ID_ICON_WX_SM_CLOUDY},
-        {"CLDY_NIGHT",  RESOURCE_ID_ICON_WX_SM_NIGHT_CLOUDY},
-        {"FOGGY",       RESOURCE_ID_ICON_WX_SM_FOG},
-        {"FOGGY_NIGHT", RESOURCE_ID_ICON_WX_SM_NIGHT_FOG},
-        {"DRZL",        RESOURCE_ID_ICON_WX_SM_DRIZZLE},
-        {"DRZL_NIGHT",  RESOURCE_ID_ICON_WX_SM_NIGHT_DRIZZLE},
-        {"RAIN",        RESOURCE_ID_ICON_WX_SM_RAIN},
-        {"RAIN_NIGHT",  RESOURCE_ID_ICON_WX_SM_NIGHT_RAIN},
-        {"SHWR",        RESOURCE_ID_ICON_WX_SM_SHOWERS},
-        {"SHWR_NIGHT",  RESOURCE_ID_ICON_WX_SM_NIGHT_SHOWERS},
-        {"SNOW",        RESOURCE_ID_ICON_WX_SM_SNOW},
-        {"SNOW_NIGHT",  RESOURCE_ID_ICON_WX_SM_NIGHT_SNOW},
-        {"SNSH",        RESOURCE_ID_ICON_WX_SM_SNOW_WIND},
-        {"SNSH_NIGHT",  RESOURCE_ID_ICON_WX_SM_NIGHT_SNOW_WIND},
-        {"STRM",        RESOURCE_ID_ICON_WX_SM_THUNDERSTORM},
-        {"STRM_NIGHT",  RESOURCE_ID_ICON_WX_SM_NIGHT_THUNDERSTORM},
-        // freezing drizzle and freezing rain share the sleet glyph just like the 24px set
-        {"FZDZ",        RESOURCE_ID_ICON_WX_SM_SLEET},
-        {"FZDZ_NIGHT",  RESOURCE_ID_ICON_WX_SM_NIGHT_SLEET},
-        {"FZRN",        RESOURCE_ID_ICON_WX_SM_SLEET},
-        {"FZRN_NIGHT",  RESOURCE_ID_ICON_WX_SM_NIGHT_SLEET},
-    };
-
-    for (unsigned i = 0; i < ARRAY_LENGTH(map); i++)
+    if (cond >= WX_COND_COUNT)
     {
-        if (!strcmp(cond, map[i].token))
-        {
-            return map[i].res;
-        }
+        return RESOURCE_ID_ICON_WX_SM_NA;
     }
 
-    return RESOURCE_ID_ICON_WX_SM_NA;
+    return night ? s_wx_night[cond] : s_wx_day[cond];
+}
+
+uint32_t ops_wx_icon(void)
+{
+    bool night = false;
+    WxCond cond = wx_cond_parse(weather_store_cond(), &night);
+
+    return ops_wx_icon_for(cond, night);
+}
+
+/**
+ * @brief Write a temperature with its unit letter, or "--" for no reading.
+ *
+ * The face declares the temperature unit key, so the setting always says which unit the phone
+ * sent it in, plugin weather included.
+ *
+ * @param out Output buffer.
+ * @param n Buffer size.
+ * @param temp The temperature, or WEATHER_NO_TEMP for none.
+ */
+static void write_temp(char *out, size_t n, int temp)
+{
+    if (temp == WEATHER_NO_TEMP)
+    {
+        no_data(out, n);
+        return;
+    }
+
+    snprintf(out, n, "%d%c", temp, settings_u8(SETTING_TEMPERATURE_UNIT) ? 'F' : 'C');
 }
 
 void ops_text_humidity(char *out, size_t n)
@@ -430,6 +461,40 @@ void ops_text_hilo(char *out, size_t n)
     snprintf(out, n, "%d/%d", hi, lo);
 }
 
+void ops_text_precip(char *out, size_t n)
+{
+    int pct = weather_store_precip_chance();
+    if (pct < 0)
+    {
+        no_data(out, n);
+        return;
+    }
+
+    snprintf(out, n, "%d%%", pct);
+}
+
+void ops_text_feels_like(char *out, size_t n)
+{
+    write_temp(out, n, weather_store_feels_like());
+}
+
+void ops_text_pressure(char *out, size_t n)
+{
+    int hpa = weather_store_pressure();
+    if (hpa < 0)
+    {
+        no_data(out, n);
+        return;
+    }
+
+    snprintf(out, n, "%d HPA", hpa);
+}
+
+void ops_text_dew_point(char *out, size_t n)
+{
+    write_temp(out, n, weather_store_dew_point());
+}
+
 // --- calendar ---
 
 void ops_text_julian(char *out, size_t n)
@@ -448,6 +513,81 @@ void ops_text_week(char *out, size_t n)
 {
     const struct tm *tm = time_store_tm();
     snprintf(out, n, "%d", date_iso_week(tm->tm_year + 1900, tm->tm_yday, tm->tm_wday));
+}
+
+void ops_text_days_left(char *out, size_t n)
+{
+    const struct tm *tm = time_store_tm();
+    snprintf(out, n, "%d", date_days_left_in_year(tm->tm_year + 1900, tm->tm_yday));
+}
+
+void ops_text_weeks_left(char *out, size_t n)
+{
+    const struct tm *tm = time_store_tm();
+
+    // TODO: a weeks left count belongs in the framework's clock/date.h beside date_days_left_in_year,
+    // and this division goes once it is there
+    snprintf(out, n, "%d", date_days_left_in_year(tm->tm_year + 1900, tm->tm_yday) / 7);
+}
+
+// --- progress ---
+
+// the face has no week start setting, so the week runs from Monday like the ISO week CYCLE counts
+#define WEEK_START_MONDAY 1
+
+int ops_week_start(void)
+{
+    return WEEK_START_MONDAY;
+}
+
+int ops_progress_pct(OpsPeriod period)
+{
+    const struct tm *tm = time_store_tm();
+
+    switch (period)
+    {
+        case OPS_PERIOD_HOUR:
+            return progress_hour_pct(tm->tm_min, tm->tm_sec);
+        case OPS_PERIOD_DAY:
+            return progress_day_pct(tm->tm_hour, tm->tm_min, tm->tm_sec);
+        case OPS_PERIOD_WEEK:
+            return progress_week_pct(tm->tm_wday, WEEK_START_MONDAY, tm->tm_hour, tm->tm_min, tm->tm_sec);
+        case OPS_PERIOD_YEAR:
+        default:
+            return progress_year_pct(tm->tm_year + 1900, tm->tm_yday, tm->tm_hour, tm->tm_min, tm->tm_sec);
+    }
+}
+
+/**
+ * @brief Write a period's progress as a whole percent.
+ *
+ * @param out Output buffer.
+ * @param n Buffer size.
+ * @param period Which period.
+ */
+static void write_progress(char *out, size_t n, OpsPeriod period)
+{
+    snprintf(out, n, "%d%%", ops_progress_pct(period));
+}
+
+void ops_text_hour_progress(char *out, size_t n)
+{
+    write_progress(out, n, OPS_PERIOD_HOUR);
+}
+
+void ops_text_day_progress(char *out, size_t n)
+{
+    write_progress(out, n, OPS_PERIOD_DAY);
+}
+
+void ops_text_week_progress(char *out, size_t n)
+{
+    write_progress(out, n, OPS_PERIOD_WEEK);
+}
+
+void ops_text_year_progress(char *out, size_t n)
+{
+    write_progress(out, n, OPS_PERIOD_YEAR);
 }
 
 // --- other clocks ---

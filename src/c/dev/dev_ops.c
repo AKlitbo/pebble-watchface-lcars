@@ -13,6 +13,7 @@
 #include "io/stores/time_store.h"
 #include "io/stores/weather_store.h"
 #include "ops/ops.h"
+#include "health/hr_day.h"
 #include "ui/engine/engine.h"
 
 // the four slots show four consecutive entries. one tap per readout walks the
@@ -51,11 +52,10 @@ static void apply_clock(uint8_t index)
 
 uint8_t dev_ops_walk_pick(int slot)
 {
-    // the tall weather block is the left column's own thing and sits outside the
-    // walk. it is the shipped default so the first shot of an untouched face
-    // already covers it
+    // the panels bigger than one slot sit outside the walk. the tall weather block is the
+    // shipped default, so the first shot of an untouched face already covers it
     uint8_t id = (uint8_t)((s_index + slot) % OPS_COUNT);
-    return ops_is_tall(id) ? OPS_EMPTY : id;
+    return ops_shape(id) != OPS_SHAPE_SINGLE ? OPS_EMPTY : id;
 }
 
 /**
@@ -97,10 +97,27 @@ void dev_ops_seed_stores(void)
     wx.precip_chance = 20;
     weather_store_init((WeatherConfig){.live = false, .poll_min = 0}, &wx);
 
+    // a day that climbs through the morning and peaks around lunch, so the chart panels have a shape
+    // to show whatever hour the walk pins the clock to
+    static const uint16_t s_step_hours[24] = {
+        0, 0, 0, 0, 0, 0, 120, 840, 1260, 460, 380, 920, 1840, 711,
+    };
+    static const uint8_t s_hr_hours[] = {56, 54, 53, 53, 55, 58, 66, 84, 78, 72, 76, 88, 112, 80};
+    static HrDay s_hr_day;
+
+    hr_day_clear(&s_hr_day);
+    for (unsigned hour = 0; hour < ARRAY_LENGTH(s_hr_hours); hour++)
+    {
+        hr_day_add(&s_hr_day, (int)hour, s_hr_hours[hour] - 4);
+        hr_day_add(&s_hr_day, (int)hour, s_hr_hours[hour] + 4);
+    }
+
     HealthSeed health = {.hr = 72, .steps = 8431, .calories = 420, .sleep_min = 431,
-                         .active_min = 52, .distance_m = 5300};
-    health_store_init((HealthConfig){.live = false, .sleep = true,
-                                     .active = true, .calories = true}, &health);
+                         .active_min = 52, .distance_m = 5300,
+                         .step_hourly = s_step_hours, .step_hours = 14, .hr_day = &s_hr_day};
+    health_store_init((HealthConfig){.live = false, .sleep = true, .active = true, .calories = true,
+                                     .step_history = HEALTH_STEP_HISTORY, .hr_day = HEALTH_HR_DAY},
+                      &health);
 
     // an absolute wake time rather than an offset from now, so the shot always reads 06:30
     // however long after the build it is captured

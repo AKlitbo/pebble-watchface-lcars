@@ -16,6 +16,7 @@
 #include "ui/icon_cache.h"
 #include "theme/theme.h"
 #include "widgets/widgets.h"
+#include "widgets/panels.h"
 #include "io/stores/system_store.h"
 #include "io/stores/weather_store.h"
 #include "io/stores/time_store.h"
@@ -77,35 +78,84 @@ static const Zone s_zones[ZONE_COUNT] = {
 // left top then left bottom then right top then right bottom
 enum { SLOT_LT, SLOT_LB, SLOT_RT, SLOT_RB };
 
+// the ops grid: two columns of two rows under the clock
+static const OpsGrid s_grid = {
+    .cols = 2,
+    .rows = 2,
+    .col_x = {OPS_COL_L, OPS_COL_R},
+    .col_right = {OPS_R_L, OPS_R_R},
+    .row_y = {OPS_ROW_T, OPS_ROW_B},
+    .bottom = PBL_DISPLAY_HEIGHT,
+};
+
+/**
+ * @brief What every slot is showing, after the shape rules.
+ *
+ * A slot keeps its pick only when the pick starts there and fits. A slot a bigger panel covers, or
+ * one holding a pick that does not fit, reads as empty rather than as a labelled panel with nothing
+ * under it.
+ *
+ * @param ids Receives each slot's OpsId.
+ * @param owner Receives the slot that fills each slot, or -1 for one nothing fills.
+ */
+static void resolve(uint8_t ids[OPS_CELLS_MAX], int8_t owner[OPS_CELLS_MAX])
+{
+    static uint8_t (*const stored[])(void) = {
+        lcars_slot_lt, lcars_slot_lb, lcars_slot_rt, lcars_slot_rb,
+    };
+
+    uint8_t picks[OPS_CELLS_MAX];
+
+    for (int slot = 0; slot < OPS_CELLS_MAX; slot++)
+    {
+        picks[slot] = dev_ops_pick(slot, stored[slot]());
+    }
+
+    ops_owners(&s_grid, picks, owner);
+
+    for (int slot = 0; slot < OPS_CELLS_MAX; slot++)
+    {
+        ids[slot] = owner[slot] == slot ? picks[slot] : OPS_EMPTY;
+    }
+}
+
 /**
  * @brief What a slot is showing.
- *
- * A tall pick is only honoured in the upper left, the one place the face draws it. Anywhere else
- * it reads as empty rather than as a labelled panel with nothing under it.
  *
  * @param slot One of the SLOT_* ids.
  * @return An OpsId.
  */
 static uint8_t pick(int slot)
 {
-    static uint8_t (*const stored[])(void) = {
-        lcars_slot_lt, lcars_slot_lb, lcars_slot_rt, lcars_slot_rb,
-    };
+    uint8_t ids[OPS_CELLS_MAX];
+    int8_t owner[OPS_CELLS_MAX];
 
-    uint8_t id = dev_ops_pick(slot, stored[slot]());
-
-    if (ops_is_tall(id) && slot != SLOT_LT)
-    {
-        return OPS_EMPTY;
-    }
-
-    return id;
+    resolve(ids, owner);
+    return ids[slot];
 }
 
 /** @brief Whether the left column is showing the one tall weather block instead of two slots. */
 static bool left_is_composite(void)
 {
-    return ops_is_tall(pick(SLOT_LT));
+    return ops_shape(pick(SLOT_LT)) == OPS_SHAPE_TALL;
+}
+
+bool stardate_ops_shows(uint8_t id)
+{
+    uint8_t ids[OPS_CELLS_MAX];
+    int8_t owner[OPS_CELLS_MAX];
+
+    resolve(ids, owner);
+
+    for (int slot = 0; slot < OPS_CELLS_MAX; slot++)
+    {
+        if (ids[slot] == id)
+        {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 bool stardate_ops_shows_beats(void)
@@ -268,19 +318,33 @@ static void draw_overlays(GContext *ctx, GRect bounds, const void *data)
 {
     // the bar word and the glyph both follow each slot's pick so they get resolved together here
     // and handed down. widgets stays a painter that is told what to draw
-    OpsChrome chrome = {.left_composite = left_is_composite()};
+    uint8_t ids[OPS_CELLS_MAX];
+    int8_t owner[OPS_CELLS_MAX];
+    resolve(ids, owner);
 
-    for (int slot = SLOT_LT; slot <= SLOT_RB; slot++)
+    OpsChrome chrome = {.grid = &s_grid, .left_composite = ops_shape(ids[SLOT_LT]) == OPS_SHAPE_TALL};
+
+    for (int slot = 0; slot < OPS_CELLS_MAX; slot++)
     {
-        const OpsReadout *entry = ops_entry(pick(slot));
+        const OpsReadout *entry = ops_entry(ids[slot]);
         chrome.label[slot] = ops_label(entry);
         chrome.icon[slot] = ops_icon(entry);
+        chrome.shape[slot] = ops_shape(ids[slot]);
+        chrome.covered[slot] = owner[slot] >= 0 && owner[slot] != slot;
     }
 
     // bars first: the label holder boxes are painted over the top of them
     widgets_draw_bars(ctx, &chrome);
     widgets_draw_battery(ctx, system_store_battery());
     widgets_draw_labels(ctx, &chrome);
+
+    for (int slot = 0; slot < OPS_CELLS_MAX; slot++)
+    {
+        if (panels_paints(ids[slot]))
+        {
+            panels_draw(ctx, &s_grid, ids[slot], slot);
+        }
+    }
 
     // honour the show/hide settings. the store owns the connect/disconnect vibe, and the
     // quiet-time glyph reads the live SDK state (no change event, so it refreshes on the tick)

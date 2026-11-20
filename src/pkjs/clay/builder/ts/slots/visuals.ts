@@ -6,9 +6,10 @@
  * picture of what the watch will actually show.
  */
 
-import { ID_EMPTY, isTall } from './geometry';
+import { ID_EMPTY, SHAPE_SINGLE, shapeOf } from './geometry';
 import { thumbByLabel } from '../../../../../../paf/ts/clay/builder/ts/shared/thumbs';
 import type { Thumbs } from '../../../../../../paf/ts/clay/builder/ts/types';
+import type { PluginKind } from '../../../../../../paf/ts/clay/builder/ts/shared/plugin-warnings';
 
 /** One readout as the builder needs it, merged from the option list and module-meta. */
 export interface Readout {
@@ -16,6 +17,10 @@ export interface Readout {
   label: string;
   icon: string;
   color: string;
+  /** Its palette group, by name. */
+  group?: string;
+  /** The plugin kind it reads, when it reads one. */
+  plugin?: PluginKind;
 }
 
 /** The raw option rows Clay hands over on the component's config. */
@@ -24,6 +29,8 @@ interface RawOption {
   label: string;
   icon?: string;
   blockColor?: string;
+  group?: string;
+  plugin?: PluginKind;
 }
 
 /**
@@ -43,6 +50,8 @@ export function buildReadoutList(options: RawOption[]): Readout[] {
         label: option.label,
         icon: option.icon || '·',
         color: option.blockColor || '#999',
+        group: option.group,
+        plugin: option.plugin,
       };
     })
     .filter(function (readout) {
@@ -50,9 +59,11 @@ export function buildReadoutList(options: RawOption[]): Readout[] {
     });
 }
 
-/** The size token a readout's thumbnail is filed under. */
+/** The size token a readout's thumbnail is filed under: slot for one cell, else its shape. */
 export function sizeFor(id: number): string {
-  return isTall(id) ? 'tall' : 'slot';
+  const shape = shapeOf(id);
+
+  return shape === SHAPE_SINGLE ? 'slot' : shape;
 }
 
 /**
@@ -67,17 +78,16 @@ export function thumbFor(thumbs: Thumbs, readout: Readout | null): string | null
 }
 
 /**
- * Paint a readout into a box: the screenshot if there is one, otherwise its tint behind its emoji
- * and name so an unphotographed readout is still recognizable.
+ * Paint a readout into a panel or a drag ghost: the screenshot if there is one, otherwise its tint
+ * behind its emoji so an unphotographed readout is still recognizable.
  *
  * @param el The box to fill. Its contents are replaced.
  * @param readout The readout, or null to leave the box empty.
  * @param thumbs The thumbnail asset.
- * @param withName True to show the label under the emoji in the fallback.
  */
-export function fillVisual(el: HTMLElement, readout: Readout | null, thumbs: Thumbs, withName: boolean): void {
+export function fillVisual(el: HTMLElement, readout: Readout | null, thumbs: Thumbs): void {
   el.innerHTML = '';
-  el.classList.remove('sb-pal-fallback');
+  el.classList.remove('sb-fallback');
   el.style.background = '';
 
   if (!readout) {
@@ -94,28 +104,21 @@ export function fillVisual(el: HTMLElement, readout: Readout | null, thumbs: Thu
   if (thumb) {
     const img = el.ownerDocument.createElement('img');
 
-    img.className = el.classList.contains('sb-pal') ? 'sb-pal-img' : 'sb-slot-img';
+    img.className = 'sb-slot-img';
     img.src = thumb;
     img.alt = readout.label;
     el.appendChild(img);
     return;
   }
 
-  el.classList.add('sb-pal-fallback');
+  el.classList.add('sb-fallback');
   el.style.background = readout.color;
 
   const icon = el.ownerDocument.createElement('span');
 
-  icon.className = 'sb-pal-icon';
+  icon.className = 'sb-fallback-icon';
   icon.textContent = readout.icon;
   el.appendChild(icon);
-
-  if (withName) {
-    const name = el.ownerDocument.createElement('span');
-
-    name.textContent = readout.label;
-    el.appendChild(name);
-  }
 }
 
 /** Look a readout up by its catalogue id. */

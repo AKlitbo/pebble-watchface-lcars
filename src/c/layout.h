@@ -85,16 +85,17 @@ enum
 #define OPS_VALUE_WIDE(x, y, r, dy) GRect((x) + OPS_GLYPH_W, (y) + 11 + (dy), \
                                           (r) - ((x) + OPS_GLYPH_W), 18)
 
-// the two columns and the two rows they each hold
+// the two columns and the two rows they each hold. the rail block's edge, the gap between the two
+// bars, and the screen's edge each leave 5px either side of the bars
 #define OPS_COL_L 52
-#define OPS_COL_R 125
+#define OPS_COL_R 126
 #define OPS_ROW_T 166
 #define OPS_ROW_B 197
 
 // how far right a reading may run. the right column goes to x=198 which is two
-// off the screen edge. the left has to stop short of the right column's bar so it
-// is narrower and steps its font down a little sooner
-#define OPS_R_L 122
+// off the screen edge. the left has to stop 3px short of the right column's bar so
+// it is narrower and steps its font down a little sooner
+#define OPS_R_L (OPS_COL_R - 3)
 #define OPS_R_R 198
 
 // the font step-down nudges in the order the Zone tiers try them
@@ -130,7 +131,7 @@ enum
 // the stardate bar spans the whole width so it gets its own rect. the four slot
 // bars come from OPS_BAR. the label rides a pixel high inside its holder box and
 // the spare row underneath is what squares that up
-#define BAR_STARDATE GRect(52, 2, 142, 11)
+#define BAR_STARDATE GRect(52, 2, 143, 11)
 
 // --- LCARS Bar Labels ---
 // left-aligned in black holder boxes on coloured bars
@@ -155,6 +156,16 @@ void stardate_setup(Window *window);
  * @return How many slots were written.
  */
 uint8_t stardate_build(EngineSlot *out, uint8_t max, GRect bounds);
+
+/**
+ * @brief Whether any ops slot is showing a pick, after the shape rules.
+ *
+ * main asks this to start only the health parts a panel on screen needs.
+ *
+ * @param id The OpsId.
+ * @return True when a slot shows it.
+ */
+bool stardate_ops_shows(uint8_t id);
 
 /**
  * @brief Whether any drawn ops slot is showing the .beats reading.

@@ -12,6 +12,8 @@
 #pragma once
 #include <pebble.h>
 
+#include "weather/wx_cond.h"
+
 /**
  * @addtogroup watchface-lcars
  * @{
@@ -55,15 +57,132 @@ uint32_t ops_sun_next_icon(void);
 /** @brief The current condition's glyph at ops size, since the SENSORS one is cut for a 24px box. */
 uint32_t ops_wx_icon(void);
 
+/**
+ * @brief A condition's glyph at ops size, for a forecast column as well as the sky now.
+ *
+ * @param cond The condition, or anything past the list for the not available glyph.
+ * @param night True for the after dark glyph.
+ * @return The resource id.
+ */
+uint32_t ops_wx_icon_for(WxCond cond, bool night);
+
 void ops_text_humidity(char *out, size_t n);
 void ops_text_wind(char *out, size_t n);
 void ops_text_uv(char *out, size_t n);
 void ops_text_hilo(char *out, size_t n);
 
+/**
+ * @brief Today's chance of rain, such as "40%".
+ *
+ * @param out Output buffer.
+ * @param n Buffer size.
+ */
+void ops_text_precip(char *out, size_t n);
+
+/**
+ * @brief How warm it feels, with its unit letter.
+ *
+ * @param out Output buffer.
+ * @param n Buffer size.
+ */
+void ops_text_feels_like(char *out, size_t n);
+
+/**
+ * @brief The sea level pressure in hPa, the unit the phone sends it in.
+ *
+ * @param out Output buffer.
+ * @param n Buffer size.
+ */
+void ops_text_pressure(char *out, size_t n);
+
+/**
+ * @brief The dew point, with its unit letter.
+ *
+ * @param out Output buffer.
+ * @param n Buffer size.
+ */
+void ops_text_dew_point(char *out, size_t n);
+
 // --- calendar ---
 void ops_text_julian(char *out, size_t n);
 void ops_text_day_of_year(char *out, size_t n);
 void ops_text_week(char *out, size_t n);
+
+/**
+ * @brief How many days are left in the year, so December 31st reads 0.
+ *
+ * @param out Output buffer.
+ * @param n Buffer size.
+ */
+void ops_text_days_left(char *out, size_t n);
+
+/**
+ * @brief How many whole weeks are left in the year.
+ *
+ * @param out Output buffer.
+ * @param n Buffer size.
+ */
+void ops_text_weeks_left(char *out, size_t n);
+
+// --- progress ---
+
+/** @brief The stretches of time the progress readouts measure. */
+typedef enum
+{
+    OPS_PERIOD_HOUR,
+    OPS_PERIOD_DAY,
+    OPS_PERIOD_WEEK,
+    OPS_PERIOD_YEAR,
+} OpsPeriod;
+
+/**
+ * @brief How far through a period the clock is, for the readouts and for the bars a row wide.
+ *
+ * The week starts on Monday, the same week the CYCLE readout numbers.
+ *
+ * @param period Which period.
+ * @return Whole percent from 0 to 99.
+ */
+int ops_progress_pct(OpsPeriod period);
+
+/**
+ * @brief The weekday the week starts on, for the readouts that lay the week out.
+ *
+ * @return 1 for Monday, counted the way tm_wday counts.
+ */
+int ops_week_start(void);
+
+/**
+ * @brief The hour's progress as a whole percent, such as "87%".
+ *
+ * @param out Output buffer.
+ * @param n Buffer size.
+ */
+void ops_text_hour_progress(char *out, size_t n);
+
+/**
+ * @brief The day's progress as a whole percent.
+ *
+ * @param out Output buffer.
+ * @param n Buffer size.
+ */
+void ops_text_day_progress(char *out, size_t n);
+
+/**
+ * @brief The week's progress as a whole percent, counted from Monday.
+ *
+ * @param out Output buffer.
+ * @param n Buffer size.
+ */
+void ops_text_week_progress(char *out, size_t n);
+
+/**
+ * @brief The year's progress as a whole percent.
+ *
+ * @param out Output buffer.
+ * @param n Buffer size.
+ */
+void ops_text_year_progress(char *out, size_t n);
 
 // --- other clocks ---
 void ops_text_epoch(char *out, size_t n);

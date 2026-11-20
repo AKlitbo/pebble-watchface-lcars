@@ -11,6 +11,7 @@
   "calories":                        { "svg": "uxwing/burn-fire-icon",                        "size": [14, 14] },
   "sleep":                           { "svg": "uxwing/snooze-zzz-icon",                       "size": [14, 14] },
   "active":                          { "svg": "uxwing/time-late-icon",                        "size": [14, 14] },
+  "clock":                           { "svg": "uxwing/clock-icon",                            "size": [14, 14] },
   "calendar":                        { "svg": "uxwing/calendar-blank-line-icon",              "size": [14, 14] },
   "globe":                           { "svg": "uxwing/globe-network-icon",                    "size": [14, 14] },
   "sunrise":                         { "svg": "weather-icons/svg/wi-sunrise",                 "size": [14, 14] },

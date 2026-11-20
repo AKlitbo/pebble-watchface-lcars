@@ -8,13 +8,16 @@
 #include "io/appmessage/appmessage.h"
 #include "ui/engine/engine.h"
 #include "ui/readouts.h"
+#include "io/stores/calendar_store.h"
 #include "io/stores/health_store.h"
+#include "io/stores/music_store.h"
 #include "io/stores/location_store.h"
 #include "io/stores/system_store.h"
 #include "io/stores/time_store.h"
 #include "io/stores/weather_store.h"
 #include "dev/dev.h"
 #include "layout.h"
+#include "ops/ops.h"
 #include "persist_keys.h"
 #include "system/settings/settings.h"
 #include "system/settings/setting_values.h"
@@ -24,7 +27,89 @@
 // weather polls the phone this often
 #define WEATHER_POLL_MIN 30
 
+// the calendar polls the phone this often while a calendar panel shows it
+#define CALENDAR_POLL_MIN 30
+
 static Window *s_window;
+
+// the health store's rules as last started, so a settings change only restarts it when a chart
+// panel came or went. false while the dev fixture seeds the stores, which a restart would undo
+static HealthConfig s_health;
+static bool s_health_live;
+
+// whether the calendar and music stores were last started live
+static bool s_calendar_live;
+static bool s_music_live;
+
+/** @brief Whether a panel that shows the calendar is placed. */
+static bool calendar_shown(void)
+{
+    return stardate_ops_shows(OPS_FULL_AGENDA) || stardate_ops_shows(OPS_WIDE_EVENT);
+}
+
+/** @brief Whether a panel that shows what is playing is placed. */
+static bool music_shown(void)
+{
+    return stardate_ops_shows(OPS_WIDE_MUSIC) || stardate_ops_shows(OPS_FULL_MUSIC);
+}
+
+/**
+ * @brief Starts the calendar and music stores live only while a panel shows them, and again when a
+ * save adds the first one or takes the last one off.
+ *
+ * A live calendar store asks the phone for the agenda every half hour, and a live music store has
+ * the phone send every change of track. With no panel showing either, both would only wake the
+ * watch for nothing. A music store started not live tells the phone so, and the phone stops sending.
+ *
+ * @param first True at launch, when both start whatever they were before.
+ */
+static void apply_phone_feeds(bool first)
+{
+    if (!s_health_live)
+    {
+        return;
+    }
+
+    bool calendar_live = calendar_shown();
+    if (first || calendar_live != s_calendar_live)
+    {
+        s_calendar_live = calendar_live;
+        calendar_store_init((CalendarConfig){.live = calendar_live, .poll_min = CALENDAR_POLL_MIN,
+                                             .persist_key = CALENDAR_STORE_KEY}, NULL);
+    }
+
+    bool music_live = music_shown();
+    if (first || music_live != s_music_live)
+    {
+        s_music_live = music_live;
+        music_store_init((MusicConfig){.live = music_live}, NULL);
+    }
+}
+
+/**
+ * @brief The health store's rules from what the ops panels show.
+ *
+ * An ops slot can show sleep, active minutes or calories, and those three each cost a read the
+ * watch does not cache, so they are always on. The two hourly parts only run while a chart panel
+ * draws them. The heart rate one reads the watch's minute log at launch, which is real work for a
+ * panel nobody placed.
+ */
+static HealthConfig health_cfg(void)
+{
+    bool step_chart = stardate_ops_shows(OPS_WIDE_STEPS) || stardate_ops_shows(OPS_FULL_STEPS);
+    bool heart_chart = stardate_ops_shows(OPS_WIDE_HEART) || stardate_ops_shows(OPS_FULL_HEART);
+
+    return (HealthConfig){
+        .live = true,
+        .sleep = true,
+        .active = true,
+        .calories = true,
+        .distance = true,
+        .step_history = step_chart ? HEALTH_STEP_HISTORY : NULL,
+        .hr_day = heart_chart ? HEALTH_HR_DAY : NULL,
+        .persist_key = HEALTH_STORE_KEY,
+    };
+}
 
 /**
  * @brief The time-store rules from the current settings. The cadence follows what is on screen.
@@ -64,6 +149,17 @@ static void on_settings_changed(bool time_or_date_changed)
     engine_rebuild();
 
     time_store_reconfigure(time_cfg());  // on every change, since the formats and the buzz both pick it
+
+    // a chart panel placed or taken away starts or stops the hourly part behind it
+    HealthConfig health = health_cfg();
+    if (s_health_live && (health.step_history != s_health.step_history || health.hr_day != s_health.hr_day))
+    {
+        s_health = health;
+        health_store_init(s_health, NULL);
+    }
+
+    // a calendar or Now Playing panel placed or taken away starts or stops the phone's feed for it
+    apply_phone_feeds(false);
 }
 
 /**
@@ -93,12 +189,10 @@ static void init(void)
     if (!dev_seed_stores())
     {
         system_store_init((SystemConfig){.live = true, .vibe = vibe_bt_transition}, NULL);
-        // an ops slot can show sleep, active minutes or calories, and those three each cost a
-        // read the watch does not cache. the two history buffers stay off: they cost a storage
-        // write a minute and no slot draws a curve
-        health_store_init((HealthConfig){.live = true, .sleep = true,
-                                         .active = true, .calories = true, .distance = true,
-                                         .persist_key = HEALTH_STORE_KEY}, NULL);
+        s_health = health_cfg();
+        s_health_live = true;
+        health_store_init(s_health, NULL);
+        apply_phone_feeds(true);
         time_store_init(time_cfg(), NULL);
         weather_store_init((WeatherConfig){.live = true, .poll_min = WEATHER_POLL_MIN,
                                            .persist_key = WEATHER_STORE_KEY}, NULL);
@@ -115,6 +209,8 @@ static void init(void)
     // any store change repaints all slots. the time tick also drives the hourly vibe
     time_store_subscribe(on_time_tick);
     health_store_subscribe(engine_mark_dirty);
+    calendar_store_subscribe(engine_mark_dirty);
+    music_store_subscribe(engine_mark_dirty);
     weather_store_subscribe(engine_mark_dirty);
     location_store_subscribe(engine_mark_dirty);
     system_store_subscribe(engine_mark_dirty);
@@ -133,6 +229,7 @@ static void deinit(void)
     dev_stop();
     lcars_dev_stop();
     system_store_deinit();
+    music_store_deinit();
     engine_deinit();
     stardate_teardown();
     window_destroy(s_window);

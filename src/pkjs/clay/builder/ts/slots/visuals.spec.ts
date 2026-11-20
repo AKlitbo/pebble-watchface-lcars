@@ -12,7 +12,7 @@
 import { describe, test, expect, beforeEach } from 'vitest';
 import { buildReadoutList, sizeFor, thumbFor, fillVisual, readoutById } from './visuals';
 import type { Readout } from './visuals';
-import { ID_HEART, ID_EMPTY, ID_SENSORS } from './geometry';
+import { ID_HEART, ID_EMPTY, ID_SENSORS, ID_WIDE_DAYLIGHT, ID_FULL_HEART } from './geometry';
 
 const THUMBS = {
   'Heart Rate': { slot: 'data:heart-slot' },
@@ -60,6 +60,14 @@ describe('buildReadoutList', () => {
     expect(result[0].color).toBe('#999');
   });
 
+  /** The palette files a readout under its group and the warnings read its plugin, so dropping either off the merged row hides it under Other or silences its warning. */
+  test('carries the group and the plugin from the merged row', () => {
+    const result = buildReadoutList([{ value: 33, label: 'Now Playing (AUDIO)', group: 'Music', plugin: 'music' }]);
+
+    expect(result[0].group).toBe('Music');
+    expect(result[0].plugin).toBe('music');
+  });
+
   /** Clay can hand over nothing at all before the config settles, and mapping that would throw before the palette draws. */
   test('reads a missing option list as an empty palette', () => {
     const result = buildReadoutList(null);
@@ -69,11 +77,11 @@ describe('buildReadoutList', () => {
 });
 
 describe('sizeFor', () => {
-  /** The tall block is shot at its own size, so filing it under the panel size fetches a crop of the wrong shape. */
-  test('files the tall block apart from the ordinary readouts', () => {
-    const result = [sizeFor(ID_SENSORS), sizeFor(ID_HEART)];
+  /** A big panel is shot at its own size, so filing it under the panel size fetches a crop of the wrong shape. */
+  test('files each big panel apart from the ordinary readouts', () => {
+    const result = [sizeFor(ID_SENSORS), sizeFor(ID_WIDE_DAYLIGHT), sizeFor(ID_FULL_HEART), sizeFor(ID_HEART)];
 
-    expect(result).toEqual(['tall', 'slot']);
+    expect(result).toEqual(['tall', 'wide', 'full', 'slot']);
   });
 });
 
@@ -114,9 +122,9 @@ describe('fillVisual', () => {
   test('clears whatever the box held before', () => {
     const box = document.createElement('div');
 
-    fillVisual(box, HEART, THUMBS, false);
+    fillVisual(box, HEART, THUMBS);
 
-    fillVisual(box, SENSORS, THUMBS, false);
+    fillVisual(box, SENSORS, THUMBS);
 
     expect(box.querySelectorAll('img')).toHaveLength(1);
     expect(box.querySelector('img').src).toBe('data:sensors-tall');
@@ -126,57 +134,31 @@ describe('fillVisual', () => {
   test('writes an empty marker for no readout', () => {
     const box = document.createElement('div');
 
-    fillVisual(box, null, THUMBS, false);
+    fillVisual(box, null, THUMBS);
 
     expect(box.querySelector('.sb-slot-empty').textContent).toBe('Empty');
-  });
-
-  /** The palette and the panels size their images differently, so the wrong class draws a tile at the other one's scale. */
-  test('classes the image by whether the box is a palette tile', () => {
-    const tile = document.createElement('div');
-
-    tile.className = 'sb-pal';
-    const slot = document.createElement('div');
-
-    fillVisual(tile, HEART, THUMBS, false);
-    fillVisual(slot, HEART, THUMBS, false);
-
-    expect(tile.querySelector('img').className).toBe('sb-pal-img');
-    expect(slot.querySelector('img').className).toBe('sb-slot-img');
   });
 
   /** Without the fallback an unphotographed readout draws nothing at all, which reads as a builder that failed rather than a readout with no shot. */
   test('falls back to the tint and emoji for a readout with no shot', () => {
     const box = document.createElement('div');
 
-    fillVisual(box, UNSHOT, THUMBS, false);
+    fillVisual(box, UNSHOT, THUMBS);
 
     expect(box.querySelector('img')).toBeNull();
-    expect(box.classList.contains('sb-pal-fallback')).toBe(true);
-    expect(box.querySelector('.sb-pal-icon').textContent).toBe('$');
-  });
-
-  /** The palette names its readouts and the panels do not, so ignoring the flag either crowds a panel or leaves the palette unreadable. */
-  test('adds the label to the fallback only when asked', () => {
-    const named = document.createElement('div');
-    const bare = document.createElement('div');
-
-    fillVisual(named, UNSHOT, THUMBS, true);
-    fillVisual(bare, UNSHOT, THUMBS, false);
-
-    expect(named.textContent).toContain('Stocks');
-    expect(bare.textContent).not.toContain('Stocks');
+    expect(box.classList.contains('sb-fallback')).toBe(true);
+    expect(box.querySelector('.sb-fallback-icon').textContent).toBe('$');
   });
 
   /** A box that fell back once and is later given a shot would keep the tint behind its image. */
   test('drops the fallback styling when a later readout has a shot', () => {
     const box = document.createElement('div');
 
-    fillVisual(box, UNSHOT, THUMBS, false);
+    fillVisual(box, UNSHOT, THUMBS);
 
-    fillVisual(box, HEART, THUMBS, false);
+    fillVisual(box, HEART, THUMBS);
 
-    expect(box.classList.contains('sb-pal-fallback')).toBe(false);
+    expect(box.classList.contains('sb-fallback')).toBe(false);
     expect(box.style.background).toBe('');
   });
 });

@@ -2,12 +2,13 @@
  * This face's answers for the shared drag engine: what a panel drag carries, where it may land,
  * and what happens when it gets there.
  *
- * The pointer handling itself lives in the framework. All that is here is the four-panel shape: hit testing
- * four boxes rather than mapping a pointer onto a grid pitch, and swapping two panels rather than
- * placing a block into free space.
+ * The pointer handling itself lives in the framework. All that is here is the panel grid's own
+ * shape: hit testing the panel boxes rather than mapping a pointer onto a grid pitch, and swapping
+ * panels rather than placing a block into free space.
  */
 
-import { SLOT_COUNT, ID_EMPTY, canPlace, isTall, swallowedBy } from './geometry';
+import { GRID, ID_EMPTY, SHAPE_SINGLE, cellsFor, colOf, owners, rowOf, shapeOf, slotAt } from './geometry';
+import type { Grid } from './geometry';
 import { fillVisual, readoutById } from './visuals';
 import type { Readout } from './visuals';
 import type { Thumbs } from '../../../../../../paf/ts/clay/builder/ts/types';
@@ -18,7 +19,7 @@ export interface DragEnv {
   root: HTMLElement;
   readouts: Readout[];
   thumbs: Thumbs;
-  /** The four panel boxes, in slot order. A hidden one reports an empty rect and is skipped. */
+  /** The panel boxes, in cell order. A hidden one reports an empty rect and is skipped. */
   slotEls: HTMLElement[];
   getSlots: () => number[];
   setSlots: (slots: number[]) => void;
@@ -31,40 +32,86 @@ interface Dragged {
 }
 
 /**
- * Work out what the four slots would become, or null when the move is not allowed.
+ * Work out what the panels would become, or null when the move is not allowed.
  *
- * Dragging between panels swaps them, which can push a tall pick somewhere it cannot go, so the
- * whole candidate arrangement is checked rather than just the panel under the pointer.
+ * A drop off the palette replaces whatever it lands on, all of it, so a single readout dropped on
+ * part of a big panel takes the whole panel out. A drag from one panel to another trades places
+ * instead. Each readout it lands on moves by the same step the other way, so swapping two singles,
+ * or a wide panel with the row under it, both come out as the eye expects. A readout that would not
+ * fit where the trade sends it refuses the whole move rather than being dropped or placed badly, so
+ * the whole candidate arrangement is checked rather than just the panel under the pointer.
  *
- * @param slots The current four.
+ * @param slots The current values, one a cell.
  * @param id What is being dragged.
- * @param from The slot it came from, or -1 from the palette.
- * @param to The slot it is being dropped on.
- * @return The new four, or null to refuse the drop.
+ * @param from The cell it came from, or -1 from the palette.
+ * @param to The cell it is being dropped on.
+ * @param grid The grid.
+ * @return The new values, or null to refuse the drop.
  */
-export function tryPlace(slots: number[], id: number, from: number, to: number): number[] | null {
+export function tryPlace(slots: number[], id: number, from: number, to: number, grid: Grid): number[] | null {
+  const landing = cellsFor(id, to, grid);
+
+  if (!landing) {
+    return null;
+  }
+
+  if (from === to) {
+    return slots.slice();
+  }
+
   const next = slots.slice();
 
   if (from >= 0) {
-    next[from] = slots[to];
+    clearPiece(next, from, grid);
   }
+
+  // what sits under the landing cells, by the cell each one starts from
+  const under = owners(next, grid);
+  const hit: number[] = [];
+
+  landing.forEach((cell) => {
+    if (under[cell] >= 0 && hit.indexOf(under[cell]) < 0) {
+      hit.push(under[cell]);
+    }
+  });
+
+  const hitIds = hit.map((slot) => next[slot]);
+
+  hit.forEach((slot) => {
+    clearPiece(next, slot, grid);
+  });
 
   next[to] = id;
 
-  // a tall pick fills its column so whatever was under it is gone rather than pushed aside
-  const swallowed = swallowedBy(id, to);
-
-  if (swallowed >= 0) {
-    next[swallowed] = ID_EMPTY;
+  if (from < 0) {
+    return next;
   }
 
-  for (let slot = 0; slot < SLOT_COUNT; slot++) {
-    if (!canPlace(next[slot], slot)) {
+  const stepCol = colOf(from, grid) - colOf(to, grid);
+  const stepRow = rowOf(from, grid) - rowOf(to, grid);
+
+  for (let i = 0; i < hit.length; i++) {
+    const dest = slotAt(colOf(hit[i], grid) + stepCol, rowOf(hit[i], grid) + stepRow, grid);
+    const cells = dest >= 0 ? cellsFor(hitIds[i], dest, grid) : null;
+    const taken = owners(next, grid);
+
+    if (!cells || cells.some((cell) => taken[cell] >= 0)) {
       return null;
     }
+
+    next[dest] = hitIds[i];
   }
 
   return next;
+}
+
+/** Empties every cell the readout starting at a cell fills. */
+function clearPiece(slots: number[], slot: number, grid: Grid): void {
+  const cells = cellsFor(slots[slot], slot, grid) || [slot];
+
+  cells.forEach((cell) => {
+    slots[cell] = ID_EMPTY;
+  });
 }
 
 /**
@@ -77,8 +124,8 @@ export function installDrag(env: DragEnv) {
   const doc = env.root.ownerDocument || document;
 
   /** Which panel is under a point, or null. A hidden panel has no box and cannot win. */
-  function slotAt(x: number, y: number): number | null {
-    for (let slot = 0; slot < SLOT_COUNT; slot++) {
+  function slotUnder(x: number, y: number): number | null {
+    for (let slot = 0; slot < env.slotEls.length; slot++) {
       const box = env.slotEls[slot].getBoundingClientRect();
 
       if (box.width && x >= box.left && x <= box.right && y >= box.top && y <= box.bottom) {
@@ -95,19 +142,21 @@ export function installDrag(env: DragEnv) {
     ghost(dragged) {
       const ghost = doc.createElement('div');
 
-      ghost.className = 'sb-ghost' + (isTall(dragged.id) ? ' tall' : '');
-      fillVisual(ghost, readoutById(env.readouts, dragged.id), env.thumbs, false);
+      const shape = shapeOf(dragged.id);
+
+      ghost.className = 'sb-ghost' + (shape === SHAPE_SINGLE ? '' : ' ' + shape);
+      fillVisual(ghost, readoutById(env.readouts, dragged.id), env.thumbs);
       return ghost;
     },
 
-    hitTest: slotAt,
+    hitTest: slotUnder,
 
     allows(dragged, slot) {
-      return tryPlace(env.getSlots(), dragged.id, dragged.from, slot) !== null;
+      return tryPlace(env.getSlots(), dragged.id, dragged.from, slot, GRID) !== null;
     },
 
     highlight(dragged, slot, allowed) {
-      for (let i = 0; i < SLOT_COUNT; i++) {
+      for (let i = 0; i < env.slotEls.length; i++) {
         env.slotEls[i].classList.remove('over', 'blocked');
       }
 
@@ -117,7 +166,7 @@ export function installDrag(env: DragEnv) {
     },
 
     drop(dragged, slot) {
-      const next = tryPlace(env.getSlots(), dragged.id, dragged.from, slot);
+      const next = tryPlace(env.getSlots(), dragged.id, dragged.from, slot, GRID);
 
       if (next) {
         env.setSlots(next);

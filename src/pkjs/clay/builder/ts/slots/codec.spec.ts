@@ -10,10 +10,12 @@
  */
 
 import { describe, test, expect, beforeEach } from 'vitest';
-import { parseId, formatId, storeFor, readSlots, writeStores, sanitize, defaults } from './codec';
+import { parseId, formatId, storeFor, readSlots, writeStores, sanitize } from './codec';
 import {
+  GRID,
   SLOT_LT, SLOT_LB, SLOT_RT, SLOT_RB,
-  ID_HEART, ID_STEPS, ID_EMPTY, ID_SENSORS,
+  ID_HEART, ID_STEPS,
+  ID_EMPTY, ID_SENSORS, ID_WIDE_DAYLIGHT, ID_FULL_HEART,
 } from './geometry';
 
 /** Puts the three hidden stores on the page the way the config template does. */
@@ -172,42 +174,50 @@ describe('writeStores', () => {
 describe('sanitize', () => {
   /** A valid arrangement must come back untouched, or every read would quietly rewrite the user's face. */
   test('leaves a placeable arrangement as it is', () => {
-    const result = sanitize([ID_SENSORS, ID_EMPTY, ID_HEART, ID_STEPS]);
+    const result = sanitize([ID_SENSORS, ID_EMPTY, ID_HEART, ID_STEPS], GRID);
 
     expect(result).toEqual([ID_SENSORS, ID_EMPTY, ID_HEART, ID_STEPS]);
   });
 
   /** A tall pick outside its column renders as a labelled panel with nothing in it, so it is cleared rather than shown. */
   test('empties a tall pick that is not in the upper left', () => {
-    const result = sanitize([ID_HEART, ID_SENSORS, ID_STEPS, ID_EMPTY]);
+    const result = sanitize([ID_HEART, ID_SENSORS, ID_STEPS, ID_EMPTY], GRID);
 
     expect(result).toEqual([ID_HEART, ID_EMPTY, ID_STEPS, ID_EMPTY]);
   });
 
+  /** A pick saved in a cell a wide panel covers would draw underneath it on a face that read it, so it is cleared. */
+  test('empties a pick in a cell a wide panel covers', () => {
+    const result = sanitize([ID_WIDE_DAYLIGHT, ID_HEART, ID_STEPS, ID_STEPS], GRID);
+
+    expect(result).toEqual([ID_WIDE_DAYLIGHT, ID_HEART, ID_EMPTY, ID_STEPS]);
+  });
+
+  /** A wide panel saved in the right column has nowhere to draw, so it is cleared rather than shown half off the screen. */
+  test('empties a wide panel saved in the right column', () => {
+    const result = sanitize([ID_HEART, ID_STEPS, ID_WIDE_DAYLIGHT, ID_EMPTY], GRID);
+
+    expect(result).toEqual([ID_HEART, ID_STEPS, ID_EMPTY, ID_EMPTY]);
+  });
+
+  /** A full panel covers the grid, so anything saved beside it is cleared. */
+  test('empties every other cell under a full panel', () => {
+    const result = sanitize([ID_FULL_HEART, ID_HEART, ID_SENSORS, ID_STEPS], GRID);
+
+    expect(result).toEqual([ID_FULL_HEART, ID_EMPTY, ID_EMPTY, ID_EMPTY]);
+  });
+
   /** A short blob would leave the later slots undefined, and the builder would index a panel that is not there. */
   test('pads a short arrangement out to four', () => {
-    const result = sanitize([ID_HEART]);
+    const result = sanitize([ID_HEART], GRID);
 
     expect(result).toEqual([ID_HEART, ID_EMPTY, ID_EMPTY, ID_EMPTY]);
   });
 
   /** A blob from a face with more panels must be cut down, not carried into a loop that only draws four. */
   test('cuts a long arrangement down to four', () => {
-    const result = sanitize([ID_HEART, ID_STEPS, ID_HEART, ID_STEPS, ID_HEART, ID_STEPS]);
+    const result = sanitize([ID_HEART, ID_STEPS, ID_HEART, ID_STEPS, ID_HEART, ID_STEPS], GRID);
 
     expect(result).toEqual([ID_HEART, ID_STEPS, ID_HEART, ID_STEPS]);
-  });
-});
-
-describe('defaults', () => {
-  /** Handing back the shared table would let the first edit after a reset rewrite what reset means for the rest of the session. */
-  test('hands back a fresh copy each time', () => {
-    const first = defaults();
-
-    first[0] = 99;
-
-    const result = defaults();
-
-    expect(result[0]).toBe(ID_SENSORS);
   });
 });

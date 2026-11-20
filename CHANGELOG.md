@@ -4,6 +4,23 @@ All notable changes to the LCARS Stardate watchface are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- Added wide panels that fill a row: a Daylight Bar showing the sunrise and sunset with how far through the day it is, and Steps by the Hour and Heart Rate by the Hour, each showing the reading now beside a small bar for each hour.
+- Added full panels that fill a square of four: Heart Rate Today, charting your heart rate by the hour with the day's high, average, and low, and Steps Today, charting your steps by the hour with the total and your busiest hour.
+- Added Now Playing and Next Event across two panels, showing the song playing on your phone, or your next calendar event and when it starts.
+- Added Now Playing with Art and an Agenda across four panels, showing the album art with the song and artist, or your next few events. The calendar panels take their events from a Pebble app calendar plugin or a private iCal link you paste under Calendar Preferences.
+- Added a note under the panel builder when a panel you placed needs a Pebble app plugin your phone cannot use yet, such as Now Playing while plugins are off.
+- Added Hour, Day, Week, and Year Progress as a percent or as a segmented bar, Precipitation, Feels Like, Pressure, Dew Point, Days Left, Weeks Left, and Weekday Dots readouts, and an Hourly and a 4-Day Forecast across four panels.
+- Added a UV Index Bar, a Swatch Beats Bar, and the moon's phase and the next alarm with their countdowns, each across two panels.
+
+### Changed
+
+- Changed the panels to sit evenly between the left rail and the screen's edge.
+- Changed the panel builder's list of readouts into tabs by size, named width by height from 1x1 to 2x2, with a row of groups such as Health and Weather under each. A readout already on the face is dimmed in the list.
+
 ## [1.15.1] - 2026-11-14
 
 ### Fixed

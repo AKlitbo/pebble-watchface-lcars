@@ -8,10 +8,13 @@
     "emery"
   ],
   "defines": {
-    "PLUGIN_WEATHER": 1
+    "PLUGIN_WEATHER": 1,
+    "PLUGIN_CALENDAR": 1,
+    "PLUGIN_MUSIC": 1
   },
   "providers": {
-    "weather": ["plugin", "openmeteo", "owm", "weatherapi"]
+    "weather": ["plugin", "openmeteo", "owm", "weatherapi"],
+    "calendar": ["plugin", "ical"]
   },
   "capabilities": [
     "health"
@@ -49,12 +52,18 @@
     "WEATHER_TEMP_MAX",
     "WEATHER_TEMP_MIN",
     "WEATHER_PRECIP_CHANCE",
+    "WEATHER_FEELS_LIKE",
+    "WEATHER_PRESSURE",
+    "WEATHER_DEW_POINT",
+    "WEATHER_FORECAST_HOURLY",
+    "WEATHER_FORECAST_DAILY",
     "CLOCK_TIMEZONE_1",
     "APPEARANCE_THEME_MODE",
     "APPEARANCE_NIGHT_THEME_ON",
     "APPEARANCE_NIGHT_THEME",
     "APPEARANCE_QUIET_THEME_ON",
-    "APPEARANCE_QUIET_THEME"
+    "APPEARANCE_QUIET_THEME",
+    "CALENDAR_ICS_URL"
   ],
   "resources": {
     "media": [
@@ -79,6 +88,7 @@
       { "type": "bitmap", "name": "ICON_CALORIES", "file": "icons/calories.png" },
       { "type": "bitmap", "name": "ICON_SLEEP", "file": "icons/sleep.png" },
       { "type": "bitmap", "name": "ICON_ACTIVE", "file": "icons/active.png" },
+      { "type": "bitmap", "name": "ICON_CLOCK", "file": "icons/clock.png" },
       { "type": "bitmap", "name": "ICON_CALENDAR", "file": "icons/calendar.png" },
       { "type": "bitmap", "name": "ICON_GLOBE", "file": "icons/globe.png" },
       { "type": "bitmap", "name": "ICON_SUNRISE", "file": "icons/sunrise.png" },
@@ -180,19 +190,19 @@
         "type": "font",
         "name": "FONT_ANTONIO_16",
         "file": "fonts/Antonio.ttf",
-        "characterRegex": "[A-Z0-9 .:%@/-]"
+        "characterRegex": "[ -`{-~]"
       },
       {
         "type": "font",
         "name": "FONT_ANTONIO_14",
         "file": "fonts/Antonio.ttf",
-        "characterRegex": "[A-Z0-9 .:%@/-]"
+        "characterRegex": "[ -`{-~]"
       },
       {
         "type": "font",
         "name": "FONT_ANTONIO_12",
         "file": "fonts/Antonio.ttf",
-        "characterRegex": "[A-Z0-9 .:%@/-]"
+        "characterRegex": "[ -`{-~]"
       },
       {
         "type": "font",

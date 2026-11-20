@@ -11,6 +11,9 @@
  *   blockColor  the tint the builder paints behind the icon.
  *   slug        the resources/thumbnails/<slug>-<size>.png filename stem. embed-thumbnails.ts
  *               reads it from here so the thumbnail list has one home, not a second copy.
+ *   group       the palette group tab it sits under, one of the builder's PALETTE_GROUPS.
+ *   plugin      the Pebble app plugin kind it reads, for one whose readings a plugin can bring,
+ *               so the builder warns when that plugin cannot fill it.
  *
  * Empty is deliberately absent. It has no panel to photograph, and the builder offers it as a
  * clear action rather than as something to drag.
@@ -18,45 +21,85 @@
 
 import type { ModuleMeta } from '../../../paf/ts/clay/types';
 
-const moduleMeta: Record<string, ModuleMeta> = {
-  'Heart Rate (VITALS)':            { icon: '❤️', blockColor: '#e74c3c', slug: 'heart' },
-  'Steps / Distance (TRAVERSAL)':   { icon: '👟', blockColor: '#2ecc71', slug: 'steps' },
-  'Battery (POWER)':                { icon: '🔋', blockColor: '#f0a500', slug: 'battery' },
-  'Next Alarm (ALARM)':             { icon: '🔔', blockColor: '#ef5350', slug: 'alarm' },
-  'Calories (METABOLIC)':           { icon: '🔥', blockColor: '#e67e22', slug: 'calories' },
-  'Sleep (REGEN)':                  { icon: '😴', blockColor: '#4a5568', slug: 'sleep' },
-  'Active Minutes (EXERTION)':      { icon: '🏃', blockColor: '#1abc9c', slug: 'active' },
+/** One readout's row: the framework's fields, plus where the palette files it and what it reads. */
+export interface LcarsModuleMeta extends ModuleMeta {
+  group: string;
+  plugin?: 'weather' | 'calendar' | 'music';
+}
 
-  'Moon Phase % (LUNAR)':           { icon: '🌘', blockColor: '#7e57c2', slug: 'moon-pct' },
-  'Moon Phase Name (LUNAR)':        { icon: '🌗', blockColor: '#7e57c2', slug: 'moon-phase' },
-  'Next Full / New Moon':           { icon: '🌑', blockColor: '#673ab7', slug: 'moon-next' },
+const moduleMeta: Record<string, LcarsModuleMeta> = {
+  'Heart Rate (VITALS)':            { icon: '❤️', blockColor: '#e74c3c', slug: 'heart', group: 'Health' },
+  'Steps / Distance (TRAVERSAL)':   { icon: '👟', blockColor: '#2ecc71', slug: 'steps', group: 'Health' },
+  'Battery (POWER)':                { icon: '🔋', blockColor: '#f0a500', slug: 'battery', group: 'Status' },
+  'Next Alarm (ALARM)':             { icon: '🔔', blockColor: '#ef5350', slug: 'alarm', group: 'Status' },
+  'Calories (METABOLIC)':           { icon: '🔥', blockColor: '#e67e22', slug: 'calories', group: 'Health' },
+  'Sleep (REGEN)':                  { icon: '😴', blockColor: '#4a5568', slug: 'sleep', group: 'Health' },
+  'Active Minutes (EXERTION)':      { icon: '🏃', blockColor: '#1abc9c', slug: 'active', group: 'Health' },
 
-  'Sunrise (DAWN)':                 { icon: '🌅', blockColor: '#ffa726', slug: 'sunrise' },
-  'Sunset (DUSK)':                  { icon: '🌇', blockColor: '#ef6c00', slug: 'sunset' },
-  'Length of Day (DAYLIGHT)':       { icon: '☀️', blockColor: '#fbc02d', slug: 'daylight' },
-  'Countdown to Sunrise / Sunset':  { icon: '⏳', blockColor: '#ff8f00', slug: 'sun-next' },
+  'Moon Phase % (LUNAR)':           { icon: '🌘', blockColor: '#7e57c2', slug: 'moon-pct', group: 'Sky' },
+  'Moon Phase Name (LUNAR)':        { icon: '🌗', blockColor: '#7e57c2', slug: 'moon-phase', group: 'Sky' },
+  'Next Full / New Moon':           { icon: '🌑', blockColor: '#673ab7', slug: 'moon-next', group: 'Sky' },
 
-  'Humidity (ATMOS)':               { icon: '💧', blockColor: '#29b6f6', slug: 'humidity' },
-  'Wind (AIRFLOW)':                 { icon: '🌬', blockColor: '#4dd0e1', slug: 'wind' },
-  'UV Index':                       { icon: '😎', blockColor: '#ab47bc', slug: 'uv' },
-  'High / Low Temperature (RANGE)': { icon: '🌡', blockColor: '#42a5f5', slug: 'hilo' },
-  'Temperature (THERMAL)':          { icon: '🌡', blockColor: '#42a5f5', slug: 'temp' },
-  'Conditions (SKY)':               { icon: '🌤', blockColor: '#2196f3', slug: 'conditions' },
+  'Sunrise (DAWN)':                 { icon: '🌅', blockColor: '#ffa726', slug: 'sunrise', group: 'Sky', plugin: 'weather' },
+  'Sunset (DUSK)':                  { icon: '🌇', blockColor: '#ef6c00', slug: 'sunset', group: 'Sky', plugin: 'weather' },
+  'Length of Day (DAYLIGHT)':       { icon: '☀️', blockColor: '#fbc02d', slug: 'daylight', group: 'Sky', plugin: 'weather' },
+  'Countdown to Sunrise / Sunset':  { icon: '⏳', blockColor: '#ff8f00', slug: 'sun-next', group: 'Sky', plugin: 'weather' },
 
-  'Julian Date':                    { icon: '🗓', blockColor: '#90a4ae', slug: 'julian' },
-  'Day of Year (SOL)':              { icon: '📅', blockColor: '#90a4ae', slug: 'day-of-year' },
-  'Week Number (CYCLE)':            { icon: '🗓', blockColor: '#78909c', slug: 'week' },
+  'Humidity (ATMOS)':               { icon: '💧', blockColor: '#29b6f6', slug: 'humidity', group: 'Weather', plugin: 'weather' },
+  'Wind (AIRFLOW)':                 { icon: '🌬', blockColor: '#4dd0e1', slug: 'wind', group: 'Weather', plugin: 'weather' },
+  'UV Index':                       { icon: '😎', blockColor: '#ab47bc', slug: 'uv', group: 'Weather', plugin: 'weather' },
+  'High / Low Temperature (RANGE)': { icon: '🌡', blockColor: '#42a5f5', slug: 'hilo', group: 'Weather', plugin: 'weather' },
+  'Temperature (THERMAL)':          { icon: '🌡', blockColor: '#42a5f5', slug: 'temp', group: 'Weather', plugin: 'weather' },
+  'Precipitation (PRECIP)':         { icon: '☔', blockColor: '#1e88e5', slug: 'precip', group: 'Weather', plugin: 'weather' },
+  'Feels Like':         { icon: '🌡', blockColor: '#42a5f5', slug: 'feels-like', group: 'Weather', plugin: 'weather' },
+  'Pressure':                       { icon: '🧭', blockColor: '#5c6bc0', slug: 'pressure', group: 'Weather', plugin: 'weather' },
+  'Dew Point':           { icon: '💧', blockColor: '#29b6f6', slug: 'dew-point', group: 'Weather', plugin: 'weather' },
+  'Conditions (SKY)':               { icon: '🌤', blockColor: '#2196f3', slug: 'conditions', group: 'Weather', plugin: 'weather' },
 
-  'Epoch Clock':                    { icon: '🕗', blockColor: '#aed581', slug: 'epoch' },
-  'Swatch Beats':                   { icon: '🌐', blockColor: '#e91e63', slug: 'beats' },
-  'Alternate Time Zone (ZONE 1)':   { icon: '🌍', blockColor: '#8e44ad', slug: 'zone1' },
+  'Julian Date':                    { icon: '🗓', blockColor: '#90a4ae', slug: 'julian', group: 'Date' },
+  'Day of Year (SOL)':              { icon: '📅', blockColor: '#90a4ae', slug: 'day-of-year', group: 'Date' },
+  'Week Number (CYCLE)':            { icon: '🗓', blockColor: '#78909c', slug: 'week', group: 'Date' },
 
-  // the tall one that fills the whole left column
-  'Sensors Block (weather + temperature)': { icon: '🌤', blockColor: '#1e88e5', slug: 'sensors' },
+  'Epoch Clock':                    { icon: '🕗', blockColor: '#aed581', slug: 'epoch', group: 'Clock' },
+  'Swatch Beats':                   { icon: '🌐', blockColor: '#e91e63', slug: 'beats', group: 'Clock' },
+  'Alternate Time Zone (ZONE 1)':   { icon: '🌍', blockColor: '#8e44ad', slug: 'zone1', group: 'Clock' },
+
+  'Hour Progress':         { icon: '⏱', blockColor: '#26a69a', slug: 'hour-progress', group: 'Date' },
+  'Day Progress':         { icon: '🕛', blockColor: '#26a69a', slug: 'day-progress', group: 'Date' },
+  'Week Progress':          { icon: '📆', blockColor: '#00897b', slug: 'week-progress', group: 'Date' },
+  'Year Progress':         { icon: '📆', blockColor: '#00796b', slug: 'year-progress', group: 'Date' },
+  'Days Left':          { icon: '📅', blockColor: '#90a4ae', slug: 'days-left', group: 'Date' },
+  'Weeks Left':                     { icon: '🗓', blockColor: '#78909c', slug: 'weeks-left', group: 'Date' },
+  'Weekday Dots':       { icon: '📅', blockColor: '#78909c', slug: 'weekday-dots', group: 'Date' },
+
+  // the tall one that fills two cells of the left column
+  'Sensors Block (weather + temperature)': { icon: '🌤', blockColor: '#1e88e5', slug: 'sensors', group: 'Weather', plugin: 'weather' },
+
+  // the wide ones that fill a row, and the full ones that fill a 2x2 block
+  'Daylight Bar (DAYLIGHT)':        { icon: '🌅', blockColor: '#fbc02d', slug: 'daylight-bar', group: 'Sky', plugin: 'weather' },
+  'Steps by the Hour (TRAVERSAL)':  { icon: '👟', blockColor: '#2ecc71', slug: 'steps-hours', group: 'Health' },
+  'Heart Rate by the Hour (VITALS)': { icon: '❤️', blockColor: '#e74c3c', slug: 'heart-hours', group: 'Health' },
+  'Now Playing (AUDIO)':            { icon: '🎵', blockColor: '#8e44ad', slug: 'music', group: 'Music', plugin: 'music' },
+  'Next Event (SCHEDULE)':          { icon: '📅', blockColor: '#3498db', slug: 'event', group: 'Calendar', plugin: 'calendar' },
+  'Now Playing with Art (AUDIO)':   { icon: '🎵', blockColor: '#8e44ad', slug: 'music-art', group: 'Music', plugin: 'music' },
+  'Agenda (SCHEDULE)':              { icon: '📅', blockColor: '#3498db', slug: 'agenda', group: 'Calendar', plugin: 'calendar' },
+  'Heart Rate Today (VITALS TODAY)': { icon: '❤️', blockColor: '#e74c3c', slug: 'heart-today', group: 'Health' },
+  'Steps Today (TRAVERSAL TODAY)': { icon: '👟', blockColor: '#27ae60', slug: 'steps-today', group: 'Health' },
+  'Hour Progress Bar':     { icon: '⏱', blockColor: '#26a69a', slug: 'hour-progress-bar', group: 'Date' },
+  'Day Progress Bar':     { icon: '🕛', blockColor: '#26a69a', slug: 'day-progress-bar', group: 'Date' },
+  'Week Progress Bar':      { icon: '📆', blockColor: '#00897b', slug: 'week-progress-bar', group: 'Date' },
+  'Year Progress Bar':     { icon: '📆', blockColor: '#00796b', slug: 'year-progress-bar', group: 'Date' },
+  'UV Index Bar':             { icon: '😎', blockColor: '#ab47bc', slug: 'uv-bar', group: 'Weather', plugin: 'weather' },
+  'Moon Phase and Countdown': { icon: '🌗', blockColor: '#7e57c2', slug: 'moon-wide', group: 'Sky' },
+  'Next Alarm and Countdown': { icon: '🔔', blockColor: '#ef5350', slug: 'alarm-wide', group: 'Status' },
+  'Swatch Beats Bar':         { icon: '🌐', blockColor: '#e91e63', slug: 'beats-bar', group: 'Clock' },
+  'Hourly Forecast Board': { icon: '⛅', blockColor: '#2196f3', slug: 'forecast-hourly', group: 'Weather', plugin: 'weather' },
+  '4-Day Forecast Board':   { icon: '📅', blockColor: '#1976d2', slug: 'forecast-daily', group: 'Weather', plugin: 'weather' },
 };
 
-// the panel shapes this face's thumbnails come in: one ops slot, or the tall block filling the
-// whole left column. embed-thumbnails.ts refuses a png in any other size
-export const thumbnailSizes = ['slot', 'tall'];
+// the panel shapes this face's thumbnails come in: one ops slot, the tall block filling two cells of
+// the left column, a wide panel filling a row, or a full one filling a 2x2 block. embed-thumbnails.ts
+// refuses a png in any other size
+export const thumbnailSizes = ['slot', 'tall', 'wide', 'full'];
 
 export default moduleMeta;

@@ -9,24 +9,37 @@
 #pragma once
 #include <pebble.h>
 
+#include "ops/ops.h"
+
 /**
  * @addtogroup watchface-lcars
  * @{
  */
 
 /**
- * @brief What the four ops slots resolved to this paint, in slot order (left top, left bottom,
- * right top, right bottom).
+ * @brief What the ops slots resolved to this paint, in the grid's cell order.
  *
  * Layout works this out from the catalogue and hands it over, so the painters below stay painters
  * that are told what to draw rather than reaching for settings themselves.
  */
 typedef struct
 {
-    const char *label[4];   ///< Holder-box word per slot, "" for a slot that draws none
-    uint32_t    icon[4];    ///< Glyph resource per slot, 0 for none
+    const OpsGrid *grid;                ///< The ops grid, which places each slot's chrome
+    const char *label[OPS_CELLS_MAX];   ///< Holder-box word per slot, "" for a slot that draws none
+    uint32_t    icon[OPS_CELLS_MAX];    ///< Glyph resource per slot, 0 for none
+    OpsShape    shape[OPS_CELLS_MAX];   ///< How much of the grid each slot's pick fills
+    bool        covered[OPS_CELLS_MAX]; ///< A bigger panel covers the slot, so it draws no chrome of its own
     bool        left_composite; ///< The left column is the one tall weather block, not two slots
 } OpsChrome;
+
+/**
+ * @brief Blit a glyph centred in a box, at its own size.
+ *
+ * @param ctx The graphics context.
+ * @param res The resource id.
+ * @param box The area to centre it in.
+ */
+void widgets_draw_glyph(GContext *ctx, uint32_t res, GRect box);
 
 /** @brief Load the label font. */
 void widgets_load(void);
@@ -39,7 +52,7 @@ void widgets_unload(void);
  *
  * The frame artwork leaves their space empty, so these are painted before anything that sits on
  * top of them (the label holder boxes). A column showing the tall weather block gets one bar
- * across its top row instead of two.
+ * across its top row instead of two, and a wide or full panel gets one bar across both columns.
  *
  * @param ctx The graphics context.
  * @param chrome What the four slots resolved to.

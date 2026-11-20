@@ -1,15 +1,15 @@
 /**
  * The Clay settings page for this face.
  *
- * Built from the shared template (see paf/ts/pkjs/config-builder.ts), tuned with the
- * LCARS theme list and the two ops slots this face lets you fill.
+ * Built from the shared template (see paf/ts/pkjs/config-builder.ts), tuned with the LCARS theme
+ * list and the slot builder for the ops panels.
  */
 import buildConfig from '../../paf/ts/pkjs/config-builder';
 import moduleThumbnails from './clay/module-thumbnails.g';
 import moduleMeta from './clay/module-meta';
 import themePreviews from './clay/theme-previews.g';
 
-// what either right-hand slot can show. the value is the C OpsId, so these numbers are the
+// what one panel can show. the value is the C OpsId, so these numbers are the
 // contract with src/c/ops/ops.h and are only ever appended to, never reordered
 const OPS_OPTIONS = [
   { label: 'Heart Rate (VITALS)', value: 0 },
@@ -38,20 +38,52 @@ const OPS_OPTIONS = [
   { label: 'Next Alarm (ALARM)', value: 27 },
   { label: 'Temperature (THERMAL)', value: 21 },
   { label: 'Conditions (SKY)', value: 22 },
+  { label: 'Hour Progress', value: 37 },
+  { label: 'Day Progress', value: 38 },
+  { label: 'Week Progress', value: 39 },
+  { label: 'Year Progress', value: 40 },
+  { label: 'Precipitation (PRECIP)', value: 45 },
+  { label: 'Feels Like', value: 46 },
+  { label: 'Pressure', value: 47 },
+  { label: 'Dew Point', value: 48 },
+  { label: 'Days Left', value: 49 },
+  { label: 'Weeks Left', value: 50 },
+  { label: 'Weekday Dots', value: 51 },
   { label: 'Empty', value: 20 },
 ];
 
-// the weather block fills both rows of its column so it is only offered where a
-// column starts. picking it anywhere else would leave half a block and the watch
-// reads it as Empty there
-const SENSORS_BLOCK = { label: 'Sensors Block (weather + temperature)', value: 23 };
+// the bigger panels. the weather block fills two cells of the left column, a wide panel fills a row,
+// and a full panel fills a 2x2 block. each is only offered where it starts, and the watch reads it as
+// Empty anywhere else
+const BIG_PANELS = [
+  { label: 'Sensors Block (weather + temperature)', value: 23 },
+  { label: 'Daylight Bar (DAYLIGHT)', value: 28 },
+  { label: 'Steps by the Hour (TRAVERSAL)', value: 29 },
+  { label: 'Heart Rate by the Hour (VITALS)', value: 32 },
+  { label: 'Now Playing (AUDIO)', value: 33 },
+  { label: 'Next Event (SCHEDULE)', value: 36 },
+  { label: 'Hour Progress Bar', value: 41 },
+  { label: 'Day Progress Bar', value: 42 },
+  { label: 'Week Progress Bar', value: 43 },
+  { label: 'Year Progress Bar', value: 44 },
+  { label: 'UV Index Bar', value: 54 },
+  { label: 'Moon Phase and Countdown', value: 55 },
+  { label: 'Next Alarm and Countdown', value: 56 },
+  { label: 'Swatch Beats Bar', value: 57 },
+  { label: 'Now Playing with Art (AUDIO)', value: 34 },
+  { label: 'Agenda (SCHEDULE)', value: 35 },
+  { label: 'Hourly Forecast Board', value: 52 },
+  { label: '4-Day Forecast Board', value: 53 },
+  { label: 'Heart Rate Today (VITALS TODAY)', value: 30 },
+  { label: 'Steps Today (TRAVERSAL TODAY)', value: 31 },
+];
 
 // what the builder drags. every readout plus the block with the emoji and tint
 // from module-meta riding along
 // the builder cannot import that file itself. Clay turns its initialize into text
 // and runs it in a webview with no module scope. so the merge happens here and
 // rides on the page item
-const BUILDER_OPTIONS = [SENSORS_BLOCK, ...OPS_OPTIONS].map(function (option) {
+const BUILDER_OPTIONS = [...BIG_PANELS, ...OPS_OPTIONS].map(function (option) {
   const merged: Record<string, unknown> = {};
 
   Object.assign(merged, option, moduleMeta[option.label]);
@@ -173,6 +205,7 @@ export default buildConfig({
   location: { gpsDefault: false },
   clock: { timeZone: true },
   weather: {},
+  calendar: {},
   temperature: {},
   quietTime: {},
   hourlyVibe: {},

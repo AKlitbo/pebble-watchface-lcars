@@ -7,6 +7,8 @@
  */
 import app from '../../paf/ts/pkjs/app';
 import weather from '../../paf/ts/weather/feature';
+import calendar from '../../paf/ts/calendar/feature';
+import music from '../../paf/ts/music/feature';
 import type { WeatherResult } from '../../paf/ts/weather/util';
 import hiddenStoreComponent from '../../paf/ts/clay/hidden-store-component';
 import clayConfig from './config';
@@ -36,5 +38,8 @@ app.startPebbleApp({
       [messageKeys.LOCATION_LATITUDE]: fmtCoord(result.lat),
       [messageKeys.LOCATION_LONGITUDE]: fmtCoord(result.lon),
     })),
+    calendar,
+    // the art fills the full Now Playing panel's square
+    music.withArtwork({ w: 48, h: 48 }),
   ],
 });

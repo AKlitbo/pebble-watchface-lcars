@@ -73,7 +73,7 @@ body .section > .component.component-heading {
   background: transparent;
   border: none;
   padding: 0;
-  margin: 0 0 10px;
+  margin: 0 0 2px;
   overflow: visible;
 }
 
@@ -209,4 +209,38 @@ body .pf-loc-search .pf-loc-note:before {
   font-size: 14px !important;
   font-weight: 700 !important;
   line-height: 16px !important;
+}
+
+/* Clay pads the bottom of every row in a section and every description, so the last row in a card
+   leaves a gap the section's own padding already covers. that last row keeps none of its own */
+body .section > .component:last-child,
+body .section > .component:last-child .description {
+  padding-bottom: 0;
+}
+
+/* Clay sets a top margin on a section's first row and only a heading has it taken off above, so a
+   card that opens on a row, such as the supported plugins list, starts with an empty band */
+body .section > .component:first-child:not(.component-heading) {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+/* the frame theme picker reads its help text under the dropdown, then the picture */
+body .pf-theme {
+  display: flex;
+  flex-direction: column;
+}
+
+body .pf-theme > label {
+  order: 1;
+}
+
+body .pf-theme .pf-theme-desc {
+  order: 2;
+  padding-bottom: 0;
+}
+
+body .pf-theme .pf-theme-preview {
+  order: 3;
+  margin-top: 0.5rem;
 }

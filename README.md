@@ -39,7 +39,7 @@ Open LCARS Stardate's settings in the Pebble app.
 
 | Setting | What It Does |
 | :-- | :-- |
-| The Panel Builder | Drag a readout onto a panel, or one panel onto another to swap them. Default puts back the Sensors Block, Heart Rate, and Steps / Distance. Clear empties all four. |
+| The Panel Builder | Drag a readout onto a panel, or one panel onto another to swap them. Default puts back the Sensors Block, Heart Rate, and Steps / Distance. Clear empties all four. A panel that needs a plugin your phone cannot use says so under the face. |
 
 ### Bluetooth
 
@@ -102,9 +102,11 @@ Any of these can go in any of the four panels.
 | **Heart Rate**<br>![](resources/thumbnails/heart-slot.png) | **Steps / Distance**<br>![](resources/thumbnails/steps-slot.png) | **Battery**<br>![](resources/thumbnails/battery-slot.png) | **Calories**<br>![](resources/thumbnails/calories-slot.png) | **Sleep**<br>![](resources/thumbnails/sleep-slot.png) | **Active Minutes**<br>![](resources/thumbnails/active-slot.png) | **Moon Phase %**<br>![](resources/thumbnails/moon-pct-slot.png) |
 | **Moon Phase Name**<br>![](resources/thumbnails/moon-phase-slot.png) | **Next Full / New Moon**<br>![](resources/thumbnails/moon-next-slot.png) | **Sunrise**<br>![](resources/thumbnails/sunrise-slot.png) | **Sunset**<br>![](resources/thumbnails/sunset-slot.png) | **Length of Day**<br>![](resources/thumbnails/daylight-slot.png) | **Countdown to Sunrise / Sunset**<br>![](resources/thumbnails/sun-next-slot.png) | **Humidity**<br>![](resources/thumbnails/humidity-slot.png) |
 | **Wind**<br>![](resources/thumbnails/wind-slot.png) | **UV Index**<br>![](resources/thumbnails/uv-slot.png) | **High / Low Temperature**<br>![](resources/thumbnails/hilo-slot.png) | **Julian Date**<br>![](resources/thumbnails/julian-slot.png) | **Day of Year**<br>![](resources/thumbnails/day-of-year-slot.png) | **Week Number**<br>![](resources/thumbnails/week-slot.png) | **Temperature**<br>![](resources/thumbnails/temp-slot.png) |
-| **Conditions**<br>![](resources/thumbnails/conditions-slot.png) | **Epoch Clock**<br>![](resources/thumbnails/epoch-slot.png) | **Swatch Beats**<br>![](resources/thumbnails/beats-slot.png) | **Alternate Time Zone**<br>![](resources/thumbnails/zone1-slot.png) | **Next Alarm**<br>![](resources/thumbnails/alarm-slot.png) | | |
+| **Conditions**<br>![](resources/thumbnails/conditions-slot.png) | **Epoch Clock**<br>![](resources/thumbnails/epoch-slot.png) | **Swatch Beats**<br>![](resources/thumbnails/beats-slot.png) | **Alternate Time Zone**<br>![](resources/thumbnails/zone1-slot.png) | **Next Alarm**<br>![](resources/thumbnails/alarm-slot.png) | **Hour Progress**<br>![](resources/thumbnails/hour-progress-slot.png) | **Day Progress**<br>![](resources/thumbnails/day-progress-slot.png) |
+| **Week Progress**<br>![](resources/thumbnails/week-progress-slot.png) | **Year Progress**<br>![](resources/thumbnails/year-progress-slot.png) | **Precipitation**<br>![](resources/thumbnails/precip-slot.png) | **Feels Like**<br>![](resources/thumbnails/feels-like-slot.png) | **Pressure**<br>![](resources/thumbnails/pressure-slot.png) | **Dew Point**<br>![](resources/thumbnails/dew-point-slot.png) | **Days Left**<br>![](resources/thumbnails/days-left-slot.png) |
+| **Weeks Left**<br>![](resources/thumbnails/weeks-left-slot.png) | **Weekday Dots**<br>![](resources/thumbnails/weekday-dots-slot.png) | | | | | |
 
-Alternate Time Zone labels its bar with the city you pick, and reads ZONE 1 until you pick one.
+Alternate Time Zone labels its bar with the city you pick, and reads ZONE 1 until you pick one. The week readouts start the week on Monday. Weekday Dots lights today among the seven days.
 
 ### Sensors Block
 
@@ -113,6 +115,29 @@ Alternate Time Zone labels its bar with the city you pick, and reads ZONE 1 unti
 | **Sensors Block**<br>![](resources/thumbnails/sensors-tall.png) |
 
 The Sensors Block shows the weather glyph, the conditions, and a bigger temperature. It only goes in the top left, and takes the bottom left panel with it.
+
+### Wide Panels
+
+These fill a row, the top or the bottom.
+
+- **Daylight Bar:** the sunrise and sunset with a bar between them that fills through the day. After dark it fills towards the next sunrise in the bar's end colour.
+- **Steps by the Hour:** your steps or distance, with a small bar for each hour of the day so far.
+- **Heart Rate by the Hour:** your heart rate now, with a small bar for each hour of the day so far.
+- **Now Playing:** the song playing on your phone, with a play or pause mark. It needs a Pebble app music plugin.
+- **Next Event:** your next calendar event, with when it starts.
+- **Hour, Day, Week, and Year Progress Bars:** how far through the period it is, with a segment for each five minutes, hour, day, or month.
+- **UV Index Bar and Swatch Beats Bar:** the UV index on a bar up to 11+, or the beat on a bar of the beat day.
+- **Moon Phase and Countdown, and Next Alarm and Countdown:** the moon's phase with the days to the next full or new moon, or the next alarm with how long until it rings.
+
+### Full Panels
+
+These fill all four panels.
+
+- **Heart Rate Today:** your heart rate for each hour of the day so far, with the day's high, average, and low, and your heart rate now.
+- **Steps Today:** your steps for each hour of the day so far, with the total, your busiest hour, this hour, and your active minutes.
+- **Now Playing with Art:** the album art, the song's title, and the artist beside a play or pause mark.
+- **Agenda:** your next few calendar events, each with when it is.
+- **Hourly Forecast Board and 4-Day Forecast Board:** the next six hours, or the next four days with each day's high and low.
 
 ## Themes
 

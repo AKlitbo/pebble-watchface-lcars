@@ -18,11 +18,12 @@
 #define LCARS_SETTINGS_KEY 5
 
 // --- store snapshots (high band, handed to each store's init) ---
-// 251 (calendar) and 254 (stock) are left reserved: this face wires neither. 249 holds the
-// framework's own copy of the weather source choice
+// 254 (stock) is left reserved, since this face does not wire it. 249 holds the framework's own
+// copy of the weather source choice
+#define CALENDAR_STORE_KEY 251
 #define HEALTH_STORE_KEY   252
 #define LOCATION_STORE_KEY 253
 #define WEATHER_STORE_KEY  255
 
 // a stray edit that lets the two bands meet breaks the build instead of a watch in the field
-_Static_assert(LCARS_SETTINGS_KEY < HEALTH_STORE_KEY, "settings keys must stay below the store keys");
+_Static_assert(LCARS_SETTINGS_KEY < CALENDAR_STORE_KEY, "settings keys must stay below the store keys");
