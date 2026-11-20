@@ -105,7 +105,8 @@ body .inputs > .component.component-text {
   margin-bottom: 16px;
 }
 
-body .component.component-heading h4 {
+body .component.component-heading h4,
+body .component.component-heading h5 {
   position: relative;
   display: inline-block;
   margin: 0;
@@ -119,6 +120,14 @@ body .component.component-heading h4 {
   line-height: 25px;
   text-transform: uppercase;
   z-index: 1;
+}
+
+/* a smaller heading inside a section sits on the same bar in smaller, paler lettering, so it groups
+   the rows under it without reading as a section of its own. it keeps the section heading's line
+   height, since the bar under every heading is placed for that height */
+body .component.component-heading h5 {
+  color: #ffcc99;
+  font-size: 16px;
 }
 
 body .component.component-text p {
@@ -215,6 +224,15 @@ body .pf-loc-search .pf-loc-note:before {
    leaves a gap the section's own padding already covers. that last row keeps none of its own */
 body .section > .component:last-child,
 body .section > .component:last-child .description {
+  padding-bottom: 0;
+}
+
+/* a section can end on a row the settings page has hidden, such as the custom pattern under a
+   vibration choice, so the last row on show is not the last child. this catches the last row with
+   nothing showing after it. it sits in its own rule, since a webview without :has throws out every
+   selector in a rule that uses it, and the rule above still covers the usual case there */
+body .section > .component:not(:has(~ .component:not(.hide))),
+body .section > .component:not(:has(~ .component:not(.hide))) .description {
   padding-bottom: 0;
 }
 
