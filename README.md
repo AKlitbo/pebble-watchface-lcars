@@ -157,8 +157,8 @@ Heart Rate Today shows the day's high, average, and low beside your heart rate n
 
 | | | | | |
 |:--:|:--:|:--:|:--:|:--:|
-| **Classic**<br><img src=".github/images/lcars-stardate/theme_classic.png" width="75"> | **Nemesis Blue**<br><img src=".github/images/lcars-stardate/theme_nemesis-blue.png" width="75"> | **Classic Mono**<br><img src=".github/images/lcars-stardate/theme_mono.png" width="75"> | **Voyager**<br><img src=".github/images/lcars-stardate/theme_voyager.png" width="75"> | **Voyager Mono**<br><img src=".github/images/lcars-stardate/theme_voyager-mono.png" width="75"> |
-| **Lower Decks**<br><img src=".github/images/lcars-stardate/theme_lower-decks.png" width="75"> | **Lower Decks Mono**<br><img src=".github/images/lcars-stardate/theme_lower-decks-mono.png" width="75"> | **Lower Decks PADD**<br><img src=".github/images/lcars-stardate/theme_lower-decks-padd.png" width="75"> | **Lower Decks PADD Mono**<br><img src=".github/images/lcars-stardate/theme_lower-decks-padd-mono.png" width="75"> | |
+| **Classic**<br><img src=".github/images/lcars-stardate/theme_classic.gif" width="75"> | **Nemesis Blue**<br><img src=".github/images/lcars-stardate/theme_nemesis-blue.gif" width="75"> | **Classic Mono**<br><img src=".github/images/lcars-stardate/theme_mono.gif" width="75"> | **Voyager**<br><img src=".github/images/lcars-stardate/theme_voyager.gif" width="75"> | **Voyager Mono**<br><img src=".github/images/lcars-stardate/theme_voyager-mono.gif" width="75"> |
+| **Lower Decks**<br><img src=".github/images/lcars-stardate/theme_lower-decks.gif" width="75"> | **Lower Decks Mono**<br><img src=".github/images/lcars-stardate/theme_lower-decks-mono.gif" width="75"> | **Lower Decks PADD**<br><img src=".github/images/lcars-stardate/theme_lower-decks-padd.gif" width="75"> | **Lower Decks PADD Mono**<br><img src=".github/images/lcars-stardate/theme_lower-decks-padd-mono.gif" width="75"> | |
 
 ## Weather Sources
 
