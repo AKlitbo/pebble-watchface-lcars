@@ -122,10 +122,14 @@ typedef enum
     OPS_TALL_WEEK_PROGRESS,
     OPS_TALL_YEAR_PROGRESS,
     OPS_TALL_EVENT,
+    // the clock and the date as panels a 2x2 block each, which only the Tactical layout places.
+    // each goes on the face once at most
+    OPS_CLOCK,
+    OPS_STARDATE,
     OPS_COUNT
 } OpsId;
 
-#define OPS_CELLS_MAX 4 ///< The cells the ops grid holds, two columns of two
+#define OPS_CELLS_MAX 4 ///< The cells one ops grid holds, two columns of two
 
 /**
  * @brief The ops grid: how many columns and rows it holds, and where each one sits.
@@ -183,6 +187,7 @@ typedef struct
     uint32_t  (*icon_for)(void);            ///< Glyph that moves with the reading, or NULL
     void      (*text)(char *out, size_t n); ///< Value formatter, or NULL to leave the slot blank
     OpsShape    shape;                      ///< How much of the grid it fills. Anything past one slot is drawn by the face, not the table
+    bool        bare;                       ///< Draws no bar of its own, as the clock has none
 } OpsReadout;
 
 /**

@@ -7,5 +7,11 @@
   "5": ".github/images/lcars-stardate/theme_lower-decks-mono.png",
   "6": ".github/images/lcars-stardate/theme_lower-decks-padd-mono.png",
   "7": ".github/images/lcars-stardate/theme_voyager.png",
-  "8": ".github/images/lcars-stardate/theme_voyager-mono.png"
+  "8": ".github/images/lcars-stardate/theme_voyager-mono.png",
+  "maps": {
+    "layout": {
+      "0": ".github/images/lcars-stardate/theme_classic.png",
+      "1": ".github/images/lcars-stardate/layout_tactical.png"
+    }
+  }
 }

@@ -7,7 +7,7 @@
  * panels rather than placing a block into free space.
  */
 
-import { GRID, ID_EMPTY, SHAPE_SINGLE, cellsFor, colOf, owners, rowOf, shapeOf, slotAt } from './geometry';
+import { ID_EMPTY, SHAPE_SINGLE, areaOf, cellsFor, colOf, owners, rowOf, shapeOf, slotAt } from './geometry';
 import type { Grid } from './geometry';
 import { fillVisual, readoutById } from './visuals';
 import type { Readout } from './visuals';
@@ -21,6 +21,8 @@ export interface DragEnv {
   thumbs: Thumbs;
   /** The panel boxes, in cell order. A hidden one reports an empty rect and is skipped. */
   slotEls: HTMLElement[];
+  /** The grid of the layout on show. */
+  getGrid: () => Grid;
   getSlots: () => number[];
   setSlots: (slots: number[]) => void;
 }
@@ -37,7 +39,8 @@ interface Dragged {
  * A drop off the palette replaces whatever it lands on, all of it, so a single readout dropped on
  * part of a big panel takes the whole panel out. A drag from one panel to another trades places
  * instead. Each readout it lands on moves by the same step the other way, so swapping two singles,
- * or a wide panel with the row under it, both come out as the eye expects. A readout that would not
+ * or a wide panel with the row under it, both come out as the eye expects, and so does a trade
+ * between two areas, which moves each readout by the same areas too. A readout that would not
  * fit where the trade sends it refuses the whole move rather than being dropped or placed badly, so
  * the whole candidate arrangement is checked rather than just the panel under the pointer.
  *
@@ -87,11 +90,12 @@ export function tryPlace(slots: number[], id: number, from: number, to: number, 
     return next;
   }
 
+  const stepArea = areaOf(from, grid) - areaOf(to, grid);
   const stepCol = colOf(from, grid) - colOf(to, grid);
   const stepRow = rowOf(from, grid) - rowOf(to, grid);
 
   for (let i = 0; i < hit.length; i++) {
-    const dest = slotAt(colOf(hit[i], grid) + stepCol, rowOf(hit[i], grid) + stepRow, grid);
+    const dest = slotAt(colOf(hit[i], grid) + stepCol, rowOf(hit[i], grid) + stepRow, grid, areaOf(hit[i], grid) + stepArea);
     const cells = dest >= 0 ? cellsFor(hitIds[i], dest, grid) : null;
     const taken = owners(next, grid);
 
@@ -152,7 +156,7 @@ export function installDrag(env: DragEnv) {
     hitTest: slotUnder,
 
     allows(dragged, slot) {
-      return tryPlace(env.getSlots(), dragged.id, dragged.from, slot, GRID) !== null;
+      return tryPlace(env.getSlots(), dragged.id, dragged.from, slot, env.getGrid()) !== null;
     },
 
     highlight(dragged, slot, allowed) {
@@ -166,7 +170,7 @@ export function installDrag(env: DragEnv) {
     },
 
     drop(dragged, slot) {
-      const next = tryPlace(env.getSlots(), dragged.id, dragged.from, slot, GRID);
+      const next = tryPlace(env.getSlots(), dragged.id, dragged.from, slot, env.getGrid());
 
       if (next) {
         env.setSlots(next);

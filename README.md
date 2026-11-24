@@ -2,12 +2,13 @@
 
 <img src=".github/images/lcars-stardate/ops_body.png" width="100" title="Body"> <img src=".github/images/lcars-stardate/ops_weather.png" width="100" title="Weather"> <img src=".github/images/lcars-stardate/ops_sun.png" width="100" title="Sun"> <img src=".github/images/lcars-stardate/ops_moon.png" width="100" title="Moon"> <img src=".github/images/lcars-stardate/ops_calendar.png" width="100" title="Calendar"> <img src=".github/images/lcars-stardate/ops_alt-time.png" width="100" title="Alternate Time">
 
-An LCARS watchface for the Pebble Time 2. The time sits inside a *Star Trek* computer frame, with four ops panels below it for the readouts you pick.
+An LCARS watchface for the Pebble Time 2. The time sits inside a *Star Trek* computer frame, with four ops panels below it for the readouts you pick, or up to twelve on the Tactical layout.
 
 ## Features
 
 - The time in 12-hour, 24-hour, or Swatch Internet Time (.beats), and a stardate-style date on the STARDATE banner.
-- Four ops panels, filled by dragging readouts onto a picture of the face.
+- Two layouts: Stardate, with the big clock over four ops panels, and Tactical, with the clock, the panels, and the date in three frames you can rearrange.
+- Ops panels, filled by dragging readouts onto a picture of the face.
 - Readouts for your health, the battery, the sun, the moon, the weather, day counts, .beats, the Unix time, a second time zone, and your next alarm.
 - Your coordinates, a bluetooth glyph, and an optional Quiet Time glyph on the left rail, and a battery gauge in the top corner.
 - Nine frame themes, with an optional swap after dark or during Quiet Time.
@@ -29,6 +30,7 @@ Open LCARS Stardate's settings in the Pebble app.
 
 | Setting | What It Does |
 | :-- | :-- |
+| Layout | Stardate, the default, draws the big clock over four panels. Tactical puts the clock in the top frame, four panels between the elbows, and the date in the bottom frame, and the clock and the date can move or give way to panels. Its two pills read LINK, or NO LINK when the phone drops, and QUIET during Quiet Time, in place of the glyphs, so Show Connection Icon and Show Quiet Time Icon hide while it is picked. |
 | Frame Theme | The frame's colour scheme, from nine. Classic by default. |
 | Theme Mode | Fixed, the default, keeps the Frame Theme. Day / Night / Quiet can swap in another after dark or during Quiet Time. |
 | Use Night Theme and Night Theme | Wears the Night Theme from sunset to sunrise. Off by default. |
@@ -39,7 +41,7 @@ Open LCARS Stardate's settings in the Pebble app.
 
 | Setting | What It Does |
 | :-- | :-- |
-| The Panel Builder | Drag a readout onto a panel, or one panel onto another to swap them. Default puts back the Sensors Block, Heart Rate, and Steps / Distance. Clear empties all four. A panel that needs a plugin your phone cannot use says so under the face. |
+| The Panel Builder | Drag a readout onto a panel, or one panel onto another to swap them. It shows the panels of the layout picked above, and each layout keeps its own. Default puts back the layout's starting panels, and Clear empties them. A panel that needs a plugin your phone cannot use says so under the face. |
 
 ### Bluetooth
 
@@ -99,7 +101,7 @@ Each panel's bar carries an LCARS word, such as VITALS for the heart rate, and t
 
 ### Readouts
 
-Any of these can go in any of the four panels.
+Any of these can go in any panel.
 
 | | | | | | | |
 |:--:|:--:|:--:|:--:|:--:|:--:|:--:|
@@ -114,7 +116,7 @@ Alternate Time Zone labels its bar with the city you pick, and reads ZONE 1 unti
 
 ### Tall Panels
 
-These fill the top and bottom panels of a column. They go in either column, so two can sit side by side, and each one's name on the settings page ends in Block.
+These fill the top and bottom panels of a column in a grid. They go in either column, so two can sit side by side, and each one's name on the settings page ends in Block.
 
 | | | | | |
 |:--:|:--:|:--:|:--:|:--:|
@@ -144,12 +146,13 @@ After dark the Daylight Bar fills towards the next sunrise in the bar's end colo
 
 ### Full Panels
 
-These fill all four panels.
+These fill all four panels of a grid. Clock and Date only go on Tactical, once each.
 
 | | | |
 |:--:|:--:|:--:|
 | **Now Playing with Art**<br>![](resources/thumbnails/music-art-full.png) | **Agenda**<br>![](resources/thumbnails/agenda-full.png) | **Heart Rate Today**<br>![](resources/thumbnails/heart-today-full.png) |
 | **Steps Today**<br>![](resources/thumbnails/steps-today-full.png) | **Hourly Forecast Board**<br>![](resources/thumbnails/forecast-hourly-full.png) | **4-Day Forecast Board**<br>![](resources/thumbnails/forecast-daily-full.png) |
+| **Clock**<br>![](resources/thumbnails/clock-full.png) | **Date (STARDATE)**<br>![](resources/thumbnails/stardate-full.png) | |
 
 Heart Rate Today shows the day's high, average, and low beside your heart rate now. Steps Today shows the total, your busiest hour, this hour, and your active minutes. The Agenda shows your next few calendar events.
 

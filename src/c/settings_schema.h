@@ -69,6 +69,35 @@ bool lcars_use_quiet_theme(void);
  */
 uint8_t lcars_quiet_theme(void);
 
+/** @brief The layouts the face can be drawn as. The number is what is saved. */
+typedef enum
+{
+    LCARS_LAYOUT_STARDATE, ///< The default: the big clock over a 2x2 ops grid
+    LCARS_LAYOUT_TACTICAL,   ///< Tactical: three 2x2 grids, top, middle, and bottom, with the clock and date placed as panels
+    LCARS_LAYOUT_COUNT
+} LcarsLayout;
+
+/// How many cells Tactical holds, three grids of four
+#define LCARS_TACTICAL_CELLS 12
+
+/**
+ * @brief Which layout the face is drawn as.
+ *
+ * @return A LcarsLayout.
+ */
+uint8_t lcars_layout(void);
+
+/**
+ * @brief What one cell of Tactical is set to show.
+ *
+ * The saved list is read from the front, so a list longer than the twelve cells gives its first
+ * twelve picks and the rest are never read.
+ *
+ * @param cell The cell, 0 to 11. Each grid's four run down each column, top grid first.
+ * @return An OpsId, OPS_EMPTY for a cell the saved list leaves out or holds no number for.
+ */
+uint8_t lcars_slot_tactical(int cell);
+
 /**
  * @brief What the upper left slot is set to show.
  *

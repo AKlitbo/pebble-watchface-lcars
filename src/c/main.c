@@ -119,21 +119,24 @@ static HealthConfig health_cfg(void)
  * On a .beats clock the hourly buzz also asks for a wake at the top of each hour.
  *
  * Three things can want the .beats ticker and they are independent: the clock itself, any ops
- * slot picked as BEATS, and a date format ending in a reading. A beat is 86.4 seconds, so
+ * slot picked as BEATS, and a date format ending in a reading. The clock and the date only count
+ * while they are on the face, since Tactical can leave either off. A beat is 86.4 seconds, so
  * anything left on the minute tick sits on a stale number and reports every rollover up to a
  * minute late. The store runs both cadences at once, so the .beats ticker can drive an ops slot
  * or the date line while the clock keeps its minute tick.
  */
 static TimeConfig time_cfg(void)
 {
-    bool clock_beats = settings_u8(SETTING_TIME_FORMAT) == TIME_FORMAT_BEATS;
+    // a .beats clock left off the face hands the minute tick back, since the panels still need it
+    bool clock_beats = settings_u8(SETTING_TIME_FORMAT) == TIME_FORMAT_BEATS && stardate_shows_clock();
+    bool date_beats = readout_date_shows_beats() && stardate_shows_date();
     bool hourly = settings_u8(SETTING_HOURLY_VIBE) != VIBE_NONE;
 
     return (TimeConfig){
         .live = true,
         .minute_tick = !clock_beats,  // .beats replaces the clock, and only the clock
         .hourly = hourly,             // a .beats clock still wakes on the hour for the buzz
-        .beats = clock_beats || stardate_ops_shows_beats() || readout_date_shows_beats(),
+        .beats = clock_beats || stardate_ops_shows_beats() || date_beats,
     };
 }
 

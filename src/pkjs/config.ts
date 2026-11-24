@@ -1,13 +1,15 @@
 /**
  * The Clay settings page for this face.
  *
- * Built from the shared template (see paf/ts/pkjs/config-builder.ts), tuned with the LCARS theme
- * list and the slot builder for the ops panels.
+ * Built from the shared template (see paf/ts/pkjs/config-builder.ts), tuned with the layout and
+ * LCARS theme pickers and the slot builder for the ops panels.
  */
 import buildConfig from '../../paf/ts/pkjs/config-builder';
+import type { ClayConfigItem } from '../../paf/ts/clay/types';
 import moduleThumbnails from './clay/module-thumbnails.g';
 import moduleMeta from './clay/module-meta';
 import themePreviews from './clay/theme-previews.g';
+import layoutPreviews from './clay/theme-previews-layout.g';
 
 // what one panel can show. the value is the C OpsId, so these numbers are the
 // contract with src/c/ops/ops.h and are only ever appended to, never reordered
@@ -102,6 +104,9 @@ const BIG_PANELS = [
   { label: '4-Day Forecast Board', value: 53 },
   { label: 'Heart Rate Today (VITALS TODAY)', value: 30 },
   { label: 'Steps Today (TRAVERSAL TODAY)', value: 31 },
+  // the clock and the date as panels, which only Tactical places, once each
+  { label: 'Clock', value: 84 },
+  { label: 'Date (STARDATE)', value: 85 },
 ];
 
 // what the builder drags. every readout plus the block with the emoji and tint
@@ -129,17 +134,34 @@ const THEME_OPTIONS = [
   { label: 'Lower Decks PADD Mono', value: 6 },
 ];
 
-export default buildConfig({
+const config = buildConfig({
   heading: 'Watchface Configuration',
   // the framework's default intro leaves weather out, and this face has it
   intro: 'Personalize your layout, dial in your weather preferences, and make this watchface your own.',
-  theme: {
-    label: 'Frame Theme',
-    description: 'LCARS colour scheme for the watch frame.',
-    options: THEME_OPTIONS,
-    previews: themePreviews,
-  },
+  // the Layout picker leads, then the frame theme with a shot of each. the theme picker is spelled
+  // out here rather than handed to buildConfig's theme shorthand, since that puts it first
   appearanceItems: [
+    {
+      'type': 'themePreview',
+      'messageKey': 'APPEARANCE_LAYOUT',
+      'label': 'Layout',
+      'description': 'Tactical moves the clock into the top frame and the four panels between the two elbows, with the date in the bottom frame. Its clock and date are panels too, so any of its twelve cells can hold either or a readout. Each layout keeps its own panels.',
+      'defaultValue': 0,
+      'options': [
+        { 'label': 'Stardate (Default)', 'value': 0 },
+        { 'label': 'Tactical', 'value': 1 },
+      ],
+      'previews': layoutPreviews,
+    },
+    {
+      'type': 'themePreview',
+      'messageKey': 'APPEARANCE_THEME',
+      'label': 'Frame Theme',
+      'description': 'LCARS colour scheme for the watch frame.',
+      'defaultValue': 0,
+      'options': THEME_OPTIONS,
+      'previews': themePreviews,
+    },
     {
       'type': 'select',
       'messageKey': 'APPEARANCE_THEME_MODE',
@@ -194,11 +216,13 @@ export default buildConfig({
         },
         {
           'type': 'text',
-          'defaultValue': 'The four panels across the bottom of the face. The sun and weather readouts need a weather source set up below.',
+          'defaultValue': 'The panels of the layout picked above, four on Stardate and up to twelve on Tactical. Each layout keeps its own. The sun and weather readouts need a weather source set up below.',
         },
-        // the three panels the builder does not own outright. a Clay component
-        // carries one message key so the other three ride hidden stores it writes
-        // to by class. the watch reads all four the same way as plain enum settings
+        // the panels the builder does not own outright. a Clay component carries one message key,
+        // so the Stardate layout's other three ride hidden stores it writes to by class, and the watch
+        // reads all four as plain enum settings. Tactical's twelve ride one more store as a list the
+        // watch reads a cell at a time. the stores sit above the builder, since Clay has not built a
+        // row below it yet when the builder reads them
         {
           'type': 'hiddenStore',
           'messageKey': 'APPEARANCE_SLOT_LEFT_BOTTOM',
@@ -216,6 +240,12 @@ export default buildConfig({
           'messageKey': 'APPEARANCE_SLOT_RIGHT_BOTTOM',
           'storeClass': 'sb-rb',
           'defaultValue': '1',
+        },
+        {
+          'type': 'hiddenStore',
+          'messageKey': 'APPEARANCE_SLOTS_TACTICAL',
+          'storeClass': 'sb-tac',
+          'defaultValue': '84,20,20,20,23,20,0,1,85,20,20,20',
         },
         {
           'type': 'slotBuilder',
@@ -247,3 +277,29 @@ export default buildConfig({
     alerts: { custom: true },
   },
 });
+
+// the two glyph toggles only drive the Stardate layout's glyphs. Tactical reads the phone link and
+// Quiet Time in its pills whatever they say, so they hide while it is picked
+const STARDATE_ONLY = ['CONNECTION_BLUETOOTH_ICON', 'APPEARANCE_QUIET_TIME_ICON'];
+
+/**
+ * Hides the Stardate-only toggles while Tactical is picked. The framework builds those rows, so the
+ * rule is added to them here once the page is built.
+ *
+ * @param items The page's rows, searched down through every section.
+ */
+function hideOnTactical(items: ClayConfigItem[]): void {
+  items.forEach(function (item) {
+    if (item.messageKey && STARDATE_ONLY.indexOf(item.messageKey) >= 0) {
+      item.visibleWhen = { 'key': 'APPEARANCE_LAYOUT', 'in': [0] };
+    }
+
+    if (item.items) {
+      hideOnTactical(item.items);
+    }
+  });
+}
+
+hideOnTactical(config);
+
+export default config;

@@ -10,7 +10,8 @@
   "defines": {
     "PLUGIN_WEATHER": 1,
     "PLUGIN_CALENDAR": 1,
-    "PLUGIN_MUSIC": 1
+    "PLUGIN_MUSIC": 1,
+    "ENGINE_SLOTS_MAX": 20
   },
   "providers": {
     "weather": ["plugin", "openmeteo", "owm", "weatherapi"],
@@ -63,6 +64,8 @@
     "APPEARANCE_NIGHT_THEME",
     "APPEARANCE_QUIET_THEME_ON",
     "APPEARANCE_QUIET_THEME",
+    "APPEARANCE_LAYOUT",
+    "APPEARANCE_SLOTS_TACTICAL",
     "CALENDAR_ICS_URL",
     "HEALTH_GOAL_STEPS",
     "HEALTH_GOAL_DISTANCE",
@@ -84,6 +87,15 @@
       { "type": "bitmap", "name": "IMAGE_BG_LOWER_DECKS_PADD_MONO", "file": "images/background-lower-decks-padd-mono.png" },
       { "type": "bitmap", "name": "IMAGE_BG_VOYAGER", "file": "images/background-voyager.png" },
       { "type": "bitmap", "name": "IMAGE_BG_VOYAGER_MONO", "file": "images/background-voyager-mono.png" },
+      { "type": "bitmap", "name": "IMAGE_BG_CLASSIC_TACTICAL", "file": "images/background-classic-tactical.png" },
+      { "type": "bitmap", "name": "IMAGE_BG_NEMESIS_BLUE_TACTICAL", "file": "images/background-nemesis-blue-tactical.png" },
+      { "type": "bitmap", "name": "IMAGE_BG_MONO_TACTICAL", "file": "images/background-mono-tactical.png" },
+      { "type": "bitmap", "name": "IMAGE_BG_VOYAGER_TACTICAL", "file": "images/background-voyager-tactical.png" },
+      { "type": "bitmap", "name": "IMAGE_BG_VOYAGER_MONO_TACTICAL", "file": "images/background-voyager-mono-tactical.png" },
+      { "type": "bitmap", "name": "IMAGE_BG_LOWER_DECKS_TACTICAL", "file": "images/background-lower-decks-tactical.png" },
+      { "type": "bitmap", "name": "IMAGE_BG_LOWER_DECKS_MONO_TACTICAL", "file": "images/background-lower-decks-mono-tactical.png" },
+      { "type": "bitmap", "name": "IMAGE_BG_LOWER_DECKS_PADD_TACTICAL", "file": "images/background-lower-decks-padd-tactical.png" },
+      { "type": "bitmap", "name": "IMAGE_BG_LOWER_DECKS_PADD_MONO_TACTICAL", "file": "images/background-lower-decks-padd-mono-tactical.png" },
       { "type": "bitmap", "name": "ICON_BLUETOOTH", "file": "icons/bluetooth.png" },
       { "type": "bitmap", "name": "ICON_BLUETOOTH_SLASH", "file": "icons/bluetooth-slash.png" },
       { "type": "bitmap", "name": "ICON_VOLUME_MUTED", "file": "icons/volume-muted.png" },

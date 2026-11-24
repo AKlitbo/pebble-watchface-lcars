@@ -13,14 +13,13 @@
  */
 
 /**
- * @brief Maps the Theme setting (0=Classic, 1=Lower Decks, 2=PADD, 3=Nemesis Blue,
- * 4=Classic Mono, 5=Lower Decks Mono, 6=PADD Mono, 7=Voyager, 8=Voyager Mono) to
- * its baked LCARS background resource.
+ * @brief The baked frame for a theme in a layout.
  *
  * @param theme The theme setting value.
- * @return The background resource ID.
+ * @param layout The layout setting value, a LcarsLayout.
+ * @return The frame's resource id.
  */
-uint32_t bg_resource_for_theme(uint8_t theme);
+uint32_t bg_resource_for(uint8_t theme, uint8_t layout);
 
 /**
  * @brief Maps the Theme setting to its LCARS label text colour.

@@ -4,8 +4,37 @@
  */
 #include "theme.h"
 
-uint32_t bg_resource_for_theme(uint8_t theme)
+#include "settings_schema.h"
+
+uint32_t bg_resource_for(uint8_t theme, uint8_t layout)
 {
+    // each layout bakes its own frame for every theme. a layout number past the ones here reads as
+    // the Stardate layout, the same as the rest of the face
+    if (layout == LCARS_LAYOUT_TACTICAL)
+    {
+        switch (theme)
+        {
+            case 1:
+                return RESOURCE_ID_IMAGE_BG_LOWER_DECKS_TACTICAL;
+            case 2:
+                return RESOURCE_ID_IMAGE_BG_LOWER_DECKS_PADD_TACTICAL;
+            case 3:
+                return RESOURCE_ID_IMAGE_BG_NEMESIS_BLUE_TACTICAL;
+            case 4:
+                return RESOURCE_ID_IMAGE_BG_MONO_TACTICAL;
+            case 5:
+                return RESOURCE_ID_IMAGE_BG_LOWER_DECKS_MONO_TACTICAL;
+            case 6:
+                return RESOURCE_ID_IMAGE_BG_LOWER_DECKS_PADD_MONO_TACTICAL;
+            case 7:
+                return RESOURCE_ID_IMAGE_BG_VOYAGER_TACTICAL;
+            case 8:
+                return RESOURCE_ID_IMAGE_BG_VOYAGER_MONO_TACTICAL;
+            default:
+                return RESOURCE_ID_IMAGE_BG_CLASSIC_TACTICAL;
+        }
+    }
+
     switch (theme)
     {
         case 1:

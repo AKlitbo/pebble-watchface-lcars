@@ -153,6 +153,11 @@ static const OpsReadout s_catalog[OPS_COUNT] = {
     [OPS_TALL_WEEK_PROGRESS] = {.label = "WEEK",      .shape = OPS_SHAPE_TALL},
     [OPS_TALL_YEAR_PROGRESS] = {.label = "YEAR",      .shape = OPS_SHAPE_TALL},
     [OPS_TALL_EVENT]         = {.label = "SCHEDULE",  .shape = OPS_SHAPE_TALL},
+
+    // the clock and the date fill a 2x2 block each. layout draws their text in its own zones, so the
+    // rows carry no formatter. the clock sits bare on the black, and the date keeps its STARDATE bar
+    [OPS_CLOCK]              = {.shape = OPS_SHAPE_FULL, .bare = true},
+    [OPS_STARDATE]           = {.label = "STARDATE",  .shape = OPS_SHAPE_FULL},
 };
 
 const OpsReadout *ops_entry(uint8_t id)

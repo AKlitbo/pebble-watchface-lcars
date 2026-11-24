@@ -14,13 +14,14 @@
 #include "system/settings/setting_values.h"
 #include "clock/zone_setting.h"
 #include "health/goals.h"
+#include "layout/layout_string.h"
 #include "persist_keys.h"
 
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 
-#define LCARS_SETTINGS_VERSION 7
+#define LCARS_SETTINGS_VERSION 8
 // smallest versioned blob accepted. fields are append-only so this never changes
 #define LCARS_SETTINGS_V1_SIZE 21
 
@@ -64,9 +65,18 @@ typedef struct LcarsSettings
     uint8_t night_theme;
     bool    use_quiet_theme;
     uint8_t quiet_theme;
+    // --- added in v8 ---
+    uint8_t layout;            // a LcarsLayout
+    char    slots_tactical[48];  // Tactical's twelve picks as "84,20,20,20,...", in cell order
 } LcarsSettings;
 
-_Static_assert(sizeof(LcarsSettings) == 67, "lcars blob size is frozen at 67 bytes (v7)");
+_Static_assert(sizeof(LcarsSettings) == 116, "lcars blob size is frozen at 116 bytes (v8)");
+
+// twelve picks of up to three digits with commas between, and the end of the string, so the list
+// keeps every cell once the catalogue passes a hundred readouts
+_Static_assert(OPS_COUNT <= 1000, "a Tactical pick has to fit three digits");
+_Static_assert(sizeof(((LcarsSettings *)0)->slots_tactical) >= 12 * 3 + 11 + 1,
+               "slots_tactical has to hold twelve three-digit picks");
 _Static_assert(offsetof(LcarsSettings, bluetooth_icon) == LCARS_SETTINGS_V1_SIZE,
                "lcars v1 floor is frozen; the v2 fields must stay appended after it");
 
@@ -88,6 +98,13 @@ static LcarsSettings s_settings;
 #define SETTING_NIGHT_THEME    ((SettingId)(SETTING_COUNT + 6))
 #define SETTING_QUIET_THEME_ON ((SettingId)(SETTING_COUNT + 7))
 #define SETTING_QUIET_THEME    ((SettingId)(SETTING_COUNT + 8))
+
+// which layout the face is drawn as, also this face's own
+#define SETTING_LAYOUT         ((SettingId)(SETTING_COUNT + 9))
+
+// Tactical's picks on a fresh install: the clock across the top, the Sensors Block beside the heart
+// rate and steps in the middle, as the Stardate layout starts, and the date across the bottom
+#define TACTICAL_SLOTS_DEFAULT "84,20,20,20,23,20,0,1,85,20,20,20"
 
 // lcars subscribes to every known setting in its frozen struct order. every KNOWN_ entry takes
 // its default from the settings page, so the date opens on the numeric stardate-style "%Y.%m%d"
@@ -137,6 +154,17 @@ static const SettingField s_fields[] = {
     { .id = SETTING_QUIET_THEME, .message_key = &MESSAGE_KEY_APPEARANCE_QUIET_THEME,
       .type = SETTING_ENUM_U8, .offset = offsetof(LcarsSettings, quiet_theme),
       .enum_count = LCARS_THEME_COUNT, .default_num = 0 },
+
+    // the Stardate layout keeps the four slot keys above, and Tactical keeps its twelve picks in one
+    // text key, so its grids need no hidden store a cell on the settings page. the id is SETTING_COUNT
+    // for the same reason as the zone below
+    { .id = SETTING_LAYOUT, .message_key = &MESSAGE_KEY_APPEARANCE_LAYOUT,
+      .type = SETTING_ENUM_U8, .offset = offsetof(LcarsSettings, layout),
+      .enum_count = LCARS_LAYOUT_COUNT, .default_num = LCARS_LAYOUT_STARDATE },
+    { .id = SETTING_COUNT, .message_key = &MESSAGE_KEY_APPEARANCE_SLOTS_TACTICAL, .type = SETTING_CSTRING,
+      .offset = offsetof(LcarsSettings, slots_tactical),
+      .size = sizeof(s_settings.slots_tactical),
+      .default_str = TACTICAL_SLOTS_DEFAULT },
 
     // the ZONE 1 readout's zone. the id is SETTING_COUNT because nothing reads this through the
     // library's typed accessors, only the two helpers at the bottom of this file
@@ -293,6 +321,42 @@ bool lcars_use_quiet_theme(void)
 uint8_t lcars_quiet_theme(void)
 {
     return s_settings.quiet_theme;
+}
+
+uint8_t lcars_layout(void)
+{
+    return s_settings.layout;
+}
+
+uint8_t lcars_slot_tactical(int cell)
+{
+    const char *cursor = s_settings.slots_tactical;
+
+    // the picks are read in order up to the one asked for. a list that runs out, or holds anything
+    // but numbers and commas, leaves the rest of the cells empty rather than reading past it
+    for (int index = 0; index <= cell; index++)
+    {
+        if (*cursor < '0' || *cursor > '9')
+        {
+            return OPS_EMPTY;
+        }
+
+        int value = layout_parse_int(&cursor);
+
+        if (index == cell)
+        {
+            return value >= 0 && value < OPS_COUNT ? (uint8_t)value : OPS_EMPTY;
+        }
+
+        if (*cursor != ',')
+        {
+            return OPS_EMPTY;
+        }
+
+        cursor++;
+    }
+
+    return OPS_EMPTY;
 }
 
 bool lcars_zone_1_is_set(void)

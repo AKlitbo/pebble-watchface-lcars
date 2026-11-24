@@ -232,7 +232,7 @@ static int span_width(const OpsChrome *chrome)
  */
 static bool slot_draws(const OpsChrome *chrome, int slot)
 {
-    return !chrome->covered[slot];
+    return !chrome->covered[slot] && !chrome->bare[slot];
 }
 
 /** @brief Whether a slot's pick runs across both columns. */
@@ -275,8 +275,6 @@ void widgets_draw_bars(GContext *ctx, const OpsChrome *chrome)
     GColor cap = bar_cap_for_theme(theme);
     GColor body = bar_body_for_theme(theme);
 
-    lcars_bar(ctx, BAR_STARDATE, cap, body);
-
     for (int slot = 0; slot < ops_cell_count(chrome->grid); slot++)
     {
         if (slot_draws(chrome, slot))
@@ -290,8 +288,6 @@ void widgets_draw_labels(GContext *ctx, const OpsChrome *chrome)
 {
     GColor lbl_color = label_color_for_theme(stardate_active_theme());
 
-    lcars_label(ctx, LBL_STARDATE, "STARDATE", s_font_label, lbl_color, 3);
-
     for (int slot = 0; slot < ops_cell_count(chrome->grid); slot++)
     {
         if (slot_draws(chrome, slot))
@@ -299,6 +295,14 @@ void widgets_draw_labels(GContext *ctx, const OpsChrome *chrome)
             lcars_label(ctx, slot_label(chrome, slot), chrome->label[slot], s_font_label, lbl_color, 3);
         }
     }
+}
+
+void widgets_draw_stardate(GContext *ctx, GRect bar, GRect label)
+{
+    uint8_t theme = stardate_active_theme();
+
+    lcars_bar(ctx, bar, bar_cap_for_theme(theme), bar_body_for_theme(theme));
+    lcars_label(ctx, label, "STARDATE", s_font_label, label_color_for_theme(theme), 3);
 }
 
 void widgets_draw_battery(GContext *ctx, int level)
@@ -309,8 +313,7 @@ void widgets_draw_battery(GContext *ctx, int level)
     lcars_battery_gauge(ctx, GRect(6, 4, 32, 12), level, accent, fill);
 }
 
-void widgets_draw_glyphs(GContext *ctx, const OpsChrome *chrome, bool bt_show, bool bt_connected, bool qt_show,
-                         bool qt_active)
+void widgets_draw_glyphs(GContext *ctx, const OpsChrome *chrome)
 {
     // the cache loads each glyph once and hands back the same picture on later paints
     for (int slot = 0; slot < ops_cell_count(chrome->grid); slot++)
@@ -322,12 +325,16 @@ void widgets_draw_glyphs(GContext *ctx, const OpsChrome *chrome, bool bt_show, b
             widgets_draw_glyph(ctx, chrome->icon[slot], OPS_GLYPH(at.x, at.y));
         }
     }
+}
 
+void widgets_draw_status(GContext *ctx, GRect bt_box, GRect qt_box, bool bt_show, bool bt_connected, bool qt_show,
+                         bool qt_active)
+{
     if (bt_show)
     {
         GBitmap *bt = icon_get(bt_connected ? RESOURCE_ID_ICON_BLUETOOTH : RESOURCE_ID_ICON_BLUETOOTH_SLASH);
         icon_tint(bt, GColorBlack);  // the master glyph is white so paint it black to match the panel text
-        draw_icon(ctx, bt, BT_ICON);
+        draw_icon(ctx, bt, bt_box);
     }
 
     if (qt_show && qt_active)
@@ -335,7 +342,7 @@ void widgets_draw_glyphs(GContext *ctx, const OpsChrome *chrome, bool bt_show, b
         // a muted speaker while Quiet Time holds, and nothing when sound is on
         GBitmap *qt = icon_get(RESOURCE_ID_ICON_VOLUME_MUTED);
         icon_tint(qt, GColorBlack);  // white master glyph, tinted black to match the panel like BT
-        draw_icon(ctx, qt, QT_ICON);
+        draw_icon(ctx, qt, qt_box);
     }
 }
 

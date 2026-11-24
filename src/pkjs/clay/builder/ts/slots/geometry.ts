@@ -1,35 +1,67 @@
 /**
- * Every fact about the shape of this face's panel layout lives here, so pointing the builder at a
+ * Every fact about the shape of this face's panel layouts lives here, so pointing the builder at a
  * different arrangement is a matter of editing this file rather than chasing constants through the
  * drag and render code.
  *
- * The panels sit in a grid two columns wide and two rows tall. The cells are numbered down each
- * column, so a cell's column is its number divided by the rows and its row is what is left over.
- * Most readouts fill one cell. The bigger ones fill two cells of a column, a row, or the whole grid,
- * and each is saved in the cell it starts from, with the cells it covers saved as empty. The watch
- * reads the values back the same way.
+ * Each layout has its panels in areas, each area a grid two columns wide and two rows tall. The
+ * Stardate layout has one area under the clock. Tactical has three, one in the top frame, one
+ * between the two elbows, and one in the bottom frame. The cells are numbered down each column of
+ * an area, and the areas follow each other from the top, so on Tactical the cells run 0 to 11.
+ * Most readouts fill one cell. The bigger ones fill two cells of a column, a row, or a whole area,
+ * and each is saved in the cell it starts from, with the cells it covers saved as empty. A panel
+ * never runs from one area into the next. The watch reads the values back the same way.
  */
 
-/** A grid of panels. */
+/** A layout's panels: its areas, each a grid of the same columns and rows. */
 export interface Grid {
   cols: number;
   rows: number;
+  areas: number;
+  /** Whether the clock and the date are panels here, which go on the face once each. */
+  placesClock: boolean;
 }
 
-/** The panels: two columns of two under the clock. */
-export const GRID: Grid = { cols: 2, rows: 2 };
+/** The layouts, by the number APPEARANCE_LAYOUT saves. */
+export const LAYOUT_STARDATE = 0;
+export const LAYOUT_TACTICAL = 1;
+
+/** The Stardate layout's panels: two columns of two under the clock. */
+export const STARDATE_GRID: Grid = { cols: 2, rows: 2, areas: 1, placesClock: false };
+
+/** Tactical's panels: three areas of two columns of two, with the clock and the date among them. */
+export const TACTICAL_GRID: Grid = { cols: 2, rows: 2, areas: 3, placesClock: true };
 
 /**
- * How many cells a grid holds.
+ * A layout's grid. Anything but Tactical reads as the Stardate layout, the same as on the watch.
+ *
+ * @param layout The saved layout.
+ * @return Its grid.
+ */
+export function gridFor(layout: number): Grid {
+  return layout === LAYOUT_TACTICAL ? TACTICAL_GRID : STARDATE_GRID;
+}
+
+/**
+ * How many cells one area of a grid holds.
  *
  * @param grid The grid.
  * @return Its columns times its rows.
  */
-export function cellCount(grid: Grid): number {
+export function areaCellCount(grid: Grid): number {
   return grid.cols * grid.rows;
 }
 
-/** The four panels, in the order the watch numbers them. */
+/**
+ * How many cells a grid holds, across all its areas.
+ *
+ * @param grid The grid.
+ * @return Its columns times its rows times its areas.
+ */
+export function cellCount(grid: Grid): number {
+  return areaCellCount(grid) * grid.areas;
+}
+
+/** The Stardate layout's four panels, in the order the watch numbers them. */
 export const SLOT_LT = 0;
 export const SLOT_LB = 1;
 export const SLOT_RT = 2;
@@ -90,6 +122,11 @@ export const ID_TALL_DAY_PROGRESS = 80;
 export const ID_TALL_WEEK_PROGRESS = 81;
 export const ID_TALL_YEAR_PROGRESS = 82;
 export const ID_TALL_EVENT = 83;
+export const ID_CLOCK = 84;
+export const ID_STARDATE = 85;
+
+/** The panels that go on the face once at most, and only where the grid places the clock. */
+export const UNIQUE_IDS = [ID_CLOCK, ID_STARDATE];
 
 /** How much of the grid a readout fills. */
 export const SHAPE_SINGLE = 'single';
@@ -151,6 +188,8 @@ const SHAPES: Record<number, Shape> = {
   [ID_TALL_WEEK_PROGRESS]: SHAPE_TALL,
   [ID_TALL_YEAR_PROGRESS]: SHAPE_TALL,
   [ID_TALL_EVENT]: SHAPE_TALL,
+  [ID_CLOCK]: SHAPE_FULL,
+  [ID_STARDATE]: SHAPE_FULL,
 };
 
 /** A slot's message key, in slot order. The first is the component's own. */
@@ -161,26 +200,34 @@ export const SLOT_KEYS = [
   'APPEARANCE_SLOT_RIGHT_BOTTOM',
 ];
 
-/** The hidden-store class each of the other three slots is found by. */
+/** The hidden-store class each of the other three Stardate slots is found by. */
 export const SLOT_STORE_CLASS = [null, 'sb-lb', 'sb-rt', 'sb-rb'];
 
-/** The grid column a cell sits in, 0 for the left. */
+/** The hidden-store class Tactical's twelve picks are found by, all in one text value. */
+export const TACTICAL_STORE_CLASS = 'sb-tac';
+
+/** The area a cell sits in, 0 for the top. */
+export function areaOf(slot: number, grid: Grid): number {
+  return Math.floor(slot / areaCellCount(grid));
+}
+
+/** The column a cell sits in within its area, 0 for the left. */
 export function colOf(slot: number, grid: Grid): number {
-  return Math.floor(slot / grid.rows);
+  return Math.floor((slot % areaCellCount(grid)) / grid.rows);
 }
 
-/** The grid row a cell sits in, 0 for the top. */
+/** The row a cell sits in within its area, 0 for the top. */
 export function rowOf(slot: number, grid: Grid): number {
-  return slot % grid.rows;
+  return (slot % areaCellCount(grid)) % grid.rows;
 }
 
-/** The cell at a column and row, or -1 off the grid. */
-export function slotAt(col: number, row: number, grid: Grid): number {
-  if (col < 0 || col >= grid.cols || row < 0 || row >= grid.rows) {
+/** The cell at a column and row of an area, or -1 off the area. */
+export function slotAt(col: number, row: number, grid: Grid, area = 0): number {
+  if (col < 0 || col >= grid.cols || row < 0 || row >= grid.rows || area < 0 || area >= grid.areas) {
     return -1;
   }
 
-  return col * grid.rows + row;
+  return area * areaCellCount(grid) + col * grid.rows + row;
 }
 
 /** How much of the grid a readout fills. */
@@ -201,8 +248,9 @@ export function spanOf(shape: Shape): { cols: number; rows: number } {
  *
  * The first cell is always the one it starts from. A big readout only starts from a cell where the
  * watch draws it: a tall panel from the top of either column, a full panel from the left column,
- * and a wide panel from the left of its row. The firmware makes the same check, so a hand-edited
- * setting cannot put one anywhere else.
+ * and a wide panel from the left of its row, all within one area. The clock and the date only go
+ * where the grid places them. The firmware makes the same check, so a hand-edited setting cannot
+ * put one anywhere else.
  *
  * @param id The readout.
  * @param slot The cell it starts from.
@@ -210,14 +258,20 @@ export function spanOf(shape: Shape): { cols: number; rows: number } {
  * @return The cells it fills, or null.
  */
 export function cellsFor(id: number, slot: number, grid: Grid): number[] | null {
+  // the clock and the date are panels only where the grid places them
+  if (!grid.placesClock && UNIQUE_IDS.indexOf(id) >= 0) {
+    return null;
+  }
+
   const span = spanOf(shapeOf(id));
+  const area = areaOf(slot, grid);
   const col0 = colOf(slot, grid);
   const row0 = rowOf(slot, grid);
   const cells = [];
 
   for (let col = 0; col < span.cols; col++) {
     for (let row = 0; row < span.rows; row++) {
-      const cell = slotAt(col0 + col, row0 + row, grid);
+      const cell = slotAt(col0 + col, row0 + row, grid, area);
 
       if (cell < 0) {
         return null;

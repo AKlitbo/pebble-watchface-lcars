@@ -13,6 +13,7 @@ import type { WeatherResult } from '../../paf/ts/weather/util';
 import hiddenStoreComponent from '../../paf/ts/clay/hidden-store-component';
 import clayConfig from './config';
 import slotComponent from './clay/slot-component.g';
+import slotLayout from './clay/slot-layout-fn';
 import distanceUnit from './distance-unit';
 
 /**
@@ -31,8 +32,10 @@ function fmtCoord(v: number | undefined): string {
 
 app.startPebbleApp({
   clayConfig,
-  // the slot builder plus the hidden stores holding the three panels it does not own
+  // the slot builder plus the hidden stores holding the panels it does not own
   components: [slotComponent, hiddenStoreComponent],
+  // tells the slot builder which layout the Layout picker holds
+  customClay: slotLayout,
   // dash style into two keys. fmtCoord yields '' for a missing coordinate
   features: [
     weather.withCoords((messageKeys: Record<string, number>, result: WeatherResult) => ({

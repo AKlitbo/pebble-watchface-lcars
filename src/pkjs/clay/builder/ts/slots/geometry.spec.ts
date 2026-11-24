@@ -11,7 +11,7 @@
 
 import { describe, test, expect } from 'vitest';
 import {
-  canPlace, cellsFor, owners, shapeOf, slotAt, GRID,
+  canPlace, cellsFor, owners, shapeOf, slotAt, STARDATE_GRID,
   SLOT_LT, SLOT_LB, SLOT_RT, SLOT_RB, SLOT_COUNT,
   SLOT_KEYS, SLOT_STORE_CLASS,
   ID_HEART, ID_STEPS, ID_EMPTY, ID_SENSORS,
@@ -56,14 +56,14 @@ const TALL_BLOCKS: Array<[string, number]> = [
 describe('slotAt', () => {
   /** The slots are numbered down each column, and reading them across instead would send a trade to the wrong cell. */
   test('numbers the slots down each column', () => {
-    const result = [slotAt(0, 0, GRID), slotAt(0, 1, GRID), slotAt(1, 0, GRID), slotAt(1, 1, GRID)];
+    const result = [slotAt(0, 0, STARDATE_GRID), slotAt(0, 1, STARDATE_GRID), slotAt(1, 0, STARDATE_GRID), slotAt(1, 1, STARDATE_GRID)];
 
     expect(result).toEqual([SLOT_LT, SLOT_LB, SLOT_RT, SLOT_RB]);
   });
 
   /** A trade that steps off the grid has to come back as nowhere, not wrap round to a cell on the other side. */
   test('answers -1 off the grid', () => {
-    const result = [slotAt(-1, 0, GRID), slotAt(2, 0, GRID), slotAt(0, -1, GRID), slotAt(0, 2, GRID)];
+    const result = [slotAt(-1, 0, STARDATE_GRID), slotAt(2, 0, STARDATE_GRID), slotAt(0, -1, STARDATE_GRID), slotAt(0, 2, STARDATE_GRID)];
 
     expect(result).toEqual([-1, -1, -1, -1]);
   });
@@ -81,7 +81,7 @@ describe('shapeOf', () => {
 describe('cellsFor', () => {
   /** A big readout fills the cells after the one it starts from, and naming the wrong ones clears a panel the user kept. */
   test('fills the column, the row, or the grid from the upper left', () => {
-    const result = [cellsFor(ID_SENSORS, SLOT_LT, GRID), cellsFor(ID_WIDE_DAYLIGHT, SLOT_LT, GRID), cellsFor(ID_FULL_HEART, SLOT_LT, GRID)];
+    const result = [cellsFor(ID_SENSORS, SLOT_LT, STARDATE_GRID), cellsFor(ID_WIDE_DAYLIGHT, SLOT_LT, STARDATE_GRID), cellsFor(ID_FULL_HEART, SLOT_LT, STARDATE_GRID)];
 
     expect(result).toEqual([[SLOT_LT, SLOT_LB], [SLOT_LT, SLOT_RT], [SLOT_LT, SLOT_LB, SLOT_RT, SLOT_RB]]);
   });
@@ -108,21 +108,21 @@ describe('cellsFor', () => {
     ['the hourly forecast board', ID_FULL_FORECAST_HOURLY, [SLOT_LT, SLOT_LB, SLOT_RT, SLOT_RB]],
     ['the four day forecast board', ID_FULL_FORECAST_DAILY, [SLOT_LT, SLOT_LB, SLOT_RT, SLOT_RB]],
   ])('fills the cells the watch draws %s across', (_name, id, cells) => {
-    const result = cellsFor(id, SLOT_LT, GRID);
+    const result = cellsFor(id, SLOT_LT, STARDATE_GRID);
 
     expect(result).toEqual(cells);
   });
 
   /** A wide panel on the bottom row is a real place the watch draws it, so refusing it would cost half the spots it fits. */
   test('fits a wide panel along the bottom row', () => {
-    const result = cellsFor(ID_WIDE_DAYLIGHT, SLOT_LB, GRID);
+    const result = cellsFor(ID_WIDE_DAYLIGHT, SLOT_LB, STARDATE_GRID);
 
     expect(result).toEqual([SLOT_LB, SLOT_RB]);
   });
 
   /** A wide panel started in the right column would run off the screen, so it has to be refused rather than drawn half off. */
   test('refuses a wide panel in the right column', () => {
-    const result = [cellsFor(ID_WIDE_DAYLIGHT, SLOT_RT, GRID), cellsFor(ID_WIDE_DAYLIGHT, SLOT_RB, GRID)];
+    const result = [cellsFor(ID_WIDE_DAYLIGHT, SLOT_RT, STARDATE_GRID), cellsFor(ID_WIDE_DAYLIGHT, SLOT_RB, STARDATE_GRID)];
 
     expect(result).toEqual([null, null]);
   });
@@ -132,28 +132,28 @@ describe('cellsFor', () => {
    * one cell, and refusing the right column would turn away a place the watch draws it.
    */
   test.each(TALL_BLOCKS)('fills either column with %s', (_name, id) => {
-    const result = [cellsFor(id, SLOT_LT, GRID), cellsFor(id, SLOT_RT, GRID)];
+    const result = [cellsFor(id, SLOT_LT, STARDATE_GRID), cellsFor(id, SLOT_RT, STARDATE_GRID)];
 
     expect(result).toEqual([[SLOT_LT, SLOT_LB], [SLOT_RT, SLOT_RB]]);
   });
 
   /** A block started on the bottom row would run off the screen, so it fits from the top of a column only. */
   test('refuses a block on the bottom row', () => {
-    const result = [cellsFor(ID_TALL_STEP_GOAL, SLOT_LB, GRID), cellsFor(ID_TALL_STEP_GOAL, SLOT_RB, GRID)];
+    const result = [cellsFor(ID_TALL_STEP_GOAL, SLOT_LB, STARDATE_GRID), cellsFor(ID_TALL_STEP_GOAL, SLOT_RB, STARDATE_GRID)];
 
     expect(result).toEqual([null, null]);
   });
 
   /** A full panel anywhere but the upper left runs off the 2x2, so it fits one place only. */
   test('fits a full panel in the upper left only', () => {
-    const result = [SLOT_LT, SLOT_LB, SLOT_RT, SLOT_RB].map((slot) => canPlace(ID_FULL_HEART, slot, GRID));
+    const result = [SLOT_LT, SLOT_LB, SLOT_RT, SLOT_RB].map((slot) => canPlace(ID_FULL_HEART, slot, STARDATE_GRID));
 
     expect(result).toEqual([true, false, false, false]);
   });
 
   /** An ordinary readout fits any panel, and refusing one would make the builder reject a drop the watch accepts. */
   test('fits an ordinary readout in every slot', () => {
-    const result = [SLOT_LT, SLOT_LB, SLOT_RT, SLOT_RB].map((slot) => cellsFor(ID_HEART, slot, GRID));
+    const result = [SLOT_LT, SLOT_LB, SLOT_RT, SLOT_RB].map((slot) => cellsFor(ID_HEART, slot, STARDATE_GRID));
 
     expect(result).toEqual([[SLOT_LT], [SLOT_LB], [SLOT_RT], [SLOT_RB]]);
   });
@@ -163,42 +163,42 @@ describe('cellsFor', () => {
 describe('owners', () => {
   /** Every cell a wide panel covers belongs to it, so the builder hides those boxes and the watch skips their chrome. */
   test('gives a wide panel both cells of its row', () => {
-    const result = owners([ID_WIDE_DAYLIGHT, ID_HEART, ID_EMPTY, ID_STEPS], GRID);
+    const result = owners([ID_WIDE_DAYLIGHT, ID_HEART, ID_EMPTY, ID_STEPS], STARDATE_GRID);
 
     expect(result).toEqual([SLOT_LT, SLOT_LB, SLOT_LT, SLOT_RB]);
   });
 
   /** The earlier slot keeps a cell two readouts claim, and the watch reads it the same way, so the two never disagree on what shows. */
   test('lets the earlier slot keep a cell two readouts claim', () => {
-    const result = owners([ID_SENSORS, ID_WIDE_DAYLIGHT, ID_HEART, ID_EMPTY], GRID);
+    const result = owners([ID_SENSORS, ID_WIDE_DAYLIGHT, ID_HEART, ID_EMPTY], STARDATE_GRID);
 
     expect(result).toEqual([SLOT_LT, SLOT_LT, SLOT_RT, -1]);
   });
 
   /** Two blocks side by side each own their own column, so neither hides the other. */
   test('gives two blocks a column each', () => {
-    const result = owners([ID_TALL_HEART, ID_EMPTY, ID_TALL_BATTERY, ID_EMPTY], GRID);
+    const result = owners([ID_TALL_HEART, ID_EMPTY, ID_TALL_BATTERY, ID_EMPTY], STARDATE_GRID);
 
     expect(result).toEqual([SLOT_LT, SLOT_LT, SLOT_RT, SLOT_RT]);
   });
 
   /** The sensors block on the right owns its whole column, so whatever was saved under it is hidden rather than drawn over. */
   test('gives a sensors block on the right its whole column', () => {
-    const result = owners([ID_HEART, ID_STEPS, ID_SENSORS, ID_HEART], GRID);
+    const result = owners([ID_HEART, ID_STEPS, ID_SENSORS, ID_HEART], STARDATE_GRID);
 
     expect(result).toEqual([SLOT_LT, SLOT_LB, SLOT_RT, SLOT_RT]);
   });
 
   /** The layout the face ships with, the sensors block on the left, reads as it always has. */
   test('gives the shipped sensors block the left column', () => {
-    const result = owners([ID_SENSORS, ID_EMPTY, ID_HEART, ID_STEPS], GRID);
+    const result = owners([ID_SENSORS, ID_EMPTY, ID_HEART, ID_STEPS], STARDATE_GRID);
 
     expect(result).toEqual([SLOT_LT, SLOT_LT, SLOT_RT, SLOT_RB]);
   });
 
   /** A big pick where it does not fit owns nothing, rather than spilling over cells it was never meant to cover. */
   test('leaves a big pick that does not fit owning nothing', () => {
-    const result = owners([ID_HEART, ID_EMPTY, ID_WIDE_DAYLIGHT, ID_STEPS], GRID);
+    const result = owners([ID_HEART, ID_EMPTY, ID_WIDE_DAYLIGHT, ID_STEPS], STARDATE_GRID);
 
     expect(result).toEqual([SLOT_LT, -1, -1, SLOT_RB]);
   });

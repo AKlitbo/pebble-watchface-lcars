@@ -16,31 +16,20 @@
  */
 
 // --- Zone (text slot) ids ---
-// face-owned slot vocabulary. layout.c declares a static Zone table indexed by these
-// and the engine loops it to build the text layers
+// face-owned slot vocabulary. layout.c declares a Zone table indexed by these and the engine loops
+// it to build the text layers
 //
-// the four ops zones are the pickable slots. two per column
-// they carry no fixed reading. what they show comes from the catalogue in ops/
-// and their bar word and glyph follow the pick
-//
-// each one has a WIDE twin for a readout that carries no glyph. it reaches left
-// over the space the glyph would have taken. left-aligned text sitting beside an
-// empty icon box looks like a picture that failed to load
+// the ops cells are not in here. what they show comes from the catalogue in ops/, their bar word
+// and glyph follow the pick, and layout.c works their zones out from the grid of the layout on show
 enum
 {
     ZONE_TIME,
     ZONE_MERIDIEM,
     ZONE_DATE,
-    ZONE_LT,
-    ZONE_LT_WIDE,
-    ZONE_LB,
-    ZONE_LB_WIDE,
-    ZONE_RT,
-    ZONE_RT_WIDE,
-    ZONE_RB,
-    ZONE_RB_WIDE,
     ZONE_LAT,
     ZONE_LON,
+    ZONE_LINK,
+    ZONE_QUIET,
     ZONE_COUNT
 };
 
@@ -136,6 +125,37 @@ enum
 // the holder box matches its bar's height exactly so no sliver of bar shows under the label
 #define LBL_STARDATE GRect(60, 2, 54, 11)
 
+// --- Tactical ---
+// three 2x2 grids: one in the top frame, one in the band between the two elbows, and one in the
+// bottom frame. every row here matches the Tactical frames, frame/<theme>-tactical~emery.html
+#define TACTICAL_ROW_TOP    4    // the top grid's first bar. its rows run 4 to 66, clear of the strip on row 69
+#define TACTICAL_ROW_MID    84   // the band's grid, rows 84 to 146 between the two strips
+#define TACTICAL_ROW_BOTTOM 166  // the bottom frame's grid, rows 166 to 228, where the Stardate layout's sits
+#define TACTICAL_ROW_H      31   // one grid row, its bar and its reading
+
+// the clock and the date as panels, measured from the first bar of the grid they sit in. the
+// clock's digits sit 8 rows into their box, so these put them on rows 2 to 57 of the grid. in the
+// top grid that leaves room under them for Voyager's frost line on rows 64 to 66. the date keeps the
+// Stardate layout's place 15 rows under its bar, and its smaller fallbacks step down with it
+#define TACTICAL_TIME(y)      GRect(53, (y) - 6, 142, 74)
+#define TACTICAL_MERIDIEM(y)  GRect(150, (y) - 3, 45, 14)
+#define TACTICAL_DATE(y)      GRect(53, (y) + 15, 142, 44)
+#define TACTICAL_DATE_SM(y)   GRect(53, (y) + 18, 142, 43)
+#define TACTICAL_DATE_XS(y)   GRect(53, (y) + 20, 142, 42)
+#define TACTICAL_DATE_XXS(y)  GRect(53, (y) + 22, 142, 40)
+
+// the coordinates sit on the bottom frame's two lower rail blocks, rows 176 to 200 and 203 to 226,
+// right-aligned like the Stardate layout's. Antonio 12's digits sit 2 rows into their box, so these
+// centre them in each block
+#define TACTICAL_LAT GRect(0, 181, 43, 22)
+#define TACTICAL_LON GRect(0, 208, 43, 22)
+
+// the pills run rows 88 to 110 and 119 to 141 and carry the phone link and Quiet Time as words, in
+// place of the glyphs the Stardate layout draws. the right edge keeps the words clear of each pill's
+// rounded end
+#define TACTICAL_LINK GRect(0, 92, 40, 22)
+#define TACTICAL_QUIET GRect(0, 123, 40, 22)
+
 /**
  * @brief Register fonts, build the baked frame + overlays, and set the background.
  *
@@ -164,6 +184,22 @@ uint8_t stardate_build(EngineSlot *out, uint8_t max, GRect bounds);
  * @return True when a slot shows it.
  */
 bool stardate_ops_shows(uint8_t id);
+
+/**
+ * @brief Whether the clock is on the face.
+ *
+ * The Stardate layout always draws it. On Tactical it is a panel, and a wearer can leave it off.
+ *
+ * @return True when the clock is drawn.
+ */
+bool stardate_shows_clock(void);
+
+/**
+ * @brief Whether the date is on the face, the same way as the clock.
+ *
+ * @return True when the date is drawn.
+ */
+bool stardate_shows_date(void);
 
 /**
  * @brief Whether any drawn ops slot is showing the .beats reading.

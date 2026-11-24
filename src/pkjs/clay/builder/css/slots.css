@@ -13,6 +13,8 @@
   --sb-slot-w: 100px;
   --sb-slot-h: 44px;
   --sb-gap: 4px;
+  /* the gap between Tactical's areas, standing in for the frame's strips */
+  --sb-strip-h: 6px;
   --sb-label: #ffaa00;
   /* the section around the builder already pads it, so the palette and the warnings need no gutter
      of their own */
@@ -79,6 +81,59 @@
 }
 .sb-rail-2 {
   background: #ffaa55;
+}
+
+/* Tactical's rail: a block beside the top area, a pill beside each row of the middle one, and a
+   block beside the bottom one. the rows match the panels', so each piece sits beside its area */
+.sb-rail-top,
+.sb-rail-bottom,
+.sb-pill {
+  display: none;
+}
+
+.sb-face.sb-tactical .sb-rail {
+  display: grid;
+  grid-template-rows:
+    var(--sb-slot-h) var(--sb-slot-h) var(--sb-strip-h) var(--sb-slot-h) var(--sb-slot-h) var(--sb-strip-h)
+    var(--sb-slot-h) var(--sb-slot-h);
+  gap: var(--sb-gap);
+}
+
+.sb-face.sb-tactical .sb-rail-1,
+.sb-face.sb-tactical .sb-rail-2 {
+  display: none;
+}
+
+.sb-face.sb-tactical .sb-rail-top,
+.sb-face.sb-tactical .sb-rail-bottom,
+.sb-face.sb-tactical .sb-pill {
+  display: block;
+}
+
+.sb-face.sb-tactical .sb-rail-top {
+  grid-row: 1 / span 2;
+  background: #55aaff;
+}
+
+.sb-face.sb-tactical .sb-rail-bottom {
+  grid-row: 7 / span 2;
+  background: #aa5555;
+}
+
+.sb-face.sb-tactical .sb-pill {
+  align-self: center;
+  height: 18px;
+  border-radius: 9px;
+}
+
+.sb-face.sb-tactical .sb-pill-1 {
+  grid-row: 4;
+  background: #aa5555;
+}
+
+.sb-face.sb-tactical .sb-pill-2 {
+  grid-row: 5;
+  background: #ff5500;
 }
 
 /* --- the panels --- */
