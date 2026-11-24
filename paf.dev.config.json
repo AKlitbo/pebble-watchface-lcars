@@ -340,6 +340,1377 @@
           }
         }
       ]
+    },
+    "themeops": {
+      "date": "2026-10-28",
+      "stores": {
+        "weather": {
+          "temp": 18,
+          "cond": "CLEAR",
+          "humidity": 41,
+          "windKmh": 12,
+          "windDir": "NW",
+          "sunrise": "06:31",
+          "sunset": "19:42",
+          "uv": 5,
+          "tempMax": 24,
+          "tempMin": 12,
+          "precipChance": 40,
+          "feelsLike": 16,
+          "pressure": 1016,
+          "dewPoint": 9,
+          "hourly": {
+            "from": 16,
+            "every": 1,
+            "columns": [
+              ["PCLDY", 18],
+              ["CLDY", 17],
+              ["SHWR", 15],
+              ["RAIN", 14],
+              ["RAIN_NIGHT", 12],
+              ["CLDY_NIGHT", 11],
+              ["PCLDY_NIGHT", 10],
+              ["CLEAR_NIGHT", 9]
+            ]
+          },
+          "daily": {
+            "from": "wed",
+            "columns": [
+              ["SHWR", 18, 9],
+              ["CLEAR", 21, 8],
+              ["PCLDY", 16, 7],
+              ["SNOW", 2, -6],
+              ["STRM", 19, 12],
+              ["FOGGY", 11, 4],
+              ["CLDY", 13, 5]
+            ]
+          }
+        }
+      },
+      "steps": [
+        {
+          "clock": "14:25",
+          "settings": {
+            "CLOCK_TIME_FORMAT": 0,
+            "CLOCK_DATE_FORMAT": "%Y.%m%d",
+            "APPEARANCE_BAR_LABELS": 0,
+            "APPEARANCE_THEME": 0,
+            "APPEARANCE_LAYOUT": 0,
+            "APPEARANCE_SLOT_LEFT_TOP": 23,
+            "APPEARANCE_SLOT_LEFT_BOTTOM": 20,
+            "APPEARANCE_SLOT_RIGHT_TOP": 69,
+            "APPEARANCE_SLOT_RIGHT_BOTTOM": 20,
+            "APPEARANCE_SLOTS_TACTICAL": "84,20,20,20,23,20,0,1,85,20,20,20",
+            "APPEARANCE_SLOTS_ENGINEERING": "23,20,0,1,9,10"
+          }
+        },
+        {
+          "clock": "09:41",
+          "settings": {
+            "CLOCK_TIME_FORMAT": 0,
+            "CLOCK_DATE_FORMAT": "%Y.%m%d",
+            "APPEARANCE_BAR_LABELS": 0,
+            "APPEARANCE_THEME": 0,
+            "APPEARANCE_LAYOUT": 2,
+            "APPEARANCE_SLOTS_TACTICAL": "84,20,20,20,23,20,0,1,85,20,20,20"
+          }
+        },
+        {
+          "clock": "17:08",
+          "settings": {
+            "CLOCK_TIME_FORMAT": 0,
+            "CLOCK_DATE_FORMAT": "%Y.%m%d",
+            "APPEARANCE_BAR_LABELS": 0,
+            "APPEARANCE_THEME": 0,
+            "APPEARANCE_LAYOUT": 4,
+            "APPEARANCE_SLOTS_ENGINEERING": "23,20,0,1,9,10"
+          }
+        },
+        {
+          "clock": "08:12",
+          "settings": {
+            "CLOCK_TIME_FORMAT": 0,
+            "CLOCK_DATE_FORMAT": "%Y.%m%d",
+            "APPEARANCE_BAR_LABELS": 0,
+            "APPEARANCE_THEME": 0,
+            "APPEARANCE_LAYOUT": 1,
+            "APPEARANCE_SLOT_LEFT_TOP": 0,
+            "APPEARANCE_SLOT_LEFT_BOTTOM": 1,
+            "APPEARANCE_SLOT_RIGHT_TOP": 21,
+            "APPEARANCE_SLOT_RIGHT_BOTTOM": 22
+          }
+        },
+        {
+          "clock": "19:34",
+          "settings": {
+            "CLOCK_TIME_FORMAT": 0,
+            "CLOCK_DATE_FORMAT": "%Y.%m%d",
+            "APPEARANCE_BAR_LABELS": 0,
+            "APPEARANCE_THEME": 0,
+            "APPEARANCE_LAYOUT": 3,
+            "APPEARANCE_SLOTS_TACTICAL": "86,9,20,10,52,20,20,20,87,0,20,1"
+          }
+        },
+        {
+          "clock": "22:50",
+          "settings": {
+            "CLOCK_TIME_FORMAT": 0,
+            "CLOCK_DATE_FORMAT": "%Y.%m%d",
+            "APPEARANCE_BAR_LABELS": 0,
+            "APPEARANCE_THEME": 0,
+            "APPEARANCE_LAYOUT": 5,
+            "APPEARANCE_SLOTS_ENGINEERING": "69,20,72,20,3,4"
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "CLOCK_TIME_FORMAT": 0,
+            "CLOCK_DATE_FORMAT": "%Y.%m%d",
+            "APPEARANCE_BAR_LABELS": 0,
+            "APPEARANCE_THEME": 3,
+            "APPEARANCE_LAYOUT": 0,
+            "APPEARANCE_SLOT_LEFT_TOP": 23,
+            "APPEARANCE_SLOT_LEFT_BOTTOM": 20,
+            "APPEARANCE_SLOT_RIGHT_TOP": 69,
+            "APPEARANCE_SLOT_RIGHT_BOTTOM": 20
+          }
+        },
+        {
+          "clock": "09:41",
+          "settings": {
+            "CLOCK_TIME_FORMAT": 0,
+            "CLOCK_DATE_FORMAT": "%Y.%m%d",
+            "APPEARANCE_BAR_LABELS": 0,
+            "APPEARANCE_THEME": 3,
+            "APPEARANCE_LAYOUT": 2,
+            "APPEARANCE_SLOTS_TACTICAL": "84,20,20,20,23,20,0,1,85,20,20,20"
+          }
+        },
+        {
+          "clock": "17:08",
+          "settings": {
+            "CLOCK_TIME_FORMAT": 0,
+            "CLOCK_DATE_FORMAT": "%Y.%m%d",
+            "APPEARANCE_BAR_LABELS": 0,
+            "APPEARANCE_THEME": 3,
+            "APPEARANCE_LAYOUT": 4,
+            "APPEARANCE_SLOTS_ENGINEERING": "23,20,0,1,9,10"
+          }
+        },
+        {
+          "clock": "08:12",
+          "settings": {
+            "CLOCK_TIME_FORMAT": 0,
+            "CLOCK_DATE_FORMAT": "%Y.%m%d",
+            "APPEARANCE_BAR_LABELS": 0,
+            "APPEARANCE_THEME": 3,
+            "APPEARANCE_LAYOUT": 1,
+            "APPEARANCE_SLOT_LEFT_TOP": 0,
+            "APPEARANCE_SLOT_LEFT_BOTTOM": 1,
+            "APPEARANCE_SLOT_RIGHT_TOP": 21,
+            "APPEARANCE_SLOT_RIGHT_BOTTOM": 22
+          }
+        },
+        {
+          "clock": "19:34",
+          "settings": {
+            "CLOCK_TIME_FORMAT": 0,
+            "CLOCK_DATE_FORMAT": "%Y.%m%d",
+            "APPEARANCE_BAR_LABELS": 0,
+            "APPEARANCE_THEME": 3,
+            "APPEARANCE_LAYOUT": 3,
+            "APPEARANCE_SLOTS_TACTICAL": "86,9,20,10,52,20,20,20,87,0,20,1"
+          }
+        },
+        {
+          "clock": "22:50",
+          "settings": {
+            "CLOCK_TIME_FORMAT": 0,
+            "CLOCK_DATE_FORMAT": "%Y.%m%d",
+            "APPEARANCE_BAR_LABELS": 0,
+            "APPEARANCE_THEME": 3,
+            "APPEARANCE_LAYOUT": 5,
+            "APPEARANCE_SLOTS_ENGINEERING": "69,20,72,20,3,4"
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "CLOCK_TIME_FORMAT": 0,
+            "CLOCK_DATE_FORMAT": "%Y.%m%d",
+            "APPEARANCE_BAR_LABELS": 0,
+            "APPEARANCE_THEME": 4,
+            "APPEARANCE_LAYOUT": 0,
+            "APPEARANCE_SLOT_LEFT_TOP": 23,
+            "APPEARANCE_SLOT_LEFT_BOTTOM": 20,
+            "APPEARANCE_SLOT_RIGHT_TOP": 69,
+            "APPEARANCE_SLOT_RIGHT_BOTTOM": 20
+          }
+        },
+        {
+          "clock": "09:41",
+          "settings": {
+            "CLOCK_TIME_FORMAT": 0,
+            "CLOCK_DATE_FORMAT": "%Y.%m%d",
+            "APPEARANCE_BAR_LABELS": 0,
+            "APPEARANCE_THEME": 4,
+            "APPEARANCE_LAYOUT": 2,
+            "APPEARANCE_SLOTS_TACTICAL": "84,20,20,20,23,20,0,1,85,20,20,20"
+          }
+        },
+        {
+          "clock": "17:08",
+          "settings": {
+            "CLOCK_TIME_FORMAT": 0,
+            "CLOCK_DATE_FORMAT": "%Y.%m%d",
+            "APPEARANCE_BAR_LABELS": 0,
+            "APPEARANCE_THEME": 4,
+            "APPEARANCE_LAYOUT": 4,
+            "APPEARANCE_SLOTS_ENGINEERING": "23,20,0,1,9,10"
+          }
+        },
+        {
+          "clock": "08:12",
+          "settings": {
+            "CLOCK_TIME_FORMAT": 0,
+            "CLOCK_DATE_FORMAT": "%Y.%m%d",
+            "APPEARANCE_BAR_LABELS": 0,
+            "APPEARANCE_THEME": 4,
+            "APPEARANCE_LAYOUT": 1,
+            "APPEARANCE_SLOT_LEFT_TOP": 0,
+            "APPEARANCE_SLOT_LEFT_BOTTOM": 1,
+            "APPEARANCE_SLOT_RIGHT_TOP": 21,
+            "APPEARANCE_SLOT_RIGHT_BOTTOM": 22
+          }
+        },
+        {
+          "clock": "19:34",
+          "settings": {
+            "CLOCK_TIME_FORMAT": 0,
+            "CLOCK_DATE_FORMAT": "%Y.%m%d",
+            "APPEARANCE_BAR_LABELS": 0,
+            "APPEARANCE_THEME": 4,
+            "APPEARANCE_LAYOUT": 3,
+            "APPEARANCE_SLOTS_TACTICAL": "86,9,20,10,52,20,20,20,87,0,20,1"
+          }
+        },
+        {
+          "clock": "22:50",
+          "settings": {
+            "CLOCK_TIME_FORMAT": 0,
+            "CLOCK_DATE_FORMAT": "%Y.%m%d",
+            "APPEARANCE_BAR_LABELS": 0,
+            "APPEARANCE_THEME": 4,
+            "APPEARANCE_LAYOUT": 5,
+            "APPEARANCE_SLOTS_ENGINEERING": "69,20,72,20,3,4"
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "CLOCK_TIME_FORMAT": 0,
+            "CLOCK_DATE_FORMAT": "%Y.%m%d",
+            "APPEARANCE_BAR_LABELS": 0,
+            "APPEARANCE_THEME": 7,
+            "APPEARANCE_LAYOUT": 0,
+            "APPEARANCE_SLOT_LEFT_TOP": 23,
+            "APPEARANCE_SLOT_LEFT_BOTTOM": 20,
+            "APPEARANCE_SLOT_RIGHT_TOP": 69,
+            "APPEARANCE_SLOT_RIGHT_BOTTOM": 20
+          }
+        },
+        {
+          "clock": "09:41",
+          "settings": {
+            "CLOCK_TIME_FORMAT": 0,
+            "CLOCK_DATE_FORMAT": "%Y.%m%d",
+            "APPEARANCE_BAR_LABELS": 0,
+            "APPEARANCE_THEME": 7,
+            "APPEARANCE_LAYOUT": 2,
+            "APPEARANCE_SLOTS_TACTICAL": "84,20,20,20,23,20,0,1,85,20,20,20"
+          }
+        },
+        {
+          "clock": "17:08",
+          "settings": {
+            "CLOCK_TIME_FORMAT": 0,
+            "CLOCK_DATE_FORMAT": "%Y.%m%d",
+            "APPEARANCE_BAR_LABELS": 0,
+            "APPEARANCE_THEME": 7,
+            "APPEARANCE_LAYOUT": 4,
+            "APPEARANCE_SLOTS_ENGINEERING": "23,20,0,1,9,10"
+          }
+        },
+        {
+          "clock": "08:12",
+          "settings": {
+            "CLOCK_TIME_FORMAT": 0,
+            "CLOCK_DATE_FORMAT": "%Y.%m%d",
+            "APPEARANCE_BAR_LABELS": 0,
+            "APPEARANCE_THEME": 7,
+            "APPEARANCE_LAYOUT": 1,
+            "APPEARANCE_SLOT_LEFT_TOP": 0,
+            "APPEARANCE_SLOT_LEFT_BOTTOM": 1,
+            "APPEARANCE_SLOT_RIGHT_TOP": 21,
+            "APPEARANCE_SLOT_RIGHT_BOTTOM": 22
+          }
+        },
+        {
+          "clock": "19:34",
+          "settings": {
+            "CLOCK_TIME_FORMAT": 0,
+            "CLOCK_DATE_FORMAT": "%Y.%m%d",
+            "APPEARANCE_BAR_LABELS": 0,
+            "APPEARANCE_THEME": 7,
+            "APPEARANCE_LAYOUT": 3,
+            "APPEARANCE_SLOTS_TACTICAL": "86,9,20,10,52,20,20,20,87,0,20,1"
+          }
+        },
+        {
+          "clock": "22:50",
+          "settings": {
+            "CLOCK_TIME_FORMAT": 0,
+            "CLOCK_DATE_FORMAT": "%Y.%m%d",
+            "APPEARANCE_BAR_LABELS": 0,
+            "APPEARANCE_THEME": 7,
+            "APPEARANCE_LAYOUT": 5,
+            "APPEARANCE_SLOTS_ENGINEERING": "69,20,72,20,3,4"
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "CLOCK_TIME_FORMAT": 0,
+            "CLOCK_DATE_FORMAT": "%Y.%m%d",
+            "APPEARANCE_BAR_LABELS": 0,
+            "APPEARANCE_THEME": 8,
+            "APPEARANCE_LAYOUT": 0,
+            "APPEARANCE_SLOT_LEFT_TOP": 23,
+            "APPEARANCE_SLOT_LEFT_BOTTOM": 20,
+            "APPEARANCE_SLOT_RIGHT_TOP": 69,
+            "APPEARANCE_SLOT_RIGHT_BOTTOM": 20
+          }
+        },
+        {
+          "clock": "09:41",
+          "settings": {
+            "CLOCK_TIME_FORMAT": 0,
+            "CLOCK_DATE_FORMAT": "%Y.%m%d",
+            "APPEARANCE_BAR_LABELS": 0,
+            "APPEARANCE_THEME": 8,
+            "APPEARANCE_LAYOUT": 2,
+            "APPEARANCE_SLOTS_TACTICAL": "84,20,20,20,23,20,0,1,85,20,20,20"
+          }
+        },
+        {
+          "clock": "17:08",
+          "settings": {
+            "CLOCK_TIME_FORMAT": 0,
+            "CLOCK_DATE_FORMAT": "%Y.%m%d",
+            "APPEARANCE_BAR_LABELS": 0,
+            "APPEARANCE_THEME": 8,
+            "APPEARANCE_LAYOUT": 4,
+            "APPEARANCE_SLOTS_ENGINEERING": "23,20,0,1,9,10"
+          }
+        },
+        {
+          "clock": "08:12",
+          "settings": {
+            "CLOCK_TIME_FORMAT": 0,
+            "CLOCK_DATE_FORMAT": "%Y.%m%d",
+            "APPEARANCE_BAR_LABELS": 0,
+            "APPEARANCE_THEME": 8,
+            "APPEARANCE_LAYOUT": 1,
+            "APPEARANCE_SLOT_LEFT_TOP": 0,
+            "APPEARANCE_SLOT_LEFT_BOTTOM": 1,
+            "APPEARANCE_SLOT_RIGHT_TOP": 21,
+            "APPEARANCE_SLOT_RIGHT_BOTTOM": 22
+          }
+        },
+        {
+          "clock": "19:34",
+          "settings": {
+            "CLOCK_TIME_FORMAT": 0,
+            "CLOCK_DATE_FORMAT": "%Y.%m%d",
+            "APPEARANCE_BAR_LABELS": 0,
+            "APPEARANCE_THEME": 8,
+            "APPEARANCE_LAYOUT": 3,
+            "APPEARANCE_SLOTS_TACTICAL": "86,9,20,10,52,20,20,20,87,0,20,1"
+          }
+        },
+        {
+          "clock": "22:50",
+          "settings": {
+            "CLOCK_TIME_FORMAT": 0,
+            "CLOCK_DATE_FORMAT": "%Y.%m%d",
+            "APPEARANCE_BAR_LABELS": 0,
+            "APPEARANCE_THEME": 8,
+            "APPEARANCE_LAYOUT": 5,
+            "APPEARANCE_SLOTS_ENGINEERING": "69,20,72,20,3,4"
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "CLOCK_TIME_FORMAT": 0,
+            "CLOCK_DATE_FORMAT": "%Y.%m%d",
+            "APPEARANCE_BAR_LABELS": 0,
+            "APPEARANCE_THEME": 1,
+            "APPEARANCE_LAYOUT": 0,
+            "APPEARANCE_SLOT_LEFT_TOP": 23,
+            "APPEARANCE_SLOT_LEFT_BOTTOM": 20,
+            "APPEARANCE_SLOT_RIGHT_TOP": 69,
+            "APPEARANCE_SLOT_RIGHT_BOTTOM": 20
+          }
+        },
+        {
+          "clock": "09:41",
+          "settings": {
+            "CLOCK_TIME_FORMAT": 0,
+            "CLOCK_DATE_FORMAT": "%Y.%m%d",
+            "APPEARANCE_BAR_LABELS": 0,
+            "APPEARANCE_THEME": 1,
+            "APPEARANCE_LAYOUT": 2,
+            "APPEARANCE_SLOTS_TACTICAL": "84,20,20,20,23,20,0,1,85,20,20,20"
+          }
+        },
+        {
+          "clock": "17:08",
+          "settings": {
+            "CLOCK_TIME_FORMAT": 0,
+            "CLOCK_DATE_FORMAT": "%Y.%m%d",
+            "APPEARANCE_BAR_LABELS": 0,
+            "APPEARANCE_THEME": 1,
+            "APPEARANCE_LAYOUT": 4,
+            "APPEARANCE_SLOTS_ENGINEERING": "23,20,0,1,9,10"
+          }
+        },
+        {
+          "clock": "08:12",
+          "settings": {
+            "CLOCK_TIME_FORMAT": 0,
+            "CLOCK_DATE_FORMAT": "%Y.%m%d",
+            "APPEARANCE_BAR_LABELS": 0,
+            "APPEARANCE_THEME": 1,
+            "APPEARANCE_LAYOUT": 1,
+            "APPEARANCE_SLOT_LEFT_TOP": 0,
+            "APPEARANCE_SLOT_LEFT_BOTTOM": 1,
+            "APPEARANCE_SLOT_RIGHT_TOP": 21,
+            "APPEARANCE_SLOT_RIGHT_BOTTOM": 22
+          }
+        },
+        {
+          "clock": "19:34",
+          "settings": {
+            "CLOCK_TIME_FORMAT": 0,
+            "CLOCK_DATE_FORMAT": "%Y.%m%d",
+            "APPEARANCE_BAR_LABELS": 0,
+            "APPEARANCE_THEME": 1,
+            "APPEARANCE_LAYOUT": 3,
+            "APPEARANCE_SLOTS_TACTICAL": "86,9,20,10,52,20,20,20,87,0,20,1"
+          }
+        },
+        {
+          "clock": "22:50",
+          "settings": {
+            "CLOCK_TIME_FORMAT": 0,
+            "CLOCK_DATE_FORMAT": "%Y.%m%d",
+            "APPEARANCE_BAR_LABELS": 0,
+            "APPEARANCE_THEME": 1,
+            "APPEARANCE_LAYOUT": 5,
+            "APPEARANCE_SLOTS_ENGINEERING": "69,20,72,20,3,4"
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "CLOCK_TIME_FORMAT": 0,
+            "CLOCK_DATE_FORMAT": "%Y.%m%d",
+            "APPEARANCE_BAR_LABELS": 0,
+            "APPEARANCE_THEME": 5,
+            "APPEARANCE_LAYOUT": 0,
+            "APPEARANCE_SLOT_LEFT_TOP": 23,
+            "APPEARANCE_SLOT_LEFT_BOTTOM": 20,
+            "APPEARANCE_SLOT_RIGHT_TOP": 69,
+            "APPEARANCE_SLOT_RIGHT_BOTTOM": 20
+          }
+        },
+        {
+          "clock": "09:41",
+          "settings": {
+            "CLOCK_TIME_FORMAT": 0,
+            "CLOCK_DATE_FORMAT": "%Y.%m%d",
+            "APPEARANCE_BAR_LABELS": 0,
+            "APPEARANCE_THEME": 5,
+            "APPEARANCE_LAYOUT": 2,
+            "APPEARANCE_SLOTS_TACTICAL": "84,20,20,20,23,20,0,1,85,20,20,20"
+          }
+        },
+        {
+          "clock": "17:08",
+          "settings": {
+            "CLOCK_TIME_FORMAT": 0,
+            "CLOCK_DATE_FORMAT": "%Y.%m%d",
+            "APPEARANCE_BAR_LABELS": 0,
+            "APPEARANCE_THEME": 5,
+            "APPEARANCE_LAYOUT": 4,
+            "APPEARANCE_SLOTS_ENGINEERING": "23,20,0,1,9,10"
+          }
+        },
+        {
+          "clock": "08:12",
+          "settings": {
+            "CLOCK_TIME_FORMAT": 0,
+            "CLOCK_DATE_FORMAT": "%Y.%m%d",
+            "APPEARANCE_BAR_LABELS": 0,
+            "APPEARANCE_THEME": 5,
+            "APPEARANCE_LAYOUT": 1,
+            "APPEARANCE_SLOT_LEFT_TOP": 0,
+            "APPEARANCE_SLOT_LEFT_BOTTOM": 1,
+            "APPEARANCE_SLOT_RIGHT_TOP": 21,
+            "APPEARANCE_SLOT_RIGHT_BOTTOM": 22
+          }
+        },
+        {
+          "clock": "19:34",
+          "settings": {
+            "CLOCK_TIME_FORMAT": 0,
+            "CLOCK_DATE_FORMAT": "%Y.%m%d",
+            "APPEARANCE_BAR_LABELS": 0,
+            "APPEARANCE_THEME": 5,
+            "APPEARANCE_LAYOUT": 3,
+            "APPEARANCE_SLOTS_TACTICAL": "86,9,20,10,52,20,20,20,87,0,20,1"
+          }
+        },
+        {
+          "clock": "22:50",
+          "settings": {
+            "CLOCK_TIME_FORMAT": 0,
+            "CLOCK_DATE_FORMAT": "%Y.%m%d",
+            "APPEARANCE_BAR_LABELS": 0,
+            "APPEARANCE_THEME": 5,
+            "APPEARANCE_LAYOUT": 5,
+            "APPEARANCE_SLOTS_ENGINEERING": "69,20,72,20,3,4"
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "CLOCK_TIME_FORMAT": 0,
+            "CLOCK_DATE_FORMAT": "%Y.%m%d",
+            "APPEARANCE_BAR_LABELS": 0,
+            "APPEARANCE_THEME": 2,
+            "APPEARANCE_LAYOUT": 0,
+            "APPEARANCE_SLOT_LEFT_TOP": 23,
+            "APPEARANCE_SLOT_LEFT_BOTTOM": 20,
+            "APPEARANCE_SLOT_RIGHT_TOP": 69,
+            "APPEARANCE_SLOT_RIGHT_BOTTOM": 20
+          }
+        },
+        {
+          "clock": "09:41",
+          "settings": {
+            "CLOCK_TIME_FORMAT": 0,
+            "CLOCK_DATE_FORMAT": "%Y.%m%d",
+            "APPEARANCE_BAR_LABELS": 0,
+            "APPEARANCE_THEME": 2,
+            "APPEARANCE_LAYOUT": 2,
+            "APPEARANCE_SLOTS_TACTICAL": "84,20,20,20,23,20,0,1,85,20,20,20"
+          }
+        },
+        {
+          "clock": "17:08",
+          "settings": {
+            "CLOCK_TIME_FORMAT": 0,
+            "CLOCK_DATE_FORMAT": "%Y.%m%d",
+            "APPEARANCE_BAR_LABELS": 0,
+            "APPEARANCE_THEME": 2,
+            "APPEARANCE_LAYOUT": 4,
+            "APPEARANCE_SLOTS_ENGINEERING": "23,20,0,1,9,10"
+          }
+        },
+        {
+          "clock": "08:12",
+          "settings": {
+            "CLOCK_TIME_FORMAT": 0,
+            "CLOCK_DATE_FORMAT": "%Y.%m%d",
+            "APPEARANCE_BAR_LABELS": 0,
+            "APPEARANCE_THEME": 2,
+            "APPEARANCE_LAYOUT": 1,
+            "APPEARANCE_SLOT_LEFT_TOP": 0,
+            "APPEARANCE_SLOT_LEFT_BOTTOM": 1,
+            "APPEARANCE_SLOT_RIGHT_TOP": 21,
+            "APPEARANCE_SLOT_RIGHT_BOTTOM": 22
+          }
+        },
+        {
+          "clock": "19:34",
+          "settings": {
+            "CLOCK_TIME_FORMAT": 0,
+            "CLOCK_DATE_FORMAT": "%Y.%m%d",
+            "APPEARANCE_BAR_LABELS": 0,
+            "APPEARANCE_THEME": 2,
+            "APPEARANCE_LAYOUT": 3,
+            "APPEARANCE_SLOTS_TACTICAL": "86,9,20,10,52,20,20,20,87,0,20,1"
+          }
+        },
+        {
+          "clock": "22:50",
+          "settings": {
+            "CLOCK_TIME_FORMAT": 0,
+            "CLOCK_DATE_FORMAT": "%Y.%m%d",
+            "APPEARANCE_BAR_LABELS": 0,
+            "APPEARANCE_THEME": 2,
+            "APPEARANCE_LAYOUT": 5,
+            "APPEARANCE_SLOTS_ENGINEERING": "69,20,72,20,3,4"
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "CLOCK_TIME_FORMAT": 0,
+            "CLOCK_DATE_FORMAT": "%Y.%m%d",
+            "APPEARANCE_BAR_LABELS": 0,
+            "APPEARANCE_THEME": 6,
+            "APPEARANCE_LAYOUT": 0,
+            "APPEARANCE_SLOT_LEFT_TOP": 23,
+            "APPEARANCE_SLOT_LEFT_BOTTOM": 20,
+            "APPEARANCE_SLOT_RIGHT_TOP": 69,
+            "APPEARANCE_SLOT_RIGHT_BOTTOM": 20
+          }
+        },
+        {
+          "clock": "09:41",
+          "settings": {
+            "CLOCK_TIME_FORMAT": 0,
+            "CLOCK_DATE_FORMAT": "%Y.%m%d",
+            "APPEARANCE_BAR_LABELS": 0,
+            "APPEARANCE_THEME": 6,
+            "APPEARANCE_LAYOUT": 2,
+            "APPEARANCE_SLOTS_TACTICAL": "84,20,20,20,23,20,0,1,85,20,20,20"
+          }
+        },
+        {
+          "clock": "17:08",
+          "settings": {
+            "CLOCK_TIME_FORMAT": 0,
+            "CLOCK_DATE_FORMAT": "%Y.%m%d",
+            "APPEARANCE_BAR_LABELS": 0,
+            "APPEARANCE_THEME": 6,
+            "APPEARANCE_LAYOUT": 4,
+            "APPEARANCE_SLOTS_ENGINEERING": "23,20,0,1,9,10"
+          }
+        },
+        {
+          "clock": "08:12",
+          "settings": {
+            "CLOCK_TIME_FORMAT": 0,
+            "CLOCK_DATE_FORMAT": "%Y.%m%d",
+            "APPEARANCE_BAR_LABELS": 0,
+            "APPEARANCE_THEME": 6,
+            "APPEARANCE_LAYOUT": 1,
+            "APPEARANCE_SLOT_LEFT_TOP": 0,
+            "APPEARANCE_SLOT_LEFT_BOTTOM": 1,
+            "APPEARANCE_SLOT_RIGHT_TOP": 21,
+            "APPEARANCE_SLOT_RIGHT_BOTTOM": 22
+          }
+        },
+        {
+          "clock": "19:34",
+          "settings": {
+            "CLOCK_TIME_FORMAT": 0,
+            "CLOCK_DATE_FORMAT": "%Y.%m%d",
+            "APPEARANCE_BAR_LABELS": 0,
+            "APPEARANCE_THEME": 6,
+            "APPEARANCE_LAYOUT": 3,
+            "APPEARANCE_SLOTS_TACTICAL": "86,9,20,10,52,20,20,20,87,0,20,1"
+          }
+        },
+        {
+          "clock": "22:50",
+          "settings": {
+            "CLOCK_TIME_FORMAT": 0,
+            "CLOCK_DATE_FORMAT": "%Y.%m%d",
+            "APPEARANCE_BAR_LABELS": 0,
+            "APPEARANCE_THEME": 6,
+            "APPEARANCE_LAYOUT": 5,
+            "APPEARANCE_SLOTS_ENGINEERING": "69,20,72,20,3,4"
+          }
+        }
+      ]
+    },
+    "tactical": {
+      "date": "2026-10-28",
+      "stores": {
+        "weather": {
+          "temp": 18,
+          "cond": "CLEAR",
+          "humidity": 41,
+          "windKmh": 12,
+          "windDir": "NW",
+          "sunrise": "06:31",
+          "sunset": "19:42",
+          "uv": 5,
+          "tempMax": 24,
+          "tempMin": 12,
+          "precipChance": 40,
+          "feelsLike": 16,
+          "pressure": 1016,
+          "dewPoint": 9,
+          "hourly": {
+            "from": 16,
+            "every": 1,
+            "columns": [
+              ["PCLDY", 18],
+              ["CLDY", 17],
+              ["SHWR", 15],
+              ["RAIN", 14],
+              ["RAIN_NIGHT", 12],
+              ["CLDY_NIGHT", 11],
+              ["PCLDY_NIGHT", 10],
+              ["CLEAR_NIGHT", 9]
+            ]
+          },
+          "daily": {
+            "from": "wed",
+            "columns": [
+              ["SHWR", 18, 9],
+              ["CLEAR", 21, 8],
+              ["PCLDY", 16, 7],
+              ["SNOW", 2, -6],
+              ["STRM", 19, 12],
+              ["FOGGY", 11, 4],
+              ["CLDY", 13, 5]
+            ]
+          }
+        }
+      },
+      "steps": [
+        {
+          "clock": "14:25",
+          "settings": {
+            "APPEARANCE_THEME": 0,
+            "APPEARANCE_LAYOUT": 2,
+            "APPEARANCE_SLOTS_TACTICAL": "84,20,20,20,23,20,0,1,85,20,20,20",
+            "APPEARANCE_SLOT_LEFT_TOP": 23,
+            "APPEARANCE_SLOT_LEFT_BOTTOM": 20,
+            "APPEARANCE_SLOT_RIGHT_TOP": 0,
+            "APPEARANCE_SLOT_RIGHT_BOTTOM": 1,
+            "APPEARANCE_BAR_LABELS": 0,
+            "APPEARANCE_SLOTS_ENGINEERING": "23,20,0,1,9,10",
+            "CLOCK_TIME_FORMAT": 0,
+            "CLOCK_DATE_FORMAT": "%Y.%m%d"
+          },
+          "stores": {
+            "system": {
+              "battery": 64,
+              "bluetooth": true
+            }
+          }
+        },
+        {
+          "clock": "09:41",
+          "settings": {
+            "APPEARANCE_THEME": 3,
+            "APPEARANCE_LAYOUT": 2,
+            "APPEARANCE_SLOTS_TACTICAL": "85,20,20,20,84,20,20,20,23,20,0,1",
+            "APPEARANCE_BAR_LABELS": 0
+          },
+          "stores": {
+            "system": {
+              "battery": 64,
+              "bluetooth": false
+            }
+          }
+        },
+        {
+          "clock": "17:08",
+          "settings": {
+            "APPEARANCE_THEME": 7,
+            "APPEARANCE_LAYOUT": 2,
+            "APPEARANCE_SLOTS_TACTICAL": "0,1,2,3,9,10,13,14,15,16,17,18",
+            "APPEARANCE_BAR_LABELS": 0
+          },
+          "stores": {
+            "system": {
+              "battery": 64,
+              "bluetooth": true
+            }
+          }
+        },
+        {
+          "clock": "08:12",
+          "settings": {
+            "APPEARANCE_THEME": 1,
+            "APPEARANCE_LAYOUT": 2,
+            "APPEARANCE_SLOTS_TACTICAL": "52,20,20,20,84,20,20,20,35,20,20,20",
+            "APPEARANCE_BAR_LABELS": 0
+          }
+        },
+        {
+          "clock": "19:34",
+          "settings": {
+            "APPEARANCE_THEME": 2,
+            "APPEARANCE_LAYOUT": 2,
+            "APPEARANCE_SLOTS_TACTICAL": "69,20,72,20,28,33,20,20,85,20,20,20",
+            "APPEARANCE_BAR_LABELS": 0
+          }
+        },
+        {
+          "clock": "22:50",
+          "settings": {
+            "APPEARANCE_THEME": 0,
+            "APPEARANCE_LAYOUT": 0,
+            "APPEARANCE_BAR_LABELS": 0
+          }
+        },
+        {
+          "clock": "10:07",
+          "settings": {
+            "APPEARANCE_THEME": 0,
+            "APPEARANCE_LAYOUT": 1,
+            "APPEARANCE_BAR_LABELS": 0
+          }
+        },
+        {
+          "clock": "11:52",
+          "settings": {
+            "APPEARANCE_THEME": 7,
+            "APPEARANCE_LAYOUT": 1,
+            "APPEARANCE_BAR_LABELS": 1
+          }
+        },
+        {
+          "clock": "13:36",
+          "settings": {
+            "APPEARANCE_THEME": 0,
+            "APPEARANCE_LAYOUT": 3,
+            "APPEARANCE_BAR_LABELS": 0,
+            "APPEARANCE_SLOTS_TACTICAL": "84,20,20,20,23,20,0,1,85,20,20,20"
+          }
+        },
+        {
+          "clock": "15:18",
+          "settings": {
+            "APPEARANCE_THEME": 3,
+            "APPEARANCE_LAYOUT": 3,
+            "APPEARANCE_BAR_LABELS": 1,
+            "APPEARANCE_SLOTS_TACTICAL": "85,20,20,20,84,20,20,20,52,20,20,20"
+          }
+        },
+        {
+          "clock": "18:44",
+          "settings": {
+            "APPEARANCE_THEME": 1,
+            "APPEARANCE_LAYOUT": 2,
+            "APPEARANCE_BAR_LABELS": 1,
+            "APPEARANCE_SLOTS_TACTICAL": "69,20,72,20,28,33,20,20,85,20,20,20"
+          }
+        },
+        {
+          "clock": "07:42",
+          "settings": {
+            "APPEARANCE_THEME": 0,
+            "APPEARANCE_LAYOUT": 2,
+            "APPEARANCE_BAR_LABELS": 0,
+            "APPEARANCE_SLOTS_TACTICAL": "86,87,20,20,23,20,0,1,52,20,20,20"
+          }
+        },
+        {
+          "clock": "21:09",
+          "settings": {
+            "APPEARANCE_THEME": 7,
+            "APPEARANCE_LAYOUT": 3,
+            "APPEARANCE_BAR_LABELS": 0,
+            "APPEARANCE_SLOTS_TACTICAL": "84,20,20,20,0,87,1,20,9,10,13,14"
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "APPEARANCE_THEME": 0,
+            "APPEARANCE_LAYOUT": 4,
+            "APPEARANCE_BAR_LABELS": 0,
+            "CLOCK_TIME_FORMAT": 1,
+            "CLOCK_DATE_FORMAT": "%Y.%m%d.{B}"
+          }
+        },
+        {
+          "clock": "20:48",
+          "settings": {
+            "APPEARANCE_THEME": 1,
+            "APPEARANCE_LAYOUT": 4,
+            "APPEARANCE_BAR_LABELS": 0,
+            "CLOCK_TIME_FORMAT": 1,
+            "CLOCK_DATE_FORMAT": "%d %b %Y"
+          },
+          "stores": {
+            "system": {
+              "battery": 35,
+              "bluetooth": false
+            }
+          }
+        },
+        {
+          "clock": "00:00",
+          "settings": {
+            "APPEARANCE_THEME": 7,
+            "APPEARANCE_LAYOUT": 4,
+            "APPEARANCE_BAR_LABELS": 0,
+            "APPEARANCE_SLOTS_ENGINEERING": "69,20,72,20,3,4",
+            "CLOCK_TIME_FORMAT": 3
+          },
+          "stores": {
+            "system": {
+              "battery": 64,
+              "bluetooth": true
+            }
+          }
+        }
+      ]
+    },
+    "layoutthemes": {
+      "date": "2026-10-28",
+      "stores": {
+        "weather": {
+          "temp": 18,
+          "cond": "CLEAR",
+          "humidity": 41,
+          "windKmh": 12,
+          "windDir": "NW",
+          "sunrise": "06:31",
+          "sunset": "19:42",
+          "uv": 5,
+          "tempMax": 24,
+          "tempMin": 12,
+          "precipChance": 40,
+          "feelsLike": 16,
+          "pressure": 1016,
+          "dewPoint": 9,
+          "hourly": {
+            "from": 16,
+            "every": 1,
+            "columns": [
+              ["PCLDY", 18],
+              ["CLDY", 17],
+              ["SHWR", 15],
+              ["RAIN", 14],
+              ["RAIN_NIGHT", 12],
+              ["CLDY_NIGHT", 11],
+              ["PCLDY_NIGHT", 10],
+              ["CLEAR_NIGHT", 9]
+            ]
+          },
+          "daily": {
+            "from": "wed",
+            "columns": [
+              ["SHWR", 18, 9],
+              ["CLEAR", 21, 8],
+              ["PCLDY", 16, 7],
+              ["SNOW", 2, -6],
+              ["STRM", 19, 12],
+              ["FOGGY", 11, 4],
+              ["CLDY", 13, 5]
+            ]
+          }
+        }
+      },
+      "steps": [
+        {
+          "clock": "14:25",
+          "settings": {
+            "APPEARANCE_LAYOUT": 0,
+            "APPEARANCE_THEME": 0,
+            "APPEARANCE_SLOT_LEFT_TOP": 23,
+            "APPEARANCE_SLOT_LEFT_BOTTOM": 20,
+            "APPEARANCE_SLOT_RIGHT_TOP": 0,
+            "APPEARANCE_SLOT_RIGHT_BOTTOM": 1,
+            "APPEARANCE_SLOTS_TACTICAL": "84,20,20,20,23,20,0,1,85,20,20,20",
+            "APPEARANCE_BAR_LABELS": 0,
+            "APPEARANCE_SLOTS_ENGINEERING": "23,20,0,1,9,10",
+            "CLOCK_TIME_FORMAT": 0,
+            "CLOCK_DATE_FORMAT": "%Y.%m%d"
+          },
+          "stores": {
+            "system": {
+              "battery": 80,
+              "bluetooth": true
+            }
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "APPEARANCE_LAYOUT": 0,
+            "APPEARANCE_THEME": 1
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "APPEARANCE_LAYOUT": 0,
+            "APPEARANCE_THEME": 2
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "APPEARANCE_LAYOUT": 0,
+            "APPEARANCE_THEME": 3
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "APPEARANCE_LAYOUT": 0,
+            "APPEARANCE_THEME": 4
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "APPEARANCE_LAYOUT": 0,
+            "APPEARANCE_THEME": 5
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "APPEARANCE_LAYOUT": 0,
+            "APPEARANCE_THEME": 6
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "APPEARANCE_LAYOUT": 0,
+            "APPEARANCE_THEME": 7
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "APPEARANCE_LAYOUT": 0,
+            "APPEARANCE_THEME": 8
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "APPEARANCE_LAYOUT": 1,
+            "APPEARANCE_THEME": 0
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "APPEARANCE_LAYOUT": 1,
+            "APPEARANCE_THEME": 1
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "APPEARANCE_LAYOUT": 1,
+            "APPEARANCE_THEME": 2
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "APPEARANCE_LAYOUT": 1,
+            "APPEARANCE_THEME": 3
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "APPEARANCE_LAYOUT": 1,
+            "APPEARANCE_THEME": 4
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "APPEARANCE_LAYOUT": 1,
+            "APPEARANCE_THEME": 5
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "APPEARANCE_LAYOUT": 1,
+            "APPEARANCE_THEME": 6
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "APPEARANCE_LAYOUT": 1,
+            "APPEARANCE_THEME": 7
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "APPEARANCE_LAYOUT": 1,
+            "APPEARANCE_THEME": 8
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "APPEARANCE_LAYOUT": 2,
+            "APPEARANCE_THEME": 0
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "APPEARANCE_LAYOUT": 2,
+            "APPEARANCE_THEME": 1
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "APPEARANCE_LAYOUT": 2,
+            "APPEARANCE_THEME": 2
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "APPEARANCE_LAYOUT": 2,
+            "APPEARANCE_THEME": 3
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "APPEARANCE_LAYOUT": 2,
+            "APPEARANCE_THEME": 4
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "APPEARANCE_LAYOUT": 2,
+            "APPEARANCE_THEME": 5
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "APPEARANCE_LAYOUT": 2,
+            "APPEARANCE_THEME": 6
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "APPEARANCE_LAYOUT": 2,
+            "APPEARANCE_THEME": 7
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "APPEARANCE_LAYOUT": 2,
+            "APPEARANCE_THEME": 8
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "APPEARANCE_LAYOUT": 3,
+            "APPEARANCE_THEME": 0
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "APPEARANCE_LAYOUT": 3,
+            "APPEARANCE_THEME": 1
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "APPEARANCE_LAYOUT": 3,
+            "APPEARANCE_THEME": 2
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "APPEARANCE_LAYOUT": 3,
+            "APPEARANCE_THEME": 3
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "APPEARANCE_LAYOUT": 3,
+            "APPEARANCE_THEME": 4
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "APPEARANCE_LAYOUT": 3,
+            "APPEARANCE_THEME": 5
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "APPEARANCE_LAYOUT": 3,
+            "APPEARANCE_THEME": 6
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "APPEARANCE_LAYOUT": 3,
+            "APPEARANCE_THEME": 7
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "APPEARANCE_LAYOUT": 3,
+            "APPEARANCE_THEME": 8
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "APPEARANCE_LAYOUT": 4,
+            "APPEARANCE_THEME": 0
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "APPEARANCE_LAYOUT": 4,
+            "APPEARANCE_THEME": 1
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "APPEARANCE_LAYOUT": 4,
+            "APPEARANCE_THEME": 2
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "APPEARANCE_LAYOUT": 4,
+            "APPEARANCE_THEME": 3
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "APPEARANCE_LAYOUT": 4,
+            "APPEARANCE_THEME": 4
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "APPEARANCE_LAYOUT": 4,
+            "APPEARANCE_THEME": 5
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "APPEARANCE_LAYOUT": 4,
+            "APPEARANCE_THEME": 6
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "APPEARANCE_LAYOUT": 4,
+            "APPEARANCE_THEME": 7
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "APPEARANCE_LAYOUT": 4,
+            "APPEARANCE_THEME": 8
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "APPEARANCE_LAYOUT": 5,
+            "APPEARANCE_THEME": 0
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "APPEARANCE_LAYOUT": 5,
+            "APPEARANCE_THEME": 1
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "APPEARANCE_LAYOUT": 5,
+            "APPEARANCE_THEME": 2
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "APPEARANCE_LAYOUT": 5,
+            "APPEARANCE_THEME": 3
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "APPEARANCE_LAYOUT": 5,
+            "APPEARANCE_THEME": 4
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "APPEARANCE_LAYOUT": 5,
+            "APPEARANCE_THEME": 5
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "APPEARANCE_LAYOUT": 5,
+            "APPEARANCE_THEME": 6
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "APPEARANCE_LAYOUT": 5,
+            "APPEARANCE_THEME": 7
+          }
+        },
+        {
+          "clock": "14:25",
+          "settings": {
+            "APPEARANCE_LAYOUT": 5,
+            "APPEARANCE_THEME": 8
+          }
+        }
+      ]
     }
   },
   "stores": {
