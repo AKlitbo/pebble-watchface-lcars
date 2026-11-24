@@ -10,8 +10,8 @@ An LCARS watchface for the Pebble Time 2. The time sits inside a *Star Trek* com
 - Two layouts: Stardate, with the big clock over four ops panels, and Tactical, with the clock, the panels, and the date in three frames you can rearrange.
 - Ops panels, filled by dragging readouts onto a picture of the face.
 - Readouts for your health, the battery, the sun, the moon, the weather, day counts, .beats, the Unix time, a second time zone, and your next alarm.
-- Your coordinates, a bluetooth glyph, and an optional Quiet Time glyph on the left rail, and a battery gauge in the top corner.
-- Nine frame themes, with an optional swap after dark or during Quiet Time.
+- Your coordinates, a bluetooth glyph, and an optional Quiet Time glyph on the rail, or pills reading LINK and QUIET on Tactical, and a battery gauge in the top corner.
+- Nine frame themes, with an optional swap after dark or during Quiet Time, and the rail on either side.
 - Optional buzzes on the hour and when the phone connects or drops.
 
 ## Installation
@@ -30,12 +30,13 @@ Open LCARS Stardate's settings in the Pebble app.
 
 | Setting | What It Does |
 | :-- | :-- |
-| Layout | Stardate, the default, draws the big clock over four panels. Tactical puts the clock in the top frame, four panels between the elbows, and the date in the bottom frame, and the clock and the date can move or give way to panels. Its two pills read LINK, or NO LINK when the phone drops, and QUIET during Quiet Time, in place of the glyphs, so Show Connection Icon and Show Quiet Time Icon hide while it is picked. |
+| Layout | Stardate, the default, draws the big clock over four panels. Tactical puts the clock in the top frame, four panels between the elbows, and the date in the bottom frame, and the clock and the date can move or give way to panels. Its two pills read LINK, or NO LINK when the phone drops, and QUIET during Quiet Time, in place of the glyphs, so Show Connection Icon and Show Quiet Time Icon hide while it is picked. Each layout also comes mirrored, with the rail down the right, and your panels keep their places. |
+| Bar Labels | Left, the default, or Right, for which end of each bar its word sits at. |
 | Frame Theme | The frame's colour scheme, from nine. Classic by default. |
 | Theme Mode | Fixed, the default, keeps the Frame Theme. Day / Night / Quiet can swap in another after dark or during Quiet Time. |
 | Use Night Theme and Night Theme | Wears the Night Theme from sunset to sunrise. Off by default. |
 | Use Quiet Time Theme and Quiet Time Theme | Wears the Quiet Time Theme during Quiet Time, even at night. Off by default. |
-| Show Quiet Time Icon | A muted speaker on the left rail during Quiet Time. Off by default. |
+| Show Quiet Time Icon | A muted speaker on the rail during Quiet Time. Off by default. |
 
 ### Ops Panels
 
@@ -47,7 +48,7 @@ Open LCARS Stardate's settings in the Pebble app.
 
 | Setting | What It Does |
 | :-- | :-- |
-| Show Connection Icon | The bluetooth glyph on the left rail, slashed when the phone drops. On by default. |
+| Show Connection Icon | The bluetooth glyph on the rail, slashed when the phone drops. On by default. |
 | Vibrate on Connect and Vibrate on Disconnect | A Short, Long, or Double buzz when the phone reconnects or drops. None by default. |
 
 ### Clock
@@ -140,13 +141,13 @@ These fill a row, the top or the bottom.
 | **UV Index Bar**<br>![](resources/thumbnails/uv-bar-wide.png) | **Moon Phase and Countdown**<br>![](resources/thumbnails/moon-wide-wide.png) | **Next Alarm and Countdown**<br>![](resources/thumbnails/alarm-wide-wide.png) |
 | **Swatch Beats Bar**<br>![](resources/thumbnails/beats-bar-wide.png) | **Step Goal Bar**<br>![](resources/thumbnails/step-goal-bar-wide.png) | **Distance Goal Bar**<br>![](resources/thumbnails/distance-goal-bar-wide.png) |
 | **Calorie Goal Bar**<br>![](resources/thumbnails/calorie-goal-bar-wide.png) | **Active Minutes Goal Bar**<br>![](resources/thumbnails/active-goal-bar-wide.png) | **Sleep Goal Bar**<br>![](resources/thumbnails/sleep-goal-bar-wide.png) |
-| **Next Sunrise / Sunset and Countdown**<br>![](resources/thumbnails/sun-next-wide-wide.png) | | |
+| **Next Sunrise / Sunset and Countdown**<br>![](resources/thumbnails/sun-next-wide-wide.png) | **Compact Clock**<br>![](resources/thumbnails/clock-compact-wide.png) | **Compact Date (STARDATE)**<br>![](resources/thumbnails/stardate-compact-wide.png) |
 
 After dark the Daylight Bar fills towards the next sunrise in the bar's end colour. Now Playing needs a Pebble app music plugin. The goal bars show today's reading and your daily goal. The Moon Phase and Countdown bar shows how much of the moon is lit, and the Next Alarm and Countdown bar fills over the day before it rings. The Next Sunrise / Sunset bar reads DAWN IN or DUSK IN.
 
 ### Full Panels
 
-These fill all four panels of a grid. Clock and Date only go on Tactical, once each.
+These fill all four panels of a grid. Clock and Date only go on Tactical, once each, and so do their compact versions under Wide Panels, which count as the same clock and date.
 
 | | | |
 |:--:|:--:|:--:|

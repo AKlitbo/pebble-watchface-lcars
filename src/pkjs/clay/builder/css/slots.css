@@ -83,6 +83,11 @@
   background: #ffaa55;
 }
 
+/* a mirrored pick runs the rail down the right. the panels keep their places, as on the watch */
+.sb-face.sb-mirror {
+  flex-direction: row-reverse;
+}
+
 /* Tactical's rail: a block beside the top area, a pill beside each row of the middle one, and a
    block beside the bottom one. the rows match the panels', so each piece sits beside its area */
 .sb-rail-top,

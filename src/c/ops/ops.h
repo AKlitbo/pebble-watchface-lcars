@@ -126,6 +126,10 @@ typedef enum
     // each goes on the face once at most
     OPS_CLOCK,
     OPS_STARDATE,
+    // the same two as compact panels a row wide each. a compact one and a full one count as the same
+    // clock or date, so the face only ever shows one of each
+    OPS_CLOCK_COMPACT,
+    OPS_STARDATE_COMPACT,
     OPS_COUNT
 } OpsId;
 

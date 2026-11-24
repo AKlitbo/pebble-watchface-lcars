@@ -30,6 +30,7 @@ typedef struct
     OpsShape    shape[OPS_CELLS_MAX];   ///< How much of the grid each slot's pick fills
     bool        covered[OPS_CELLS_MAX]; ///< A bigger panel covers the slot, so it draws no chrome of its own
     bool        bare[OPS_CELLS_MAX];    ///< The slot's pick draws no bar, word, or glyph, as the clock has none
+    bool        labels_right;           ///< Each bar's word sits at its right end rather than its left
 } OpsChrome;
 
 /**
@@ -75,17 +76,19 @@ void widgets_draw_labels(GContext *ctx, const OpsChrome *chrome);
  *
  * @param ctx The graphics context.
  * @param bar The bar.
- * @param label The word's holder box on it.
+ * @param label_right True to put the word at the bar's right end.
  */
-void widgets_draw_stardate(GContext *ctx, GRect bar, GRect label);
+void widgets_draw_stardate(GContext *ctx, GRect bar, bool label_right);
 
 /**
- * @brief Draw the battery gauge on the top-left block.
+ * @brief Draw the battery gauge on the top corner block.
  *
  * @param ctx The graphics context.
  * @param level Battery charge level percentage.
+ * @param box Where the gauge's body sits, which follows the rail.
+ * @param flipped True to point the nub left and fill from the right, for a rail down the right.
  */
-void widgets_draw_battery(GContext *ctx, int level);
+void widgets_draw_battery(GContext *ctx, int level, GRect box, bool flipped);
 
 /**
  * @brief Draw the slot glyphs.
@@ -98,7 +101,7 @@ void widgets_draw_battery(GContext *ctx, int level);
 void widgets_draw_glyphs(GContext *ctx, const OpsChrome *chrome);
 
 /**
- * @brief Draw the bluetooth and Quiet Time glyphs on the left rail.
+ * @brief Draw the bluetooth and Quiet Time glyphs on the rail.
  *
  * @param ctx The graphics context.
  * @param bt_box Where the bluetooth glyph sits.

@@ -16,7 +16,7 @@ import { tryPlace } from './drag';
 import { TACTICAL_PRESETS } from './presets';
 import {
   TACTICAL_GRID, TACTICAL_STORE_CLASS, STARDATE_GRID,
-  ID_CLOCK, ID_EMPTY, ID_FULL_HEART, ID_HEART, ID_SENSORS, ID_STARDATE, ID_STEPS, ID_TALL_HEART, ID_WIDE_DAYLIGHT,
+  ID_CLOCK, ID_CLOCK_COMPACT, ID_STARDATE_COMPACT, ID_EMPTY, ID_FULL_HEART, ID_HEART, ID_SENSORS, ID_STARDATE, ID_STEPS, ID_TALL_HEART, ID_WIDE_DAYLIGHT,
   cellsFor, slotAt,
 } from './geometry';
 
@@ -74,6 +74,13 @@ describe('the Tactical list', () => {
     expect(result).toEqual([ID_CLOCK, E, E, E, E, E, E, E, E, E, E, E]);
   });
 
+  /** The watch reads a number past its catalogue as empty, so the builder must not keep it where it blocks a drop. */
+  test('empties a pick the catalogue has no readout for', () => {
+    const result = parseTactical('84,20,20,20,99,20,0,1,85,20,20,20');
+
+    expect(result).toEqual([ID_CLOCK, E, E, E, E, E, ID_HEART, ID_STEPS, ID_STARDATE, E, E, E]);
+  });
+
   /** A fresh page has no saved list, and the builder must show empty cells rather than reading off the end. */
   test('reads an empty list as twelve empty cells', () => {
     const result = parseTactical('');
@@ -128,6 +135,24 @@ describe('the clock and the date', () => {
     const result = moveUnique(before, after);
 
     expect(result).toEqual([E, E, E, E, ID_HEART, E, E, E, ID_CLOCK, E, E, E]);
+  });
+
+  /** The compact clock is the same clock, so dropping it has to swap out the full one rather than show two clocks. */
+  test('swaps the full clock for a compact one dropped elsewhere', () => {
+    const after = SHIPPED.slice();
+
+    after[4] = ID_CLOCK_COMPACT;
+    after[6] = E;
+    const result = moveUnique(SHIPPED, after);
+
+    expect(result).toEqual([E, E, E, E, ID_CLOCK_COMPACT, E, E, ID_STEPS, ID_STARDATE, E, E, E]);
+  });
+
+  /** A hand-edited list holding the date in both sizes is drawn with the first only, so the builder must keep the same one. */
+  test('keeps only the first date across both sizes', () => {
+    const result = sanitize([E, E, E, E, ID_STARDATE_COMPACT, E, E, E, ID_STARDATE, E, E, E], TACTICAL_GRID);
+
+    expect(result).toEqual([E, E, E, E, ID_STARDATE_COMPACT, E, E, E, E, E, E, E]);
   });
 
   /** A drop that leaves the clock where it was must not clear it. */

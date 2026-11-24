@@ -77,11 +77,46 @@ typedef enum
     LCARS_LAYOUT_COUNT
 } LcarsLayout;
 
+/// How many picks the Layout picker offers. Each layout saves as twice its LcarsLayout, and its
+/// mirrored frame, with the rail down the right, as one more, so Stardate is 0, Stardate Mirrored 1,
+/// Tactical 2, and Tactical Mirrored 3
+#define LCARS_LAYOUT_PICKS (LCARS_LAYOUT_COUNT * 2)
+
+/// How many frame themes the picker offers. The night and Quiet Time overrides count the same set,
+/// and so does the frame table in theme.c, so adding a theme is one bump here
+#define LCARS_THEME_COUNT 9
+
+/**
+ * @brief A side of the face. Bar Labels saves it as its number. The rail's side rides the Layout pick
+ * instead, read through lcars_rail_right.
+ */
+typedef enum
+{
+    LCARS_SIDE_LEFT,  ///< The default for both
+    LCARS_SIDE_RIGHT,
+    LCARS_SIDE_COUNT
+} LcarsSide;
+
+/**
+ * @brief Whether the frame is mirrored, with its rail down the right. The Layout picker offers this
+ * as a mirrored version of each layout.
+ *
+ * @return True for the right.
+ */
+bool lcars_rail_right(void);
+
+/**
+ * @brief Whether each bar's word sits at its right end.
+ *
+ * @return True for the right.
+ */
+bool lcars_labels_right(void);
+
 /// How many cells Tactical holds, three grids of four
 #define LCARS_TACTICAL_CELLS 12
 
 /**
- * @brief Which layout the face is drawn as.
+ * @brief Which layout the face is drawn as, whichever side its rail is on.
  *
  * @return A LcarsLayout.
  */

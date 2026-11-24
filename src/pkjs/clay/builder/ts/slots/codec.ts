@@ -12,7 +12,7 @@
  * different face from the watch.
  */
 
-import { TACTICAL_GRID, TACTICAL_STORE_CLASS, ID_EMPTY, SLOT_COUNT, SLOT_STORE_CLASS, STARDATE_GRID, UNIQUE_IDS, cellCount, owners } from './geometry';
+import { TACTICAL_GRID, TACTICAL_STORE_CLASS, ID_COUNT, ID_EMPTY, ONCE_GROUPS, SLOT_COUNT, SLOT_STORE_CLASS, STARDATE_GRID, UNIQUE_IDS, cellCount, onceGroup, owners } from './geometry';
 import type { Grid } from './geometry';
 
 /** Read a slot id out of a hidden input's text, falling back to empty. */
@@ -129,7 +129,10 @@ export function parseTactical(text: string | null | undefined): number[] {
       continue;
     }
 
-    picks.push(parseInt(digits[0], 10));
+    // a number the catalogue has no readout for reads as empty, the same as on the watch
+    const id = parseInt(digits[0], 10);
+
+    picks.push(id < ID_COUNT ? id : ID_EMPTY);
     cursor += digits[0].length;
 
     if (source.charAt(cursor) !== ',') {
@@ -175,27 +178,28 @@ export function writeTactical(root: HTMLElement, picks: number[]): void {
 }
 
 /**
- * Keep only the newest copy of the clock and the date, after a drop.
+ * Keep only the newest clock and the newest date, after a drop.
  *
- * Each goes on the face once, so dropping one somewhere moves it there. The copy in a cell that did
- * not hold it before the drop is the one kept, and any other copy is cleared. A drop that left a
- * copy only where it already was changes nothing.
+ * Each goes on the face once, in either size, so dropping one somewhere moves it there, and dropping
+ * the other size of it swaps the one already placed. The copy in a cell that did not hold it before
+ * the drop is the one kept, and any other copy is cleared. A drop that left a copy only where it
+ * already was changes nothing.
  *
  * @param before The picks before the drop.
  * @param after The picks after it.
- * @return The picks after it, with one copy of each at most.
+ * @return The picks after it, with one clock and one date at most.
  */
 export function moveUnique(before: number[], after: number[]): number[] {
   const out = after.slice();
 
-  UNIQUE_IDS.forEach(function (id) {
-    const cells = out.map(function (pick, cell) { return pick === id ? cell : -1; }).filter(function (cell) { return cell >= 0; });
+  ONCE_GROUPS.forEach(function (group) {
+    const cells = out.map(function (pick, cell) { return group.indexOf(pick) >= 0 ? cell : -1; }).filter(function (cell) { return cell >= 0; });
 
     if (cells.length < 2) {
       return;
     }
 
-    const fresh = cells.filter(function (cell) { return before[cell] !== id; });
+    const fresh = cells.filter(function (cell) { return before[cell] !== out[cell]; });
     const keep = fresh.length > 0 ? fresh[0] : cells[0];
 
     cells.forEach(function (cell) {
@@ -215,8 +219,8 @@ export function moveUnique(before: number[], after: number[]): number[] {
  * would render as a labelled panel with nothing in it, or a pick in a cell a bigger one covers. The
  * firmware makes the same correction, so this is only about the builder showing the truth. Each
  * cell keeps a value only when a readout starts there, and every other cell is saved as empty. The
- * clock and the date are kept once each, the first copy in cell order the shape rules keep, and only
- * where the grid places them.
+ * clock and the date are kept once each in either size, the first copy in cell order the shape rules
+ * keep, and only where the grid places them.
  *
  * @param slots The values, one a cell.
  * @param grid The grid.
@@ -242,11 +246,13 @@ export function sanitize(slots: number[], grid: Grid): number[] {
   const seen: number[] = [];
 
   for (let slot = 0; slot < count; slot++) {
-    if (kept[slot] === slot && UNIQUE_IDS.indexOf(out[slot]) >= 0) {
-      if (seen.indexOf(out[slot]) >= 0) {
+    const group = onceGroup(out[slot]);
+
+    if (kept[slot] === slot && group >= 0) {
+      if (seen.indexOf(group) >= 0) {
         out[slot] = ID_EMPTY;
       } else {
-        seen.push(out[slot]);
+        seen.push(group);
       }
     }
   }

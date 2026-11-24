@@ -57,12 +57,12 @@ describe('slotLayout', () => {
 
   /** A returning wearer on Tactical has to see its three grids as the page opens, not Stardate's one grid with eight of their twelve picks hidden. */
   test('hands the saved layout to the builder once the page is built', () => {
-    const fake = fakePage('1', true);
+    const fake = fakePage('2', true);
 
     slotLayout.call(fake.page as never);
     fake.build();
 
-    expect(fake.told).toEqual(['1']);
+    expect(fake.told).toEqual(['2']);
   });
 
   /** Switching the picker has to redraw the builder, or the wearer would edit the layout they just left. */
@@ -71,9 +71,9 @@ describe('slotLayout', () => {
 
     slotLayout.call(fake.page as never);
     fake.build();
-    fake.pick('1');
+    fake.pick('2');
 
-    expect(fake.told).toEqual(['0', '1']);
+    expect(fake.told).toEqual(['0', '2']);
   });
 
   /** A page without the builder's hook must be left alone rather than throw and stop the rest of the page code. */

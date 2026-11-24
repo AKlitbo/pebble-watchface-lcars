@@ -10,7 +10,7 @@
  * so switching the picker redraws the grid without touching the other layout's picks.
  */
 
-import { ID_EMPTY, LAYOUT_TACTICAL, LAYOUT_STARDATE, UNIQUE_IDS, areaOf, cellCount, colOf, gridFor, owners, rowOf, shapeOf, spanOf } from './geometry';
+import { ID_EMPTY, LAYOUT_TACTICAL, LAYOUT_STARDATE, UNIQUE_IDS, areaOf, cellCount, colOf, gridFor, layoutOfPick, owners, railRightOfPick, rowOf, shapeOf, spanOf } from './geometry';
 import type { Grid } from './geometry';
 import { formatId, moveUnique, readTactical, readSlots, sanitize, writeTactical, writeStores } from './codec';
 import { presetFor } from './presets';
@@ -274,9 +274,13 @@ export function init(this: ClayContext): void {
     return formatId(picks[LAYOUT_STARDATE][0]);
   };
 
-  // the face's page code calls this with the Layout picker's value, which Clay hands over as text
+  // the face's page code calls this with the Layout picker's value, which Clay hands over as text. a
+  // mirrored pick draws the same panels as its layout, with the sketch's rail down the right
   hooked._sbLayout = function (value: string): void {
-    const next = parseInt(value, 10);
+    const pick = parseInt(value, 10) || 0;
+    const next = layoutOfPick(pick);
+
+    faceEl.classList.toggle('sb-mirror', railRightOfPick(pick));
 
     if (next !== layout) {
       showLayout(next);

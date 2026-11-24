@@ -30,6 +30,8 @@ export interface LcarsModuleMeta extends ModuleMeta {
 const moduleMeta: Record<string, LcarsModuleMeta> = {
   'Clock':                          { icon: '🕐', blockColor: '#ff9c00', slug: 'clock', group: 'Clock' },
   'Date (STARDATE)':                { icon: '📅', blockColor: '#cc88ff', slug: 'stardate', group: 'Date' },
+  'Compact Clock':                  { icon: '🕐', blockColor: '#ff9c00', slug: 'clock-compact', group: 'Clock' },
+  'Compact Date (STARDATE)':        { icon: '📅', blockColor: '#cc88ff', slug: 'stardate-compact', group: 'Date' },
 
   'Heart Rate (VITALS)':            { icon: '❤️', blockColor: '#e74c3c', slug: 'heart', group: 'Health' },
   'Steps / Distance (TRAVERSAL)':   { icon: '👟', blockColor: '#2ecc71', slug: 'steps', group: 'Health' },

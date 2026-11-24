@@ -8,7 +8,7 @@ import buildConfig from '../../paf/ts/pkjs/config-builder';
 import type { ClayConfigItem } from '../../paf/ts/clay/types';
 import moduleThumbnails from './clay/module-thumbnails.g';
 import moduleMeta from './clay/module-meta';
-import themePreviews from './clay/theme-previews.g';
+import themePreviews from './clay/theme-previews-layout-theme.g';
 import layoutPreviews from './clay/theme-previews-layout.g';
 
 // what one panel can show. the value is the C OpsId, so these numbers are the
@@ -107,6 +107,8 @@ const BIG_PANELS = [
   // the clock and the date as panels, which only Tactical places, once each
   { label: 'Clock', value: 84 },
   { label: 'Date (STARDATE)', value: 85 },
+  { label: 'Compact Clock', value: 86 },
+  { label: 'Compact Date (STARDATE)', value: 87 },
 ];
 
 // what the builder drags. every readout plus the block with the emoji and tint
@@ -145,11 +147,14 @@ const config = buildConfig({
       'type': 'themePreview',
       'messageKey': 'APPEARANCE_LAYOUT',
       'label': 'Layout',
-      'description': 'Tactical moves the clock into the top frame and the four panels between the two elbows, with the date in the bottom frame. Its clock and date are panels too, so any of its twelve cells can hold either or a readout. Each layout keeps its own panels.',
+      'description': 'Tactical has panels in all three frames, with the clock and date as panels you can move. Mirrored runs the rail down the right.',
       'defaultValue': 0,
+      // each mirrored pick saves as its layout plus one, which is how the watch tells the rail's side
       'options': [
         { 'label': 'Stardate (Default)', 'value': 0 },
-        { 'label': 'Tactical', 'value': 1 },
+        { 'label': 'Stardate Mirrored', 'value': 1 },
+        { 'label': 'Tactical', 'value': 2 },
+        { 'label': 'Tactical Mirrored', 'value': 3 },
       ],
       'previews': layoutPreviews,
     },
@@ -160,7 +165,20 @@ const config = buildConfig({
       'description': 'LCARS colour scheme for the watch frame.',
       'defaultValue': 0,
       'options': THEME_OPTIONS,
+      // each layout has its own shot of every theme, so the picture follows the Layout picked above
       'previews': themePreviews,
+      'previewsByKey': 'APPEARANCE_LAYOUT',
+    },
+    {
+      'type': 'select',
+      'messageKey': 'APPEARANCE_BAR_LABELS',
+      'label': 'Bar Labels',
+      'description': 'Which end of each bar its word sits at, such as VITALS or STARDATE.',
+      'defaultValue': 0,
+      'options': [
+        { 'label': 'Left (Default)', 'value': 0 },
+        { 'label': 'Right', 'value': 1 },
+      ],
     },
     {
       'type': 'select',
@@ -291,7 +309,7 @@ const STARDATE_ONLY = ['CONNECTION_BLUETOOTH_ICON', 'APPEARANCE_QUIET_TIME_ICON'
 function hideOnTactical(items: ClayConfigItem[]): void {
   items.forEach(function (item) {
     if (item.messageKey && STARDATE_ONLY.indexOf(item.messageKey) >= 0) {
-      item.visibleWhen = { 'key': 'APPEARANCE_LAYOUT', 'in': [0] };
+      item.visibleWhen = { 'key': 'APPEARANCE_LAYOUT', 'in': [0, 1] };
     }
 
     if (item.items) {

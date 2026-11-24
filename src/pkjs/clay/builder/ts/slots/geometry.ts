@@ -21,7 +21,11 @@ export interface Grid {
   placesClock: boolean;
 }
 
-/** The layouts, by the number APPEARANCE_LAYOUT saves. */
+/**
+ * The two layouts, as layoutOfPick returns them. APPEARANCE_LAYOUT saves a pick, 0 to 3, which is
+ * the layout times two plus one for its mirrored version, so read it through layoutOfPick rather
+ * than comparing it with these.
+ */
 export const LAYOUT_STARDATE = 0;
 export const LAYOUT_TACTICAL = 1;
 
@@ -30,6 +34,28 @@ export const STARDATE_GRID: Grid = { cols: 2, rows: 2, areas: 1, placesClock: fa
 
 /** Tactical's panels: three areas of two columns of two, with the clock and the date among them. */
 export const TACTICAL_GRID: Grid = { cols: 2, rows: 2, areas: 3, placesClock: true };
+
+/**
+ * The layout a Layout pick draws. Each layout saves as twice its number and its mirrored pick as one
+ * more, and a mirrored pick's panels are the same as the layout's own.
+ *
+ * @param pick The saved Layout pick, 0 to 3.
+ * @return LAYOUT_STARDATE or LAYOUT_TACTICAL.
+ */
+export function layoutOfPick(pick: number): number {
+  // a pick past the four the picker offers reads as Stardate, the same as the watch
+  return pick === 2 || pick === 3 ? LAYOUT_TACTICAL : LAYOUT_STARDATE;
+}
+
+/**
+ * Whether a Layout pick runs the rail down the right.
+ *
+ * @param pick The saved Layout pick, 0 to 3.
+ * @return True for a mirrored pick.
+ */
+export function railRightOfPick(pick: number): boolean {
+  return pick === 1 || pick === 3;
+}
 
 /**
  * A layout's grid. Anything but Tactical reads as the Stardate layout, the same as on the watch.
@@ -124,9 +150,36 @@ export const ID_TALL_YEAR_PROGRESS = 82;
 export const ID_TALL_EVENT = 83;
 export const ID_CLOCK = 84;
 export const ID_STARDATE = 85;
+export const ID_CLOCK_COMPACT = 86;
+export const ID_STARDATE_COMPACT = 87;
 
-/** The panels that go on the face once at most, and only where the grid places the clock. */
-export const UNIQUE_IDS = [ID_CLOCK, ID_STARDATE];
+/** How many readouts the catalogue has, the watch's OPS_COUNT. A pick at or past it reads as empty. */
+export const ID_COUNT = 88;
+
+/**
+ * The clock and the date, each in its two sizes. A group goes on the face once at most, so a compact
+ * clock and a full one are the same clock, and all four only go where the grid places the clock.
+ */
+export const ONCE_GROUPS = [[ID_CLOCK, ID_CLOCK_COMPACT], [ID_STARDATE, ID_STARDATE_COMPACT]];
+
+/** Every panel in ONCE_GROUPS. */
+export const UNIQUE_IDS = [ID_CLOCK, ID_CLOCK_COMPACT, ID_STARDATE, ID_STARDATE_COMPACT];
+
+/**
+ * Which of the clock or the date a readout is, in either size.
+ *
+ * @param id The readout.
+ * @return Its index in ONCE_GROUPS, or -1 for any other readout.
+ */
+export function onceGroup(id: number): number {
+  for (let group = 0; group < ONCE_GROUPS.length; group++) {
+    if (ONCE_GROUPS[group].indexOf(id) >= 0) {
+      return group;
+    }
+  }
+
+  return -1;
+}
 
 /** How much of the grid a readout fills. */
 export const SHAPE_SINGLE = 'single';
@@ -190,6 +243,8 @@ const SHAPES: Record<number, Shape> = {
   [ID_TALL_EVENT]: SHAPE_TALL,
   [ID_CLOCK]: SHAPE_FULL,
   [ID_STARDATE]: SHAPE_FULL,
+  [ID_CLOCK_COMPACT]: SHAPE_WIDE,
+  [ID_STARDATE_COMPACT]: SHAPE_WIDE,
 };
 
 /** A slot's message key, in slot order. The first is the component's own. */

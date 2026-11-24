@@ -20,7 +20,7 @@ enum
 {
     FONT_ANTONIO_62,  // clock
     FONT_ANTONIO_36,  // date banner
-    FONT_ANTONIO_32,  // date banner fallback for wide formats
+    FONT_ANTONIO_32,  // date banner fallback for wide formats, and the compact clock
     FONT_ANTONIO_28,  // date banner fallback for the wider formats
     FONT_ANTONIO_24,  // date banner fallback for the widest formats, and the tall panels' big readings
     FONT_ANTONIO_20,  // weather temp, and a tall panel's big reading stepped down

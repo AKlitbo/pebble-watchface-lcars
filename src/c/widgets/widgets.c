@@ -23,7 +23,7 @@ static GFont s_font_label;  // Antonio 10 bar labels
  */
 
 /**
- * @brief Draw a left-aligned label inside a black LCARS holder box.
+ * @brief Draw a label inside a black LCARS holder box, at the start or the end of its area.
  *
  * @param ctx The graphics context.
  * @param area The area to draw in.
@@ -31,8 +31,10 @@ static GFont s_font_label;  // Antonio 10 bar labels
  * @param font The font to use.
  * @param text_color The text colour.
  * @param pad Padding inside the box.
+ * @param right True to sit the box at the area's right end.
  */
-static void lcars_label(GContext *ctx, GRect area, const char *text, GFont font, GColor text_color, int pad)
+static void lcars_label(GContext *ctx, GRect area, const char *text, GFont font, GColor text_color, int pad,
+                        bool right)
 {
     // an ops slot set to show nothing hands over an empty word. painting it would leave a bare
     // black box on the bar, which reads as a label that failed to load rather than an empty slot
@@ -49,14 +51,16 @@ static void lcars_label(GContext *ctx, GRect area, const char *text, GFont font,
         box_w = area.size.w;
     }
 
+    int box_x = right ? area.origin.x + area.size.w - box_w : area.origin.x;
+
     graphics_context_set_fill_color(ctx, GColorBlack);
-    graphics_fill_rect(ctx, GRect(area.origin.x, area.origin.y, box_w, area.size.h), 0, GCornerNone);
+    graphics_fill_rect(ctx, GRect(box_x, area.origin.y, box_w, area.size.h), 0, GCornerNone);
 
     // flush with the holder box. the drawn bar has a hard top edge so the label
     // needs no lift to sit on it
     graphics_context_set_text_color(ctx, text_color);
     graphics_draw_text(ctx, text, font,
-        GRect(area.origin.x + pad, area.origin.y, box_w - pad, area.size.h + 4),
+        GRect(box_x + pad, area.origin.y, box_w - pad, area.size.h + 4),
         GTextOverflowModeFill, GTextAlignmentLeft, NULL);
 }
 
@@ -98,8 +102,10 @@ static void lcars_bar(GContext *ctx, GRect area, GColor cap, GColor body)
  * @param level Battery charge level percentage.
  * @param accent_color The outline and nub colour.
  * @param fill_color The lit-segment colour (already level- and theme-resolved).
+ * @param flipped True to point the nub left and fill from the right, for a rail down the right.
  */
-static void lcars_battery_gauge(GContext *ctx, GRect area, int level, GColor accent_color, GColor fill_color)
+static void lcars_battery_gauge(GContext *ctx, GRect area, int level, GColor accent_color, GColor fill_color,
+                                bool flipped)
 {
     if (level < 0)
     {
@@ -112,11 +118,12 @@ static void lcars_battery_gauge(GContext *ctx, GRect area, int level, GColor acc
     }
 
     GRect body = area;
-    GRect nub = GRect(area.origin.x + area.size.w, area.origin.y + area.size.h / 4, 3, area.size.h / 2);
+    int nub_x = flipped ? area.origin.x - 3 : area.origin.x + area.size.w;
+    GRect nub = GRect(nub_x, area.origin.y + area.size.h / 4, 3, area.size.h / 2);
 
     graphics_context_set_fill_color(ctx, GColorBlack);
     graphics_fill_rect(ctx, body, 2, GCornersAll);
-    graphics_fill_rect(ctx, nub, 1, GCornersRight);
+    graphics_fill_rect(ctx, nub, 1, flipped ? GCornersLeft : GCornersRight);
 
     GRect inner = GRect(body.origin.x + 2, body.origin.y + 2, body.size.w - 4, body.size.h - 4);
 
@@ -135,7 +142,10 @@ static void lcars_battery_gauge(GContext *ctx, GRect area, int level, GColor acc
 
     for (int i = 0; i < segments; i++)
     {
-        GRect cell = GRect(inner.origin.x + i * (seg_w + gap), inner.origin.y, seg_w, inner.size.h);
+        // a flipped gauge counts its cells from the right, so like the unflipped one it fills from the
+        // end away from its nub
+        int step = flipped ? segments - 1 - i : i;
+        GRect cell = GRect(inner.origin.x + step * (seg_w + gap), inner.origin.y, seg_w, inner.size.h);
 
         // lit cells are filled solid and empty cells are hollow. a black interior with
         // an accent outline so the cell stays visible without reading as charged
@@ -284,6 +294,17 @@ void widgets_draw_bars(GContext *ctx, const OpsChrome *chrome)
     }
 }
 
+/**
+ * @brief The room a word has between a bar's two caps, for a word that sits at the bar's right end.
+ *
+ * @param bar The bar.
+ * @return The bar less its caps.
+ */
+static GRect between_caps(GRect bar)
+{
+    return GRect(bar.origin.x + BAR_CAP_W, bar.origin.y, bar.size.w - 2 * BAR_CAP_W, bar.size.h);
+}
+
 void widgets_draw_labels(GContext *ctx, const OpsChrome *chrome)
 {
     GColor lbl_color = label_color_for_theme(stardate_active_theme());
@@ -292,25 +313,26 @@ void widgets_draw_labels(GContext *ctx, const OpsChrome *chrome)
     {
         if (slot_draws(chrome, slot))
         {
-            lcars_label(ctx, slot_label(chrome, slot), chrome->label[slot], s_font_label, lbl_color, 3);
+            GRect area = chrome->labels_right ? between_caps(slot_bar(chrome, slot)) : slot_label(chrome, slot);
+            lcars_label(ctx, area, chrome->label[slot], s_font_label, lbl_color, 3, chrome->labels_right);
         }
     }
 }
 
-void widgets_draw_stardate(GContext *ctx, GRect bar, GRect label)
+void widgets_draw_stardate(GContext *ctx, GRect bar, bool label_right)
 {
     uint8_t theme = stardate_active_theme();
 
     lcars_bar(ctx, bar, bar_cap_for_theme(theme), bar_body_for_theme(theme));
-    lcars_label(ctx, label, "STARDATE", s_font_label, label_color_for_theme(theme), 3);
+    lcars_label(ctx, between_caps(bar), "STARDATE", s_font_label, label_color_for_theme(theme), 3, label_right);
 }
 
-void widgets_draw_battery(GContext *ctx, int level)
+void widgets_draw_battery(GContext *ctx, int level, GRect box, bool flipped)
 {
     uint8_t theme = stardate_active_theme();
     GColor accent = panel_accent_for_theme(theme);
     GColor fill = battery_fill_for_theme(theme, level);
-    lcars_battery_gauge(ctx, GRect(6, 4, 32, 12), level, accent, fill);
+    lcars_battery_gauge(ctx, box, level, accent, fill, flipped);
 }
 
 void widgets_draw_glyphs(GContext *ctx, const OpsChrome *chrome)

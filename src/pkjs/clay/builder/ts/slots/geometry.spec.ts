@@ -10,8 +10,10 @@
  */
 
 import { describe, test, expect } from 'vitest';
+import { readFileSync } from 'node:fs';
 import {
-  canPlace, cellsFor, owners, shapeOf, slotAt, STARDATE_GRID,
+  canPlace, cellsFor, owners, shapeOf, slotAt, STARDATE_GRID, ID_COUNT,
+  LAYOUT_STARDATE, LAYOUT_TACTICAL, layoutOfPick, railRightOfPick,
   SLOT_LT, SLOT_LB, SLOT_RT, SLOT_RB, SLOT_COUNT,
   SLOT_KEYS, SLOT_STORE_CLASS,
   ID_HEART, ID_STEPS, ID_EMPTY, ID_SENSORS,
@@ -234,5 +236,35 @@ describe('the slot tables', () => {
 
     expect(result).toBe(SLOT_COUNT - 1);
     expect(classes).not.toContain(null);
+  });
+});
+
+describe('the catalogue size', () => {
+  /** The builder empties any pick at or past ID_COUNT, so a count behind the watch's would wipe a new readout off the face. */
+  test('matches the number of readouts in the OpsId on the watch', () => {
+    const header = readFileSync(new URL('../../../../../c/ops/ops.h', import.meta.url), 'utf8');
+    const body = header.slice(header.indexOf('typedef enum'), header.indexOf('OPS_COUNT'));
+
+    const result = (body.match(/^\s*OPS_[A-Z0-9_]+,/gm) || []).length;
+
+    expect(result).toBe(ID_COUNT);
+  });
+});
+
+describe('the Layout pick', () => {
+  /**
+   * The watch reads the pick as the layout times two plus one for its mirror, so the builder has to
+   * read it the same way, or it edits one layout's panels while the watch draws the other's.
+   */
+  test.each([
+    [0, LAYOUT_STARDATE, false],
+    [1, LAYOUT_STARDATE, true],
+    [2, LAYOUT_TACTICAL, false],
+    [3, LAYOUT_TACTICAL, true],
+    [4, LAYOUT_STARDATE, false],
+  ])('reads pick %i as its layout and rail side', (pick, layout, railRight) => {
+    const result = { layout: layoutOfPick(pick), railRight: railRightOfPick(pick) };
+
+    expect(result).toEqual({ layout: layout, railRight: railRight });
   });
 });

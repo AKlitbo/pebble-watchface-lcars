@@ -6,56 +6,32 @@
 
 #include "settings_schema.h"
 
-uint32_t bg_resource_for(uint8_t theme, uint8_t layout)
-{
-    // each layout bakes its own frame for every theme. a layout number past the ones here reads as
-    // the Stardate layout, the same as the rest of the face
-    if (layout == LCARS_LAYOUT_TACTICAL)
-    {
-        switch (theme)
-        {
-            case 1:
-                return RESOURCE_ID_IMAGE_BG_LOWER_DECKS_TACTICAL;
-            case 2:
-                return RESOURCE_ID_IMAGE_BG_LOWER_DECKS_PADD_TACTICAL;
-            case 3:
-                return RESOURCE_ID_IMAGE_BG_NEMESIS_BLUE_TACTICAL;
-            case 4:
-                return RESOURCE_ID_IMAGE_BG_MONO_TACTICAL;
-            case 5:
-                return RESOURCE_ID_IMAGE_BG_LOWER_DECKS_MONO_TACTICAL;
-            case 6:
-                return RESOURCE_ID_IMAGE_BG_LOWER_DECKS_PADD_MONO_TACTICAL;
-            case 7:
-                return RESOURCE_ID_IMAGE_BG_VOYAGER_TACTICAL;
-            case 8:
-                return RESOURCE_ID_IMAGE_BG_VOYAGER_MONO_TACTICAL;
-            default:
-                return RESOURCE_ID_IMAGE_BG_CLASSIC_TACTICAL;
-        }
-    }
+// every baked frame by layout, then rail side, then theme setting value. a Lower Decks frame sits
+// at 1 because that is the number the theme picker has always saved for it
+//
+// each row below names nine frames. a short row would fill with zeros rather than fail, so a theme
+// added to the settings without its frames here stops the build instead of drawing nothing
+_Static_assert(LCARS_THEME_COUNT == 9, "a new theme needs its frames added to every row of s_frames");
 
-    switch (theme)
-    {
-        case 1:
-            return RESOURCE_ID_IMAGE_BG_LOWER_DECKS;
-        case 2:
-            return RESOURCE_ID_IMAGE_BG_LOWER_DECKS_PADD;
-        case 3:
-            return RESOURCE_ID_IMAGE_BG_NEMESIS_BLUE;
-        case 4:
-            return RESOURCE_ID_IMAGE_BG_MONO;
-        case 5:
-            return RESOURCE_ID_IMAGE_BG_LOWER_DECKS_MONO;
-        case 6:
-            return RESOURCE_ID_IMAGE_BG_LOWER_DECKS_PADD_MONO;
-        case 7:
-            return RESOURCE_ID_IMAGE_BG_VOYAGER;
-        case 8:
-            return RESOURCE_ID_IMAGE_BG_VOYAGER_MONO;
-        default:
-            return RESOURCE_ID_IMAGE_BG_CLASSIC;
-    }
+static const uint32_t s_frames[LCARS_LAYOUT_COUNT][LCARS_SIDE_COUNT][LCARS_THEME_COUNT] = {
+    [LCARS_LAYOUT_STARDATE] = {
+        {RESOURCE_ID_IMAGE_BG_CLASSIC, RESOURCE_ID_IMAGE_BG_LOWER_DECKS, RESOURCE_ID_IMAGE_BG_LOWER_DECKS_PADD, RESOURCE_ID_IMAGE_BG_NEMESIS_BLUE, RESOURCE_ID_IMAGE_BG_MONO, RESOURCE_ID_IMAGE_BG_LOWER_DECKS_MONO, RESOURCE_ID_IMAGE_BG_LOWER_DECKS_PADD_MONO, RESOURCE_ID_IMAGE_BG_VOYAGER, RESOURCE_ID_IMAGE_BG_VOYAGER_MONO},
+        {RESOURCE_ID_IMAGE_BG_CLASSIC_MIRROR, RESOURCE_ID_IMAGE_BG_LOWER_DECKS_MIRROR, RESOURCE_ID_IMAGE_BG_LOWER_DECKS_PADD_MIRROR, RESOURCE_ID_IMAGE_BG_NEMESIS_BLUE_MIRROR, RESOURCE_ID_IMAGE_BG_MONO_MIRROR, RESOURCE_ID_IMAGE_BG_LOWER_DECKS_MONO_MIRROR, RESOURCE_ID_IMAGE_BG_LOWER_DECKS_PADD_MONO_MIRROR, RESOURCE_ID_IMAGE_BG_VOYAGER_MIRROR, RESOURCE_ID_IMAGE_BG_VOYAGER_MONO_MIRROR},
+    },
+    [LCARS_LAYOUT_TACTICAL] = {
+        {RESOURCE_ID_IMAGE_BG_CLASSIC_TACTICAL, RESOURCE_ID_IMAGE_BG_LOWER_DECKS_TACTICAL, RESOURCE_ID_IMAGE_BG_LOWER_DECKS_PADD_TACTICAL, RESOURCE_ID_IMAGE_BG_NEMESIS_BLUE_TACTICAL, RESOURCE_ID_IMAGE_BG_MONO_TACTICAL, RESOURCE_ID_IMAGE_BG_LOWER_DECKS_MONO_TACTICAL, RESOURCE_ID_IMAGE_BG_LOWER_DECKS_PADD_MONO_TACTICAL, RESOURCE_ID_IMAGE_BG_VOYAGER_TACTICAL, RESOURCE_ID_IMAGE_BG_VOYAGER_MONO_TACTICAL},
+        {RESOURCE_ID_IMAGE_BG_CLASSIC_TACTICAL_MIRROR, RESOURCE_ID_IMAGE_BG_LOWER_DECKS_TACTICAL_MIRROR, RESOURCE_ID_IMAGE_BG_LOWER_DECKS_PADD_TACTICAL_MIRROR, RESOURCE_ID_IMAGE_BG_NEMESIS_BLUE_TACTICAL_MIRROR, RESOURCE_ID_IMAGE_BG_MONO_TACTICAL_MIRROR, RESOURCE_ID_IMAGE_BG_LOWER_DECKS_MONO_TACTICAL_MIRROR, RESOURCE_ID_IMAGE_BG_LOWER_DECKS_PADD_MONO_TACTICAL_MIRROR, RESOURCE_ID_IMAGE_BG_VOYAGER_TACTICAL_MIRROR, RESOURCE_ID_IMAGE_BG_VOYAGER_MONO_TACTICAL_MIRROR},
+    },
+};
+
+uint32_t bg_resource_for(uint8_t theme, uint8_t layout, bool rail_right)
+{
+    // a number past the ones here reads as Classic and the Stardate layout, the same as the rest of
+    // the face
+    uint8_t frames_for = layout < LCARS_LAYOUT_COUNT ? layout : LCARS_LAYOUT_STARDATE;
+    uint8_t look = theme < LCARS_THEME_COUNT ? theme : 0;
+
+    return s_frames[frames_for][rail_right ? LCARS_SIDE_RIGHT : LCARS_SIDE_LEFT][look];
 }
 
 GColor label_color_for_theme(uint8_t theme)

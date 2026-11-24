@@ -84,6 +84,15 @@ enum
 #define OPS_DY_FB 1
 #define OPS_DY_FB2 3
 
+// --- Rail Side ---
+// with the rail down the right the frame is mirrored. what sits inside the frame keeps its order and
+// moves left by the rail's width, so a panel stays in the column it was set in. what sits on the
+// rail, such as the gauge, the coordinates, and the glyphs, flips across to the other side
+#define RAIL_W 47  // the rail, plus the gap that keeps the panels clear of it
+
+// the battery gauge on the top-left block
+#define BATTERY_GAUGE GRect(6, 4, 32, 12)
+
 // --- Coordinates ---
 // right-aligned black text on the left rail blocks (Antonio 12)
 #define COORD_TEXT_COLOR GColorBlack
@@ -120,11 +129,6 @@ enum
 // the spare row underneath is what squares that up
 #define BAR_STARDATE GRect(52, 2, 143, 11)
 
-// --- LCARS Bar Labels ---
-// left-aligned in black holder boxes on coloured bars
-// the holder box matches its bar's height exactly so no sliver of bar shows under the label
-#define LBL_STARDATE GRect(60, 2, 54, 11)
-
 // --- Tactical ---
 // three 2x2 grids: one in the top frame, one in the band between the two elbows, and one in the
 // bottom frame. every row here matches the Tactical frames, frame/<theme>-tactical~emery.html
@@ -150,11 +154,19 @@ enum
 #define TACTICAL_LAT GRect(0, 181, 43, 22)
 #define TACTICAL_LON GRect(0, 208, 43, 22)
 
-// the pills run rows 88 to 110 and 119 to 141 and carry the phone link and Quiet Time as words, in
-// place of the glyphs the Stardate layout draws. the right edge keeps the words clear of each pill's
-// rounded end
-#define TACTICAL_LINK GRect(0, 92, 40, 22)
-#define TACTICAL_QUIET GRect(0, 123, 40, 22)
+// the compact clock and date fill a row a grid wide, measured from that row's bar. the clock has no
+// bar, so Antonio 32 has the whole row, and its AM/PM sits top right as on the full one. the date
+// sits under its STARDATE bar like any reading, a row's width and centred, stepping down through
+// Antonio 14 and 12 for a long format
+#define TACTICAL_TIME_COMPACT(y)      GRect(53, (y) - 3, 142, 36)
+#define TACTICAL_MERIDIEM_COMPACT(y)  GRect(150, (y) - 1, 45, 14)
+#define TACTICAL_DATE_COMPACT(y, dy)  GRect(55, (y) + 11 + (dy), 140, 18)
+
+// the pills run rows 88 to 110 and 119 to 141, from x=2 to the rail's edge, and carry the phone link
+// and Quiet Time as words in place of the glyphs the Stardate layout draws. each word sits in the
+// middle of its pill, so it reads the same with the rail on either side
+#define TACTICAL_LINK GRect(2, 92, 45, 22)
+#define TACTICAL_QUIET GRect(2, 123, 45, 22)
 
 /**
  * @brief Register fonts, build the baked frame + overlays, and set the background.

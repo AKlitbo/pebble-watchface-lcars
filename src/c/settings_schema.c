@@ -25,10 +25,6 @@
 // smallest versioned blob accepted. fields are append-only so this never changes
 #define LCARS_SETTINGS_V1_SIZE 21
 
-// how many frame themes the picker offers. the night and Quiet Time overrides count the same set,
-// so adding a theme is one bump here rather than three spread through the field table
-#define LCARS_THEME_COUNT 9
-
 /**
  * @addtogroup watchface-lcars
  * @{
@@ -66,11 +62,12 @@ typedef struct LcarsSettings
     bool    use_quiet_theme;
     uint8_t quiet_theme;
     // --- added in v8 ---
-    uint8_t layout;            // a LcarsLayout
+    uint8_t layout;              // the Layout pick: a LcarsLayout times two, plus one for its mirrored frame
     char    slots_tactical[48];  // Tactical's twelve picks as "84,20,20,20,...", in cell order
+    uint8_t bar_labels;          // a LcarsSide, which end of each bar its word sits at
 } LcarsSettings;
 
-_Static_assert(sizeof(LcarsSettings) == 116, "lcars blob size is frozen at 116 bytes (v8)");
+_Static_assert(sizeof(LcarsSettings) == 117, "lcars blob size is frozen at 117 bytes (v8)");
 
 // twelve picks of up to three digits with commas between, and the end of the string, so the list
 // keeps every cell once the catalogue passes a hundred readouts
@@ -101,6 +98,9 @@ static LcarsSettings s_settings;
 
 // which layout the face is drawn as, also this face's own
 #define SETTING_LAYOUT         ((SettingId)(SETTING_COUNT + 9))
+
+// the bar words' end, also this face's own
+#define SETTING_BAR_LABELS     ((SettingId)(SETTING_COUNT + 10))
 
 // Tactical's picks on a fresh install: the clock across the top, the Sensors Block beside the heart
 // rate and steps in the middle, as the Stardate layout starts, and the date across the bottom
@@ -156,15 +156,20 @@ static const SettingField s_fields[] = {
       .enum_count = LCARS_THEME_COUNT, .default_num = 0 },
 
     // the Stardate layout keeps the four slot keys above, and Tactical keeps its twelve picks in one
-    // text key, so its grids need no hidden store a cell on the settings page. the id is SETTING_COUNT
+    // text key, so its grids need no hidden store per cell on the settings page. the id is SETTING_COUNT
     // for the same reason as the zone below
     { .id = SETTING_LAYOUT, .message_key = &MESSAGE_KEY_APPEARANCE_LAYOUT,
       .type = SETTING_ENUM_U8, .offset = offsetof(LcarsSettings, layout),
-      .enum_count = LCARS_LAYOUT_COUNT, .default_num = LCARS_LAYOUT_STARDATE },
+      .enum_count = LCARS_LAYOUT_PICKS, .default_num = LCARS_LAYOUT_STARDATE },
     { .id = SETTING_COUNT, .message_key = &MESSAGE_KEY_APPEARANCE_SLOTS_TACTICAL, .type = SETTING_CSTRING,
       .offset = offsetof(LcarsSettings, slots_tactical),
       .size = sizeof(s_settings.slots_tactical),
       .default_str = TACTICAL_SLOTS_DEFAULT },
+
+    // the words start on the left, which is the face as it has always been drawn
+    { .id = SETTING_BAR_LABELS, .message_key = &MESSAGE_KEY_APPEARANCE_BAR_LABELS,
+      .type = SETTING_ENUM_U8, .offset = offsetof(LcarsSettings, bar_labels),
+      .enum_count = LCARS_SIDE_COUNT, .default_num = LCARS_SIDE_LEFT },
 
     // the ZONE 1 readout's zone. the id is SETTING_COUNT because nothing reads this through the
     // library's typed accessors, only the two helpers at the bottom of this file
@@ -325,7 +330,17 @@ uint8_t lcars_quiet_theme(void)
 
 uint8_t lcars_layout(void)
 {
-    return s_settings.layout;
+    return s_settings.layout / 2;
+}
+
+bool lcars_rail_right(void)
+{
+    return s_settings.layout % 2 == 1;
+}
+
+bool lcars_labels_right(void)
+{
+    return s_settings.bar_labels == LCARS_SIDE_RIGHT;
 }
 
 uint8_t lcars_slot_tactical(int cell)

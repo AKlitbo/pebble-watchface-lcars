@@ -1,0 +1,17 @@
+@charset "utf-8";
+/*
+	the mirrored frames, linked last by each *-mirror page. the whole watch flips about its middle, so
+	the rail runs down the right and every elbow, strip, and pill turns to face it. the text is drawn by
+	the watch rather than baked, so nothing here has to read the right way round
+
+	a browser preview draws the watch scaled down from the top left, so the flip slides it back over
+	the screen by its own width. the bake draws it full size and flips it in place
+*/
+.watch.mirror {
+  transform: translateX(200px) scale(-0.208333, 0.208333);
+}
+
+html.frame-render .watch.mirror {
+  transform: scaleX(-1);
+  transform-origin: center;
+}

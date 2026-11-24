@@ -13,13 +13,14 @@
  */
 
 /**
- * @brief The baked frame for a theme in a layout.
+ * @brief The baked frame for a theme in a layout, with its rail on either side.
  *
  * @param theme The theme setting value.
  * @param layout The layout setting value, a LcarsLayout.
+ * @param rail_right True for the mirrored frame, with its rail down the right.
  * @return The frame's resource id.
  */
-uint32_t bg_resource_for(uint8_t theme, uint8_t layout);
+uint32_t bg_resource_for(uint8_t theme, uint8_t layout, bool rail_right);
 
 /**
  * @brief Maps the Theme setting to its LCARS label text colour.

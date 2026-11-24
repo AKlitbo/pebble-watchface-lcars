@@ -158,6 +158,8 @@ static const OpsReadout s_catalog[OPS_COUNT] = {
     // rows carry no formatter. the clock sits bare on the black, and the date keeps its STARDATE bar
     [OPS_CLOCK]              = {.shape = OPS_SHAPE_FULL, .bare = true},
     [OPS_STARDATE]           = {.label = "STARDATE",  .shape = OPS_SHAPE_FULL},
+    [OPS_CLOCK_COMPACT]      = {.shape = OPS_SHAPE_WIDE, .bare = true},
+    [OPS_STARDATE_COMPACT]   = {.label = "STARDATE",  .shape = OPS_SHAPE_WIDE},
 };
 
 const OpsReadout *ops_entry(uint8_t id)

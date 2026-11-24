@@ -42,8 +42,8 @@ static Zone s_zones[ZONE_COUNT] = {
     [ZONE_LAT]      = {.rect = SLOT_LAT,      .font_id = FONT_ANTONIO_12, .align = GTextAlignmentRight,  .color = COORD_TEXT_COLOR},
     [ZONE_LON]      = {.rect = SLOT_LON,      .font_id = FONT_ANTONIO_12, .align = GTextAlignmentRight,  .color = COORD_TEXT_COLOR},
     // Tactical only: the pills' words, black on the pill like the coordinates on the rail
-    [ZONE_LINK]     = {.rect = TACTICAL_LINK,   .font_id = FONT_ANTONIO_12, .align = GTextAlignmentRight,  .color = COORD_TEXT_COLOR},
-    [ZONE_QUIET]    = {.rect = TACTICAL_QUIET,  .font_id = FONT_ANTONIO_12, .align = GTextAlignmentRight,  .color = COORD_TEXT_COLOR},
+    [ZONE_LINK]     = {.rect = TACTICAL_LINK,   .font_id = FONT_ANTONIO_12, .align = GTextAlignmentCenter, .color = COORD_TEXT_COLOR},
+    [ZONE_QUIET]    = {.rect = TACTICAL_QUIET,  .font_id = FONT_ANTONIO_12, .align = GTextAlignmentCenter, .color = COORD_TEXT_COLOR},
 };
 
 /**
@@ -85,8 +85,9 @@ static void quiet_text(char *out, size_t size)
 #define CELLS_MAX LCARS_TACTICAL_CELLS
 #define AREAS_MAX (CELLS_MAX / OPS_CELLS_MAX)
 
-// the Stardate layout's grid: two columns of two rows under the clock
-static const OpsGrid s_stardate_grid = {
+// the Stardate layout's grid: two columns of two rows under the clock. its columns, and Tactical's,
+// are placed on each build, since they follow the rail
+static OpsGrid s_stardate_grid = {
     .cols = 2,
     .rows = 2,
     .col_x = {OPS_COL_L, OPS_COL_R},
@@ -101,11 +102,63 @@ static const OpsGrid s_stardate_grid = {
      .col_right = {OPS_R_L, OPS_R_R}, .row_y = {(y), (y) + TACTICAL_ROW_H},    \
      .bottom = (y) + 2 * TACTICAL_ROW_H}
 
-static const OpsGrid s_tactical_grids[AREAS_MAX] = {
+static OpsGrid s_tactical_grids[AREAS_MAX] = {
     TACTICAL_GRID(TACTICAL_ROW_TOP),
     TACTICAL_GRID(TACTICAL_ROW_MID),
     TACTICAL_GRID(TACTICAL_ROW_BOTTOM),
 };
+
+/** @brief How far what sits inside the frame moves left: the rail's width with the rail down the right. */
+static int inside_shift(void)
+{
+    return lcars_rail_right() ? RAIL_W : 0;
+}
+
+/**
+ * @brief Where something inside the frame sits, given its place with the rail on the left.
+ *
+ * @param box Its place with the rail on the left.
+ * @return Its place on the screen.
+ */
+static GRect inside(GRect box)
+{
+    box.origin.x -= inside_shift();
+    return box;
+}
+
+/**
+ * @brief Where something on the rail sits, given its place with the rail on the left. With the rail
+ * down the right it flips across the screen.
+ *
+ * @param box Its place with the rail on the left.
+ * @return Its place on the screen.
+ */
+static GRect on_rail(GRect box)
+{
+    if (lcars_rail_right())
+    {
+        box.origin.x = PBL_DISPLAY_WIDTH - box.origin.x - box.size.w;
+    }
+
+    return box;
+}
+
+/** @brief Puts every grid's columns inside the frame, so a panel stays in the column it was set in. */
+static void place_grids(void)
+{
+    int shift = inside_shift();
+
+    for (int index = 0; index <= AREAS_MAX; index++)
+    {
+        // the Stardate layout's grid first, then each of Tactical's
+        OpsGrid *grid = index == 0 ? &s_stardate_grid : &s_tactical_grids[index - 1];
+
+        grid->col_x[0] = OPS_COL_L - shift;
+        grid->col_x[1] = OPS_COL_R - shift;
+        grid->col_right[0] = OPS_R_L - shift;
+        grid->col_right[1] = OPS_R_R - shift;
+    }
+}
 
 /** @brief Whether the face is drawn as Tactical. */
 static bool is_tactical(void)
@@ -166,6 +219,32 @@ static void own_cells(const uint8_t picks[CELLS_MAX], int8_t owner[CELLS_MAX])
     }
 }
 
+// the clock and the date in either size: a full one and a compact one are the same clock or date,
+// so the face shows one of each at most
+#define ONCE_GROUPS 2
+enum { ONCE_CLOCK, ONCE_DATE };
+
+/**
+ * @brief Which of the clock or the date a pick is, in either size.
+ *
+ * @param id The OpsId.
+ * @return ONCE_CLOCK, ONCE_DATE, or -1 for any other pick.
+ */
+static int once_group(uint8_t id)
+{
+    if (id == OPS_CLOCK || id == OPS_CLOCK_COMPACT)
+    {
+        return ONCE_CLOCK;
+    }
+
+    if (id == OPS_STARDATE || id == OPS_STARDATE_COMPACT)
+    {
+        return ONCE_DATE;
+    }
+
+    return -1;
+}
+
 /**
  * @brief What every cell is showing, after the shape rules.
  *
@@ -173,10 +252,10 @@ static void own_cells(const uint8_t picks[CELLS_MAX], int8_t owner[CELLS_MAX])
  * covers, or one holding a pick that does not fit, reads as empty rather than as a labelled panel
  * with nothing under it.
  *
- * The clock and the date only go on Tactical, and only once each. The Stardate layout draws them
- * in their own places, so there they read as empty, and so does a second copy of either. A copy
- * only counts once the shape rules have kept it, so a first copy that does not fit leaves the next
- * one to be drawn rather than leaving the face without a clock.
+ * The clock and the date only go on Tactical, and only once each in either size. The Stardate layout
+ * draws them in their own places, so there they read as empty, and so does a second copy of either.
+ * A copy only counts once the shape rules have kept it, so a first copy that does not fit leaves the
+ * next one to be drawn rather than leaving the face without a clock.
  *
  * @param ids Receives each cell's OpsId.
  * @param owner Receives the cell of its own grid that fills each cell, 0 to 3, or -1 for one nothing fills.
@@ -190,7 +269,7 @@ static void resolve(uint8_t ids[CELLS_MAX], int8_t owner[CELLS_MAX])
     {
         uint8_t id = dev_ops_pick(cell, stored_pick(cell));
 
-        if ((id == OPS_CLOCK || id == OPS_STARDATE) && !is_tactical())
+        if (once_group(id) >= 0 && !is_tactical())
         {
             id = OPS_EMPTY;
         }
@@ -200,20 +279,20 @@ static void resolve(uint8_t ids[CELLS_MAX], int8_t owner[CELLS_MAX])
 
     own_cells(picks, owner);
 
-    bool clock_placed = false;
-    bool date_placed = false;
+    bool placed_once[ONCE_GROUPS] = {false, false};
     bool cleared = false;
 
     for (int cell = 0; cell < count; cell++)
     {
         bool kept = owner[cell] == cell % OPS_CELLS_MAX;
+        int group = once_group(picks[cell]);
 
-        if (!kept || (picks[cell] != OPS_CLOCK && picks[cell] != OPS_STARDATE))
+        if (!kept || group < 0)
         {
             continue;
         }
 
-        bool *placed = picks[cell] == OPS_CLOCK ? &clock_placed : &date_placed;
+        bool *placed = &placed_once[group];
 
         if (*placed)
         {
@@ -282,14 +361,27 @@ bool stardate_ops_shows(uint8_t id)
     return cell_showing(id) >= 0;
 }
 
+/**
+ * @brief The cell showing the clock or the date in either size.
+ *
+ * @param group ONCE_CLOCK or ONCE_DATE.
+ * @return The cell, or -1 when neither size is on the face.
+ */
+static int cell_showing_once(int group)
+{
+    int full = cell_showing(group == ONCE_CLOCK ? OPS_CLOCK : OPS_STARDATE);
+
+    return full >= 0 ? full : cell_showing(group == ONCE_CLOCK ? OPS_CLOCK_COMPACT : OPS_STARDATE_COMPACT);
+}
+
 bool stardate_shows_clock(void)
 {
-    return !is_tactical() || cell_showing(OPS_CLOCK) >= 0;
+    return !is_tactical() || cell_showing_once(ONCE_CLOCK) >= 0;
 }
 
 bool stardate_shows_date(void)
 {
-    return !is_tactical() || cell_showing(OPS_STARDATE) >= 0;
+    return !is_tactical() || cell_showing_once(ONCE_DATE) >= 0;
 }
 
 bool stardate_ops_shows_beats(void)
@@ -396,8 +488,9 @@ static uint8_t s_loaded_frame = 0xFF;  // 0xFF = nothing loaded yet (forces firs
  */
 static void load_frame(uint8_t theme)
 {
-    // the theme takes the low four bits and the layout the high ones, so either changing reloads
-    uint8_t frame = (uint8_t)((lcars_layout() << 4) | (theme & 0x0F));
+    // the theme takes the low four bits, the rail side the next, and the layout the high ones, so any
+    // of them changing reloads
+    uint8_t frame = (uint8_t)((lcars_layout() << 5) | (lcars_rail_right() << 4) | (theme & 0x0F));
 
     if (frame == s_loaded_frame && s_frame_bitmap)
     {
@@ -412,7 +505,7 @@ static void load_frame(uint8_t theme)
         s_frame_bitmap = NULL;
     }
 
-    s_frame_bitmap = gbitmap_create_with_resource(bg_resource_for(theme, lcars_layout()));
+    s_frame_bitmap = gbitmap_create_with_resource(bg_resource_for(theme, lcars_layout(), lcars_rail_right()));
 
     if (s_frame_layer)
     {
@@ -491,7 +584,7 @@ static void draw_area(GContext *ctx, int area, const uint8_t *ids, const int8_t 
     const OpsGrid *grid = area_grid(area);
     const uint8_t *area_ids = &ids[area * OPS_CELLS_MAX];
     const int8_t *area_owner = &owner[area * OPS_CELLS_MAX];
-    OpsChrome chrome = {.grid = grid};
+    OpsChrome chrome = {.grid = grid, .labels_right = lcars_labels_right()};
 
     for (int slot = 0; slot < OPS_CELLS_MAX; slot++)
     {
@@ -535,10 +628,10 @@ static void draw_overlays(GContext *ctx, GRect bounds, const void *data)
     // panel, and its bar comes with it
     if (!is_tactical())
     {
-        widgets_draw_stardate(ctx, BAR_STARDATE, LBL_STARDATE);
+        widgets_draw_stardate(ctx, inside(BAR_STARDATE), lcars_labels_right());
     }
 
-    widgets_draw_battery(ctx, system_store_battery());
+    widgets_draw_battery(ctx, system_store_battery(), on_rail(BATTERY_GAUGE), lcars_rail_right());
 
     for (int area = 0; area < area_count(); area++)
     {
@@ -552,7 +645,8 @@ static void draw_overlays(GContext *ctx, GRect bounds, const void *data)
     {
         bool bt_show = settings_u8(SETTING_BLUETOOTH_ICON);
         bool qt_show = settings_u8(SETTING_QUIET_TIME_ICON);
-        widgets_draw_status(ctx, BT_ICON, QT_ICON, bt_show, system_store_bluetooth(), qt_show, quiet_time_is_active());
+        widgets_draw_status(ctx, on_rail(BT_ICON), on_rail(QT_ICON), bt_show, system_store_bluetooth(), qt_show,
+                            quiet_time_is_active());
     }
 }
 
@@ -572,47 +666,117 @@ void stardate_setup(Window *window)
 }
 
 /**
- * @brief Put the clock, the date, and the coordinates where the layout on show wants them.
+ * @brief Set the clock's zones: the time's place and font, and its AM/PM's place.
  *
- * The Stardate layout keeps the places the zone table starts with. On Tactical the clock and the
- * date follow the grid each sits in, and the coordinates sit on the bottom frame's rail.
+ * @param time Where the time sits.
+ * @param font Its font.
+ * @param meridiem Where its AM/PM sits.
+ */
+static void set_clock(GRect time, FontId font, GRect meridiem)
+{
+    s_zones[ZONE_TIME].rect = time;
+    s_zones[ZONE_TIME].font_id = font;
+    s_zones[ZONE_MERIDIEM].rect = meridiem;
+}
+
+/**
+ * @brief Set the date's zone, its place and font at each of its four steps down.
+ *
+ * @param fonts The font at each step, biggest first.
+ * @param rects The place at each step. A zero-sized place skips its step.
+ */
+static void set_date(const FontId fonts[4], const GRect rects[4])
+{
+    Zone *date = &s_zones[ZONE_DATE];
+
+    date->font_id = fonts[0];
+    date->rect = rects[0];
+    date->font_id_fallback = fonts[1];
+    date->rect_fallback = rects[1];
+    date->font_id_fallback2 = fonts[2];
+    date->rect_fallback2 = rects[2];
+    date->font_id_fallback3 = fonts[3];
+    date->rect_fallback3 = rects[3];
+}
+
+// the full date's fonts, the big banner Antonio stepping down to fit a long format
+static const FontId s_date_fonts[4] = {FONT_ANTONIO_36, FONT_ANTONIO_32, FONT_ANTONIO_28, FONT_ANTONIO_24};
+
+/**
+ * @brief Put the clock, the date, the coordinates, and the pill words where the layout on show wants
+ * them, on the side of the face the rail leaves them.
+ *
+ * The Stardate layout keeps its fixed places. On Tactical the clock and the date follow the cell each
+ * sits in, at the size picked, and the coordinates sit on the bottom frame's rail.
  *
  * @param clock_cell The cell the clock fills, or -1.
  * @param date_cell The cell the date fills, or -1.
  */
 static void place_zones(int clock_cell, int date_cell)
 {
+    // the coordinates sit against the rail's edge nearest the panels, so they turn with it. the pill
+    // words sit in the middle of their pills and need no turning
+    GTextAlignment rail_align = lcars_rail_right() ? GTextAlignmentLeft : GTextAlignmentRight;
+    int zones_on_rail[] = {ZONE_LAT, ZONE_LON};
+
+    for (size_t index = 0; index < ARRAY_LENGTH(zones_on_rail); index++)
+    {
+        s_zones[zones_on_rail[index]].align = rail_align;
+    }
+
     if (!is_tactical())
     {
-        s_zones[ZONE_TIME].rect = SLOT_TIME;
-        s_zones[ZONE_MERIDIEM].rect = SLOT_MERIDIEM;
-        s_zones[ZONE_DATE].rect = SLOT_BANNER;
-        s_zones[ZONE_DATE].rect_fallback = SLOT_BANNER_SM;
-        s_zones[ZONE_DATE].rect_fallback2 = SLOT_BANNER_XS;
-        s_zones[ZONE_DATE].rect_fallback3 = SLOT_BANNER_XXS;
-        s_zones[ZONE_LAT].rect = SLOT_LAT;
-        s_zones[ZONE_LON].rect = SLOT_LON;
+        const GRect dates[4] = {inside(SLOT_BANNER), inside(SLOT_BANNER_SM), inside(SLOT_BANNER_XS), inside(SLOT_BANNER_XXS)};
+
+        set_clock(inside(SLOT_TIME), FONT_ANTONIO_62, inside(SLOT_MERIDIEM));
+        set_date(s_date_fonts, dates);
+        s_zones[ZONE_LAT].rect = on_rail(SLOT_LAT);
+        s_zones[ZONE_LON].rect = on_rail(SLOT_LON);
         return;
     }
 
     if (clock_cell >= 0)
     {
-        int y = area_grid(clock_cell / OPS_CELLS_MAX)->row_y[0];
-        s_zones[ZONE_TIME].rect = TACTICAL_TIME(y);
-        s_zones[ZONE_MERIDIEM].rect = TACTICAL_MERIDIEM(y);
+        const OpsGrid *grid = area_grid(clock_cell / OPS_CELLS_MAX);
+        int y = grid->row_y[(clock_cell % OPS_CELLS_MAX) % grid->rows];
+
+        if (pick(clock_cell) == OPS_CLOCK_COMPACT)
+        {
+            set_clock(inside(TACTICAL_TIME_COMPACT(y)), FONT_ANTONIO_32, inside(TACTICAL_MERIDIEM_COMPACT(y)));
+        }
+        else
+        {
+            set_clock(inside(TACTICAL_TIME(y)), FONT_ANTONIO_62, inside(TACTICAL_MERIDIEM(y)));
+        }
     }
 
     if (date_cell >= 0)
     {
-        int y = area_grid(date_cell / OPS_CELLS_MAX)->row_y[0];
-        s_zones[ZONE_DATE].rect = TACTICAL_DATE(y);
-        s_zones[ZONE_DATE].rect_fallback = TACTICAL_DATE_SM(y);
-        s_zones[ZONE_DATE].rect_fallback2 = TACTICAL_DATE_XS(y);
-        s_zones[ZONE_DATE].rect_fallback3 = TACTICAL_DATE_XXS(y);
+        const OpsGrid *grid = area_grid(date_cell / OPS_CELLS_MAX);
+        int y = grid->row_y[(date_cell % OPS_CELLS_MAX) % grid->rows];
+
+        if (pick(date_cell) == OPS_STARDATE_COMPACT)
+        {
+            // the same three steps down a reading takes. the fourth's place is zero-sized, which skips it
+            static const FontId compact_fonts[4] = {FONT_ANTONIO_16, FONT_ANTONIO_14, FONT_ANTONIO_12, FONT_ANTONIO_12};
+            const GRect dates[4] = {inside(TACTICAL_DATE_COMPACT(y, 0)), inside(TACTICAL_DATE_COMPACT(y, OPS_DY_FB)),
+                                    inside(TACTICAL_DATE_COMPACT(y, OPS_DY_FB2)), GRectZero};
+
+            set_date(compact_fonts, dates);
+        }
+        else
+        {
+            const GRect dates[4] = {inside(TACTICAL_DATE(y)), inside(TACTICAL_DATE_SM(y)), inside(TACTICAL_DATE_XS(y)),
+                                    inside(TACTICAL_DATE_XXS(y))};
+
+            set_date(s_date_fonts, dates);
+        }
     }
 
-    s_zones[ZONE_LAT].rect = TACTICAL_LAT;
-    s_zones[ZONE_LON].rect = TACTICAL_LON;
+    s_zones[ZONE_LAT].rect = on_rail(TACTICAL_LAT);
+    s_zones[ZONE_LON].rect = on_rail(TACTICAL_LON);
+    s_zones[ZONE_LINK].rect = on_rail(TACTICAL_LINK);
+    s_zones[ZONE_QUIET].rect = on_rail(TACTICAL_QUIET);
 }
 
 // the build below writes at most the overlays, the clock and its AM/PM, the date, twelve cells, the
@@ -625,8 +789,11 @@ uint8_t stardate_build(EngineSlot *out, uint8_t max, GRect bounds)
     uint8_t i = 0;
 
     // on Tactical the clock and the date are only drawn where a cell holds them
-    int clock_cell = is_tactical() ? cell_showing(OPS_CLOCK) : -1;
-    int date_cell = is_tactical() ? cell_showing(OPS_STARDATE) : -1;
+    // the grids go first, since the cells' zones and the clock's place are read off them
+    place_grids();
+
+    int clock_cell = is_tactical() ? cell_showing_once(ONCE_CLOCK) : -1;
+    int date_cell = is_tactical() ? cell_showing_once(ONCE_DATE) : -1;
     place_zones(clock_cell, date_cell);
 
     // overlays first so they sit under the text readouts
