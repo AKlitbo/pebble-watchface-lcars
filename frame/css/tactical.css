@@ -1,0 +1,111 @@
+@charset "utf-8";
+/*
+	Tactical's frames, linked after the theme sheet by each *-tactical page
+	the clock moves into the top frame, the four ops panels sit in a band between the two elbows, and
+	the date sits under the STARDATE bar in the bottom frame. two pills stand in the rail's place
+	beside the panels, one beside each panel row, and the watch writes the phone link and Quiet Time
+	on them
+
+	every height here is the watch's row times 4.8, so the rows the watch draws to in layout.h line up
+	the top frame ends at row 79, the band runs to row 150, and the bottom frame takes the rest
+*/
+
+/* the top frame holds the clock, so it runs from the top of the screen to row 79 */
+.watch.tactical .wrap-top {
+  height: calc(79 * 4.8px);
+}
+
+.watch.tactical .right-frame-top .time {
+  flex: 1;
+  padding: 0;
+  justify-content: center;
+  font-size: 298px;
+  color: #fff;
+}
+
+/* the band between the elbows, rows 79 to 150 */
+.watch.tactical .band {
+  display: flex;
+  height: calc(71 * 4.8px);
+}
+
+/* the pills, each centred on its panel row. the rows run 84 to 115 and 115 to 146 */
+.watch.tactical .mid-rail {
+  position: relative;
+  width: var(--lfw);
+  flex: none;
+}
+
+/* each pill stands 2px in from the screen's edge and keeps the rail's right edge */
+.watch.tactical .pill {
+  position: absolute;
+  left: calc(2 * 4.8px);
+  right: 0;
+  height: calc(23 * 4.8px);
+  border-radius: calc(11.5 * 4.8px);
+}
+
+/* a pill takes the colour class of the rail block it stands in for, or the rail's own colour without one */
+.watch.tactical .pill:not([class*='background-']) {
+  background-color: var(--left-frame-color);
+}
+
+.watch.tactical .pill-lat {
+  top: calc(9 * 4.8px);
+}
+
+.watch.tactical .pill-lon {
+  top: calc(40 * 4.8px);
+}
+
+/* the panels, for a browser preview only. their bars are unpainted in the bake and the watch draws them */
+.watch.tactical .band .readouts {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 24px;
+  row-gap: 0;
+  margin: 0;
+  padding: calc(5 * 4.8px) 28px 0 28px;
+  grid-auto-rows: calc(31 * 4.8px);
+}
+
+/* the bottom frame holds the date, with no gap above it so the rail stays one column */
+.watch.tactical #gap {
+  margin-top: 0;
+}
+
+.watch.tactical #gap main {
+  padding-top: calc(7 * 4.8px);
+}
+
+.watch.tactical #gap .stardate-bar {
+  margin: 0;
+}
+
+.watch.tactical #gap .date {
+  flex: none;
+  justify-content: center;
+  padding: 0;
+  margin-top: calc(4 * 4.8px);
+  font-size: 173px;
+  color: #fff;
+}
+
+/*
+	Voyager's frost line sits a bar and a half above the top strip, which on Tactical runs through the
+	foot of the clock. 2 rows above the strip it clears the digits with a row either side. only the
+	Voyager themes draw this line, so the rule does nothing on the others
+*/
+.watch.tactical .first-bar-panel .bar-4::before {
+  bottom: calc(var(--bar-height) + 2 * 4.8px);
+}
+
+/*
+	the Lower Decks sheets give the last rail block a floor of 15vh, which on the bottom frame's shorter
+	rail stops it sharing the height evenly. without the floor every theme splits its rail the same way,
+	so the coordinates sit in the same two blocks on all of them
+*/
+.watch.tactical .left-frame .panel-6 {
+  min-height: 0;
+}
