@@ -1,0 +1,111 @@
+@charset "utf-8";
+/*
+	Engineering's frame, linked after the theme sheet by each *-engineering page
+	one rail down the left that is the power core. its head sweeps right into the strip across the top
+	and its tail into the strip along the foot, so the clock and the panels sit inside the two curves.
+	the rail between them is cut into cells, which the watch paints lit or dim with the reading
+
+	the two sweeps are Stardate's own elbows turned about: the lower one, with its strip on top, opens
+	the screen, and the upper one, with its strip along the foot, closes it. so each theme's strips,
+	notches, and accent lines come with them. both take the rail's colour, so they read as one rail
+
+	every size here is the watch's pixel times 4.8. the rail is 30 wide, narrower than Stardate's, which
+	gives the clock and the panels the room. the top elbow runs rows 0 to 114 and the bottom one the
+	rest, and the cells run rows 61 to 163. the strip across the top is 14 rows, thicker than the foot's,
+	since the watch writes the date on it
+*/
+
+/* the segment touching each elbow takes the rail's colour, as it does on Stardate's own frames */
+.watch.engineering {
+  --left-frame-color: var(--left-frame-top-color);
+  --corner-color-bottom: var(--left-frame-top-color);
+  --bar-6-color: var(--left-frame-top-color);
+  --lfw: calc(30 * 4.8px);
+  position: relative;
+}
+
+/* the top elbow, the strip across the top and the rail's head sweeping into it */
+.watch.engineering #gap {
+  flex: none;
+  height: calc(114 * 4.8px);
+  margin-top: 0;
+}
+
+/* the top strip's first piece runs to x=160, past the longest date the watch writes on it, so the
+   theme's accents start after the date rather than under it */
+.watch.engineering #gap {
+  --bar-height: calc(14 * 4.8px);
+}
+
+.watch.engineering #gap .bar-panel .bar-6 {
+  width: calc(130 * 4.8px);
+}
+
+/* the bottom elbow, the rail's tail sweeping into the strip along the foot */
+.watch.engineering .wrap-top {
+  flex: 1;
+  height: auto;
+}
+
+/* the core: the rail between the sweeps, cut into thirteen cells six rows tall with two rows between.
+   the seams are black lines across the rail, so the cells are the rail's own colour */
+.watch.engineering .core {
+  position: absolute;
+  left: 0;
+  top: calc(59 * 4.8px);
+  width: var(--lfw);
+  display: flex;
+  flex-direction: column;
+  gap: calc(6 * 4.8px);
+}
+
+.watch.engineering .core .seam-line {
+  height: calc(2 * 4.8px);
+  background-color: #000;
+}
+
+/* the rail's tail under the core holds two blocks the watch labels LINK and QUIET, rows 165 to 180
+   and 183 to 198. the core's last seam tops the first, and these seams close each one. LINK wears
+   the accent of Stardate's upper coordinate block. QUIET wears the lower block's second accent on a
+   theme that has one, and LINK's accent on the rest, whose lower block is the rail's own colour */
+.watch.engineering .tail-block {
+  position: absolute;
+  left: 0;
+  width: var(--lfw);
+  height: calc(16 * 4.8px);
+}
+
+.watch.engineering .tail-block-link {
+  top: calc(165 * 4.8px);
+}
+
+.watch.engineering .tail-block-quiet {
+  top: calc(183 * 4.8px);
+}
+
+.watch.engineering .tail-block-panel {
+  background-color: var(--panel-6-color);
+}
+
+.watch.engineering .tail-seam {
+  position: absolute;
+  left: 0;
+  width: var(--lfw);
+  height: calc(2 * 4.8px);
+  background-color: #000;
+}
+
+.watch.engineering .tail-seam-link {
+  top: calc(181 * 4.8px);
+}
+
+.watch.engineering .tail-seam-quiet {
+  top: calc(199 * 4.8px);
+}
+
+/* Voyager floats a short line just above the foot's strip, rows 210 to 213, where Engineering's minutes
+   and its last panel's reading both reach down to. Engineering leaves it off and keeps the cut-out at the
+   start of the bar */
+.watch.engineering .first-bar-panel .bar-4::before {
+  display: none;
+}
