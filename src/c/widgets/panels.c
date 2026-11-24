@@ -97,14 +97,14 @@
 static GRect body_for(const OpsGrid *grid, int slot, uint8_t id)
 {
     OpsShape shape = ops_shape(id);
-    int row = slot % grid->rows;
+    int row = ops_cell_row(grid, slot);
     int last = row + (shape == OPS_SHAPE_FULL || shape == OPS_SHAPE_TALL ? 2 : 1);
     int top = grid->row_y[row] + PANEL_BAR_GAP;
     int bottom = last < grid->rows ? grid->row_y[last] : grid->bottom;
 
     if (shape == OPS_SHAPE_TALL)
     {
-        return GRect(grid->col_x[slot / grid->rows], top, OPS_BAR(0, 0).size.w, bottom - top);
+        return GRect(grid->col_x[ops_cell_col(grid, slot)], top, OPS_BAR(0, 0).size.w, bottom - top);
     }
 
     return GRect(grid->col_x[0], top, PANEL_W, bottom - top);
@@ -284,7 +284,7 @@ static int daylight_lit(uint8_t theme, int segments, GColor *lit_color)
     int pct = day >= 0 ? day : night;
 
     *lit_color = day >= 0 ? bar_body_for_theme(theme) : bar_cap_for_theme(theme);
-    return pct < 0 ? 0 : (pct * segments + 50) / 100;
+    return pct < 0 ? 0 : widgets_lit_cells(pct, segments);
 }
 
 /** @brief Sunrise on the left, sunset on the right, and the daylight bar between them. */
@@ -683,8 +683,8 @@ static void draw_goal_for(GContext *ctx, GRect body, uint8_t theme, uint8_t id)
  */
 static void draw_weekdays(GContext *ctx, const OpsGrid *grid, int slot, uint8_t theme)
 {
-    int col = slot / grid->rows;
-    GRect box = OPS_VALUE_WIDE(grid->col_x[col], grid->row_y[slot % grid->rows], grid->col_right[col], 0);
+    int col = ops_cell_col(grid, slot);
+    GRect box = OPS_VALUE_WIDE(grid->col_x[col], grid->row_y[ops_cell_row(grid, slot)], grid->col_right[col], 0);
     int start = ops_week_start();
     int today = progress_week_day(time_store_tm()->tm_wday, start);
     GColor lit = segment_lit(theme);

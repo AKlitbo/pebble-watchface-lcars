@@ -6,13 +6,13 @@
  * on the same page, each found by its own class. Each value is the catalogue id written as text,
  * which is what the watch's enum settings already expect off the wire.
  *
- * Tactical keeps its twelve picks in one hidden store as a list of ids with commas between, such
- * as "84,20,20,20,23,20,0,1,85,20,20,20", in cell order. The watch reads that list one cell at a
+ * Tactical keeps its twelve picks, and Engineering its six, in one hidden store each as a list of
+ * ids with commas between, such as "84,20,20,20,23,20,0,1,85,20,20,20", in cell order. The watch reads that list one cell at a
  * time from the front, and the parser here makes the same calls so the builder never shows a
  * different face from the watch.
  */
 
-import { TACTICAL_GRID, TACTICAL_STORE_CLASS, ID_COUNT, ID_EMPTY, ONCE_GROUPS, SLOT_COUNT, SLOT_STORE_CLASS, STARDATE_GRID, UNIQUE_IDS, cellCount, onceGroup, owners } from './geometry';
+import { LIST_STORES, ID_COUNT, ID_EMPTY, ONCE_GROUPS, SLOT_COUNT, SLOT_STORE_CLASS, STARDATE_GRID, cellCount, gridFor, onceGroup, owners } from './geometry';
 import type { Grid } from './geometry';
 
 /** Read a slot id out of a hidden input's text, falling back to empty. */
@@ -105,22 +105,23 @@ export function writeStores(root: HTMLElement, slots: number[]): void {
 }
 
 /**
- * Tactical's picks out of the text the watch reads.
+ * A layout's picks out of the text the watch reads, a list of ids with commas between.
  *
  * The picks are read in order, the way the watch reads them. A list that runs out, or holds anything
  * but numbers and commas, leaves the rest of the cells empty rather than guessing at them. A list
- * longer than the twelve cells gives its first twelve picks, and the rest are never read.
+ * longer than the grid gives its first picks, and the rest are never read.
  *
  * @param text The saved list, such as "84,20,20,20,23,20,0,1,85,20,20,20".
- * @return The twelve picks, corrected.
+ * @param grid The layout's grid.
+ * @return One pick a cell, corrected.
  */
-export function parseTactical(text: string | null | undefined): number[] {
+export function parseList(text: string | null | undefined, grid: Grid): number[] {
   const source = text || '';
   const picks: number[] = [];
   let cursor = 0;
   let readable = true;
 
-  for (let cell = 0; cell < cellCount(TACTICAL_GRID); cell++) {
+  for (let cell = 0; cell < cellCount(grid); cell++) {
     const digits = readable ? /^[0-9]+/.exec(source.slice(cursor)) : null;
 
     if (!digits) {
@@ -142,39 +143,41 @@ export function parseTactical(text: string | null | undefined): number[] {
     cursor++;
   }
 
-  return sanitize(picks, TACTICAL_GRID);
+  return sanitize(picks, grid);
 }
 
 /**
- * Tactical's picks as the text the watch reads, every cell written out.
+ * A list layout's picks as the text the watch reads, every cell written out.
  *
- * @param picks The twelve picks.
+ * @param picks One pick a cell.
  * @return The list, such as "84,20,20,20,23,20,0,1,85,20,20,20".
  */
-export function formatTactical(picks: number[]): string {
+export function formatList(picks: number[]): string {
   return picks.map(formatId).join(',');
 }
 
 /**
- * Tactical's current picks, read from their store. A page without the store reads as empty.
+ * A list layout's current picks, read from its store. A page without the store reads as empty.
  *
  * @param root The component element.
- * @return The twelve picks, corrected.
+ * @param layout The layout, one of LIST_LAYOUTS.
+ * @return Its picks, corrected.
  */
-export function readTactical(root: HTMLElement): number[] {
-  const store = storeByClass(root, TACTICAL_STORE_CLASS);
+export function readList(root: HTMLElement, layout: number): number[] {
+  const store = storeByClass(root, LIST_STORES[layout]);
 
-  return parseTactical(store ? store.value : '');
+  return parseList(store ? store.value : '', gridFor(layout));
 }
 
 /**
- * Push Tactical's picks out to their store.
+ * Push a list layout's picks out to its store.
  *
  * @param root The component element.
- * @param picks The twelve picks.
+ * @param layout The layout, one of LIST_LAYOUTS.
+ * @param picks Its picks.
  */
-export function writeTactical(root: HTMLElement, picks: number[]): void {
-  writeStore(storeByClass(root, TACTICAL_STORE_CLASS), formatTactical(picks));
+export function writeList(root: HTMLElement, layout: number, picks: number[]): void {
+  writeStore(storeByClass(root, LIST_STORES[layout]), formatList(picks));
 }
 
 /**
@@ -232,12 +235,6 @@ export function sanitize(slots: number[], grid: Grid): number[] {
 
   while (out.length < count) {
     out.push(ID_EMPTY);
-  }
-
-  for (let slot = 0; slot < count; slot++) {
-    if (!grid.placesClock && UNIQUE_IDS.indexOf(out[slot]) >= 0) {
-      out[slot] = ID_EMPTY;
-    }
   }
 
   // a copy only counts once the shape rules keep it, so a first copy that does not fit leaves the

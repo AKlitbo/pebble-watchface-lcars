@@ -133,7 +133,7 @@ typedef enum
     OPS_COUNT
 } OpsId;
 
-#define OPS_CELLS_MAX 4 ///< The cells one ops grid holds, two columns of two
+#define OPS_CELLS_MAX 6 ///< The most cells one ops grid holds, as Engineering's single column of six
 
 /**
  * @brief The ops grid: how many columns and rows it holds, and where each one sits.
@@ -148,7 +148,7 @@ typedef struct
     uint8_t rows;          ///< Rows down each column
     int16_t col_x[2];      ///< Each column's bar, from the left of the screen
     int16_t col_right[2];  ///< How far a reading in each column may run
-    int16_t row_y[2];      ///< Each row's bar, from the top of the screen
+    int16_t row_y[6];      ///< Each row's bar, from the top of the screen, up to six for a single column
     int16_t bottom;        ///< Where the last row ends, so it is as tall as the others
 } OpsGrid;
 
@@ -161,6 +161,30 @@ typedef struct
 static inline int ops_cell_count(const OpsGrid *grid)
 {
     return grid->cols * grid->rows;
+}
+
+/**
+ * @brief The column a cell of a grid sits in. A grid's cells run down each column in turn.
+ *
+ * @param grid The grid.
+ * @param slot The cell, 0 to the grid's cell count.
+ * @return Its column, 0 for the left.
+ */
+static inline int ops_cell_col(const OpsGrid *grid, int slot)
+{
+    return slot / grid->rows;
+}
+
+/**
+ * @brief The row a cell of a grid sits in.
+ *
+ * @param grid The grid.
+ * @param slot The cell, 0 to the grid's cell count.
+ * @return Its row, 0 for the top.
+ */
+static inline int ops_cell_row(const OpsGrid *grid, int slot)
+{
+    return slot % grid->rows;
 }
 
 /**

@@ -13,7 +13,7 @@ import { describe, test, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import {
   canPlace, cellsFor, owners, shapeOf, slotAt, STARDATE_GRID, ID_COUNT,
-  LAYOUT_STARDATE, LAYOUT_TACTICAL, layoutOfPick, railRightOfPick,
+  LAYOUT_STARDATE, LAYOUT_ENGINEERING, LAYOUT_TACTICAL, layoutOfPick, railRightOfPick,
   SLOT_LT, SLOT_LB, SLOT_RT, SLOT_RB, SLOT_COUNT,
   SLOT_KEYS, SLOT_STORE_CLASS,
   ID_HEART, ID_STEPS, ID_EMPTY, ID_SENSORS,
@@ -261,7 +261,8 @@ describe('the Layout pick', () => {
     [1, LAYOUT_STARDATE, true],
     [2, LAYOUT_TACTICAL, false],
     [3, LAYOUT_TACTICAL, true],
-    [4, LAYOUT_STARDATE, false],
+    [4, LAYOUT_ENGINEERING, false],
+    [6, LAYOUT_STARDATE, false],
   ])('reads pick %i as its layout and rail side', (pick, layout, railRight) => {
     const result = { layout: layoutOfPick(pick), railRight: railRightOfPick(pick) };
 

@@ -28,6 +28,7 @@ enum
     FONT_ANTONIO_14,  // ops value fallback for the longer readings
     FONT_ANTONIO_12,  // lat / lon, and the ops fallback for the longest readings
     FONT_ANTONIO_10,  // AM/PM superscript
+    FONT_ANTONIO_100, // Engineering's stacked clock, digits only
     FONT_COUNT
 };
 

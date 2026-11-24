@@ -134,7 +134,7 @@ static void lcars_battery_gauge(GContext *ctx, GRect area, int level, GColor acc
         seg_w = 1;
     }
 
-    int lit = (level * segments + 50) / 100;
+    int lit = widgets_lit_cells(level, segments);
     if (lit == 0 && level > 0)
     {
         lit = 1;
@@ -219,7 +219,7 @@ static GPoint slot_origin(const OpsChrome *chrome, int slot)
 {
     const OpsGrid *grid = chrome->grid;
 
-    return GPoint(grid->col_x[slot / grid->rows], grid->row_y[slot % grid->rows]);
+    return GPoint(grid->col_x[ops_cell_col(grid, slot)], grid->row_y[ops_cell_row(grid, slot)]);
 }
 
 /** @brief How wide a bar runs from the left column to the end of the right one, for a wide or full panel. */
@@ -325,6 +325,40 @@ void widgets_draw_stardate(GContext *ctx, GRect bar, bool label_right)
 
     lcars_bar(ctx, bar, bar_cap_for_theme(theme), bar_body_for_theme(theme));
     lcars_label(ctx, between_caps(bar), "STARDATE", s_font_label, label_color_for_theme(theme), 3, label_right);
+}
+
+void widgets_draw_word(GContext *ctx, GRect area, const char *text, GFont font, bool right)
+{
+    lcars_label(ctx, area, text, font, label_color_for_theme(stardate_active_theme()), 3, right);
+}
+
+void widgets_draw_rail_word(GContext *ctx, GRect box, const char *text, GFont font, int drop, int radius,
+                            bool lit)
+{
+    if (!lit)
+    {
+        graphics_context_set_fill_color(ctx, GColorBlack);
+        graphics_fill_rect(ctx, box, 0, GCornerNone);
+        graphics_context_set_stroke_color(ctx, GColorDarkGray);
+        graphics_draw_round_rect(ctx, box, radius);
+    }
+
+    graphics_context_set_text_color(ctx, lit ? GColorBlack : GColorDarkGray);
+    graphics_draw_text(ctx, text, font, GRect(box.origin.x, box.origin.y + drop, box.size.w, box.size.h),
+                       GTextOverflowModeFill, GTextAlignmentCenter, NULL);
+}
+
+void widgets_draw_core(GContext *ctx, GRect first, int pitch, int cells, int lit)
+{
+    for (int cell = 0; cell < cells - lit; cell++)
+    {
+        GRect box = GRect(first.origin.x, first.origin.y + cell * pitch, first.size.w, first.size.h);
+
+        graphics_context_set_fill_color(ctx, GColorBlack);
+        graphics_fill_rect(ctx, box, 0, GCornerNone);
+        graphics_context_set_stroke_color(ctx, GColorDarkGray);
+        graphics_draw_rect(ctx, box);
+    }
 }
 
 void widgets_draw_battery(GContext *ctx, int level, GRect box, bool flipped)

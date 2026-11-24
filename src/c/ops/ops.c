@@ -227,8 +227,8 @@ static int cells_for(const OpsGrid *grid, uint8_t id, int slot, int cells[OPS_CE
     OpsShape shape = ops_shape(id);
     int cols = (shape == OPS_SHAPE_WIDE || shape == OPS_SHAPE_FULL) ? 2 : 1;
     int rows = (shape == OPS_SHAPE_TALL || shape == OPS_SHAPE_FULL) ? 2 : 1;
-    int col0 = slot / grid->rows;
-    int row0 = slot % grid->rows;
+    int col0 = ops_cell_col(grid, slot);
+    int row0 = ops_cell_row(grid, slot);
 
     if (col0 + cols > grid->cols || row0 + rows > grid->rows)
     {

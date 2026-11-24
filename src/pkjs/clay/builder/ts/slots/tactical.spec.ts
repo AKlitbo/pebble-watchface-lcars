@@ -11,11 +11,11 @@
  */
 
 import { describe, test, expect, beforeEach } from 'vitest';
-import { formatTactical, moveUnique, parseTactical, readTactical, sanitize, writeTactical } from './codec';
+import { formatList, moveUnique, parseList, readList, sanitize, writeList } from './codec';
 import { tryPlace } from './drag';
 import { TACTICAL_PRESETS } from './presets';
 import {
-  TACTICAL_GRID, TACTICAL_STORE_CLASS, STARDATE_GRID,
+  ENGINEERING_GRID, LAYOUT_TACTICAL, TACTICAL_GRID, fitsGrid, TACTICAL_STORE_CLASS, STARDATE_GRID,
   ID_CLOCK, ID_CLOCK_COMPACT, ID_STARDATE_COMPACT, ID_EMPTY, ID_FULL_HEART, ID_HEART, ID_SENSORS, ID_STARDATE, ID_STEPS, ID_TALL_HEART, ID_WIDE_DAYLIGHT,
   cellsFor, slotAt,
 } from './geometry';
@@ -62,28 +62,28 @@ describe('Tactical geometry', () => {
 describe('the Tactical list', () => {
   /** The watch reads the saved text a cell at a time, so the builder has to write exactly what it parses. */
   test('reads back what it writes', () => {
-    const result = parseTactical(formatTactical(SHIPPED));
+    const result = parseList(formatList(SHIPPED), TACTICAL_GRID);
 
     expect(result).toEqual(SHIPPED);
   });
 
   /** The watch stops at the first thing that is not a number and leaves the rest empty, so the builder has to stop there too. */
   test('empties every cell after a broken entry', () => {
-    const result = parseTactical('84,20,20,20,x,20,0,1,85');
+    const result = parseList('84,20,20,20,x,20,0,1,85', TACTICAL_GRID);
 
     expect(result).toEqual([ID_CLOCK, E, E, E, E, E, E, E, E, E, E, E]);
   });
 
   /** The watch reads a number past its catalogue as empty, so the builder must not keep it where it blocks a drop. */
   test('empties a pick the catalogue has no readout for', () => {
-    const result = parseTactical('84,20,20,20,99,20,0,1,85,20,20,20');
+    const result = parseList('84,20,20,20,99,20,0,1,85,20,20,20', TACTICAL_GRID);
 
     expect(result).toEqual([ID_CLOCK, E, E, E, E, E, ID_HEART, ID_STEPS, ID_STARDATE, E, E, E]);
   });
 
   /** A fresh page has no saved list, and the builder must show empty cells rather than reading off the end. */
   test('reads an empty list as twelve empty cells', () => {
-    const result = parseTactical('');
+    const result = parseList('', TACTICAL_GRID);
 
     expect(result).toEqual(new Array(12).fill(E));
   });
@@ -98,8 +98,8 @@ describe('the Tactical list', () => {
     store.addEventListener('change', () => { changes++; });
     document.body.append(store, root);
 
-    writeTactical(root, SHIPPED);
-    const result = { value: store.value, changes: changes, read: readTactical(root) };
+    writeList(root, LAYOUT_TACTICAL, SHIPPED);
+    const result = { value: store.value, changes: changes, read: readList(root, LAYOUT_TACTICAL) };
 
     expect(result).toEqual({ value: '84,20,20,20,23,20,0,1,85,20,20,20', changes: 1, read: SHIPPED });
   });
@@ -178,6 +178,36 @@ describe('trading between areas', () => {
     const result = tryPlace(slots, ID_WIDE_DAYLIGHT, 5, 0, TACTICAL_GRID);
 
     expect(result).toBeNull();
+  });
+});
+
+describe('Engineering', () => {
+  /** The watch reads Engineering's six picks top to bottom from its own list, so the builder has to read the same six. */
+  test('reads its six picks from the list', () => {
+    const result = parseList('23,20,0,1,9,10', ENGINEERING_GRID);
+
+    expect(result).toEqual([ID_SENSORS, E, ID_HEART, ID_STEPS, 9, 10]);
+  });
+
+  /** A single column has no room for a wide panel, so the watch shows the cell empty and the builder must refuse the drop. */
+  test('refuses a wide panel in its single column', () => {
+    const result = cellsFor(ID_WIDE_DAYLIGHT, 0, ENGINEERING_GRID);
+
+    expect(result).toBeNull();
+  });
+
+  /** The palette has to dim a wide panel on the single column, or it looks placeable and every drop is refused. */
+  test('leaves a wide panel off its single column', () => {
+    const result = fitsGrid(ID_WIDE_DAYLIGHT, ENGINEERING_GRID);
+
+    expect(result).toBe(false);
+  });
+
+  /** A tall panel fills two rows of the column, the way it fills two rows of a column elsewhere. */
+  test('fits a tall panel over two rows', () => {
+    const result = cellsFor(ID_TALL_HEART, 4, ENGINEERING_GRID);
+
+    expect(result).toEqual([4, 5]);
   });
 });
 

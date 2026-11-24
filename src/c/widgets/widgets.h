@@ -81,6 +81,64 @@ void widgets_draw_labels(GContext *ctx, const OpsChrome *chrome);
 void widgets_draw_stardate(GContext *ctx, GRect bar, bool label_right);
 
 /**
+ * @brief How many of a bar's cells a percentage lights, to the nearest cell.
+ *
+ * @param pct The percentage, held to 0 to 100.
+ * @param cells How many cells the bar has.
+ * @return How many are lit, 0 to cells.
+ */
+static inline int widgets_lit_cells(int pct, int cells)
+{
+    int held = pct < 0 ? 0 : (pct > 100 ? 100 : pct);
+
+    return (held * cells + 50) / 100;
+}
+
+/**
+ * @brief Draw a word in its black holder box on a strip, in the theme's word colour.
+ *
+ * @param ctx The graphics context.
+ * @param area How far the holder box may run. The box fills its height.
+ * @param text The word.
+ * @param font The word's font.
+ * @param right Whether the box starts from the area's right end rather than its left.
+ */
+void widgets_draw_word(GContext *ctx, GRect area, const char *text, GFont font, bool right);
+
+/**
+ * @brief Draw a word on a block or pill of the rail, lit while its state is on and dark while it is off.
+ *
+ * A lit one keeps the colour the frame bakes for it with the word in black, the same as the
+ * coordinates. A dark one is painted black with a grey edge and the word in grey, the same as the
+ * core's dim cells. The black covers the whole box, so a pill's box must sit on black outside its
+ * curves, as the frames bake it.
+ *
+ * @param ctx The graphics context.
+ * @param box The block or pill.
+ * @param text The word, set in the middle of the box.
+ * @param font The word's font.
+ * @param drop How many rows to lower the word inside the box, so its capitals sit in the middle.
+ * @param radius The corners' radius, 0 for a block and half the height for a pill.
+ * @param lit Whether the state the box shows is on.
+ */
+void widgets_draw_rail_word(GContext *ctx, GRect box, const char *text, GFont font, int drop, int radius,
+                            bool lit);
+
+/**
+ * @brief Draw a power core's dim cells over a rail cut into cells, so the lit ones show the rail.
+ *
+ * The rail's own colour is the lit cell, so only the cells above the level are painted, dark with a
+ * grey edge so each one still reads as a cell.
+ *
+ * @param ctx The graphics context.
+ * @param first The top cell.
+ * @param pitch How far apart the cells are.
+ * @param cells How many cells the core has.
+ * @param lit How many of them are lit, from the bottom.
+ */
+void widgets_draw_core(GContext *ctx, GRect first, int pitch, int cells, int lit);
+
+/**
  * @brief Draw the battery gauge on the top corner block.
  *
  * @param ctx The graphics context.

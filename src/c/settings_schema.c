@@ -65,9 +65,12 @@ typedef struct LcarsSettings
     uint8_t layout;              // the Layout pick: a LcarsLayout times two, plus one for its mirrored frame
     char    slots_tactical[48];  // Tactical's twelve picks as "84,20,20,20,...", in cell order
     uint8_t bar_labels;          // a LcarsSide, which end of each bar its word sits at
+    char    slots_engineering[24];    // Engineering's six picks as "23,20,0,1,9,10", top to bottom
 } LcarsSettings;
 
-_Static_assert(sizeof(LcarsSettings) == 117, "lcars blob size is frozen at 117 bytes (v8)");
+_Static_assert(sizeof(LcarsSettings) == 141, "lcars blob size is frozen at 141 bytes (v8)");
+_Static_assert(sizeof(((LcarsSettings *)0)->slots_engineering) >= 6 * 3 + 5 + 1,
+               "slots_engineering has to hold six three-digit picks");
 
 // twelve picks of up to three digits with commas between, and the end of the string, so the list
 // keeps every cell once the catalogue passes a hundred readouts
@@ -105,6 +108,10 @@ static LcarsSettings s_settings;
 // Tactical's picks on a fresh install: the clock across the top, the Sensors Block beside the heart
 // rate and steps in the middle, as the Stardate layout starts, and the date across the bottom
 #define TACTICAL_SLOTS_DEFAULT "84,20,20,20,23,20,0,1,85,20,20,20"
+
+// Engineering's picks on a fresh install: the Sensors Block over two rows, then the heart rate, the steps,
+// and the dawn and dusk times
+#define ENGINEERING_SLOTS_DEFAULT "23,20,0,1,9,10"
 
 // lcars subscribes to every known setting in its frozen struct order. every KNOWN_ entry takes
 // its default from the settings page, so the date opens on the numeric stardate-style "%Y.%m%d"
@@ -165,11 +172,14 @@ static const SettingField s_fields[] = {
       .offset = offsetof(LcarsSettings, slots_tactical),
       .size = sizeof(s_settings.slots_tactical),
       .default_str = TACTICAL_SLOTS_DEFAULT },
-
     // the words start on the left, which is the face as it has always been drawn
     { .id = SETTING_BAR_LABELS, .message_key = &MESSAGE_KEY_APPEARANCE_BAR_LABELS,
       .type = SETTING_ENUM_U8, .offset = offsetof(LcarsSettings, bar_labels),
       .enum_count = LCARS_SIDE_COUNT, .default_num = LCARS_SIDE_LEFT },
+    { .id = SETTING_COUNT, .message_key = &MESSAGE_KEY_APPEARANCE_SLOTS_ENGINEERING, .type = SETTING_CSTRING,
+      .offset = offsetof(LcarsSettings, slots_engineering),
+      .size = sizeof(s_settings.slots_engineering),
+      .default_str = ENGINEERING_SLOTS_DEFAULT },
 
     // the ZONE 1 readout's zone. the id is SETTING_COUNT because nothing reads this through the
     // library's typed accessors, only the two helpers at the bottom of this file
@@ -343,12 +353,20 @@ bool lcars_labels_right(void)
     return s_settings.bar_labels == LCARS_SIDE_RIGHT;
 }
 
-uint8_t lcars_slot_tactical(int cell)
+/**
+ * @brief One pick out of a saved list of picks with commas between, such as "23,20,0,1".
+ *
+ * The picks are read in order up to the one asked for. A list that runs out, or holds anything but
+ * numbers and commas, leaves the rest of the cells empty rather than reading past it.
+ *
+ * @param list The saved list.
+ * @param cell The pick to read, from 0.
+ * @return An OpsId, OPS_EMPTY for a cell the list leaves out or holds no number for.
+ */
+static uint8_t pick_from_list(const char *list, int cell)
 {
-    const char *cursor = s_settings.slots_tactical;
+    const char *cursor = list;
 
-    // the picks are read in order up to the one asked for. a list that runs out, or holds anything
-    // but numbers and commas, leaves the rest of the cells empty rather than reading past it
     for (int index = 0; index <= cell; index++)
     {
         if (*cursor < '0' || *cursor > '9')
@@ -372,6 +390,16 @@ uint8_t lcars_slot_tactical(int cell)
     }
 
     return OPS_EMPTY;
+}
+
+uint8_t lcars_slot_tactical(int cell)
+{
+    return pick_from_list(s_settings.slots_tactical, cell);
+}
+
+uint8_t lcars_slot_engineering(int cell)
+{
+    return pick_from_list(s_settings.slots_engineering, cell);
 }
 
 bool lcars_zone_1_is_set(void)

@@ -28,17 +28,18 @@ enum
     ZONE_DATE,
     ZONE_LAT,
     ZONE_LON,
-    ZONE_LINK,
-    ZONE_QUIET,
+    ZONE_MINUTES,
+    ZONE_POWER,
     ZONE_COUNT
 };
 
 // --- Text Slots ---
 #define SLOT_TIME GRect(53, 92, 142, 74)       // centred time box (Antonio 62)
-#define SLOT_BANNER GRect(53, 17, 142, 44)     // date below STARDATE bar (Antonio 36)
-#define SLOT_BANNER_SM GRect(53, 20, 142, 43)  // wide date fallback vertically centred (Antonio 32)
-#define SLOT_BANNER_XS GRect(53, 22, 142, 42)  // wider date fallback vertically centred (Antonio 28)
-#define SLOT_BANNER_XXS GRect(53, 24, 142, 40) // widest date fallback, fits the .beats formats (Antonio 24)
+// the date and its fallbacks under the STARDATE bar, the same places a Tactical date takes under its bar
+#define SLOT_BANNER TACTICAL_DATE(STARDATE_BAR_Y)         // Antonio 36
+#define SLOT_BANNER_SM TACTICAL_DATE_SM(STARDATE_BAR_Y)   // a wide date, Antonio 32
+#define SLOT_BANNER_XS TACTICAL_DATE_XS(STARDATE_BAR_Y)   // a wider date, Antonio 28
+#define SLOT_BANNER_XXS TACTICAL_DATE_XXS(STARDATE_BAR_Y) // the widest, fits the .beats formats, Antonio 24
 #define SLOT_MERIDIEM GRect(150, 95, 45, 14)   // AM/PM top-right of clock and right-aligned (Antonio 10)
 // --- Ops slot geometry ---
 // all four slots are the same shape so it gets described once here and stamped
@@ -70,8 +71,6 @@ enum
 // bars, and the screen's edge each leave 5px either side of the bars
 #define OPS_COL_L 52
 #define OPS_COL_R 126
-#define OPS_ROW_T 166
-#define OPS_ROW_B 197
 
 // how far right a reading may run. the right column goes to x=198 which is two
 // off the screen edge. the left has to stop 3px short of the right column's bar so
@@ -127,7 +126,8 @@ enum
 // the stardate bar spans the whole width so it gets its own rect. the four slot
 // bars come from OPS_BAR. the label rides a pixel high inside its holder box and
 // the spare row underneath is what squares that up
-#define BAR_STARDATE GRect(52, 2, 143, 11)
+#define STARDATE_BAR_Y 2
+#define BAR_STARDATE GRect(52, STARDATE_BAR_Y, 143, 11)
 
 // --- Tactical ---
 // three 2x2 grids: one in the top frame, one in the band between the two elbows, and one in the
@@ -162,11 +162,55 @@ enum
 #define TACTICAL_MERIDIEM_COMPACT(y)  GRect(150, (y) - 1, 45, 14)
 #define TACTICAL_DATE_COMPACT(y, dy)  GRect(55, (y) + 11 + (dy), 140, 18)
 
-// the pills run rows 88 to 110 and 119 to 141, from x=2 to the rail's edge, and carry the phone link
-// and Quiet Time as words in place of the glyphs the Stardate layout draws. each word sits in the
-// middle of its pill, so it reads the same with the rail on either side
-#define TACTICAL_LINK GRect(2, 92, 45, 22)
-#define TACTICAL_QUIET GRect(2, 123, 45, 22)
+// --- Engineering ---
+// one rail down the left that is the power core, sweeping into the strip across the top and the strip
+// along the foot. every place here matches frame/<theme>-engineering~emery.html, whose rail is 30 wide
+//
+// the clock stands hours over minutes between the rail and the panels in Antonio 100, with AM or PM
+// between them. Antonio's digits sit 13 rows into their box at 100, so the hours land on rows 19 to
+// 106 and the minutes on rows 125 to 212, the middle of the open rows 14 to 217. Antonio 12's capitals
+// sit 2 rows into theirs, which puts the AM or PM on rows 111 to 120, halfway between
+#define ENGINEERING_HOURS GRect(30, 6, 97, 110)
+#define ENGINEERING_MERIDIEM GRect(30, 109, 97, 16)
+#define ENGINEERING_MINUTES GRect(30, 112, 97, 110)
+
+// a .beats reading has three digits, too wide for Antonio 100 in the clock's width, so it stands
+// alone in Antonio 62 in the middle of the open rows with .BEATS under it
+#define ENGINEERING_BEATS GRect(30, 79, 97, 76)
+#define ENGINEERING_BEATS_WORD GRect(30, 144, 97, 16)
+
+// six panels down one column at the right, the bars 69 wide to x=198, 33 rows apart from row 20, a
+// little looser than a row on the other layouts. the column's first bar to its last reading runs 193
+// rows, which leaves it the middle of the open rows 14 to 217
+#define ENGINEERING_COL 129
+#define ENGINEERING_ROW_0 20
+#define ENGINEERING_ROW_PITCH 33
+
+// the date's word on the top strip, rows 0 to 13, from just past the rail's sweep. Antonio 12's
+// capitals sit 2 rows into their box, so they land on rows 2 to 11, the middle of the strip
+#define ENGINEERING_DATE GRect(40, 0, 158, 14)
+
+// the core: thirteen cells six rows tall, eight rows apart from row 61, across the rail. the battery
+// level sits in the rail just above them
+#define ENGINEERING_CELL GRect(0, 61, 30, 6)
+#define ENGINEERING_CELL_PITCH 8
+#define ENGINEERING_CELLS 13
+#define ENGINEERING_POWER GRect(0, 45, 28, 16)
+
+// the phone link and Quiet Time are two blocks in the rail's tail under the cells, cut out by seams
+// in the frame. each is 16 rows. Antonio 12's capitals are 10 rows and sit 2 rows into their box, so
+// lowering the word a row leaves 3 rows above them and 3 below
+#define ENGINEERING_LINK GRect(0, 165, 30, 16)
+#define ENGINEERING_QUIET GRect(0, 183, 30, 16)
+#define ENGINEERING_RAIL_WORD_DROP 1
+
+// the pills run rows 88 to 110 and 119 to 141, from x=2 to the rail's edge, and light for the phone
+// link and Quiet Time in place of the glyphs the Stardate layout draws. Antonio 12's capitals are 10
+// rows and sit 2 rows into their box, so lowering the word 4 rows sits them in the middle of the pill
+#define TACTICAL_LINK GRect(2, 88, 47, 23)
+#define TACTICAL_QUIET GRect(2, 119, 47, 23)
+#define TACTICAL_PILL_RADIUS 11
+#define TACTICAL_PILL_WORD_DROP 4
 
 /**
  * @brief Register fonts, build the baked frame + overlays, and set the background.

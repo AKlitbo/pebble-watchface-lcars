@@ -4,7 +4,9 @@
       "0": ".github/images/lcars-stardate/previews/stardate/classic.png",
       "1": ".github/images/lcars-stardate/previews/stardate-mirrored/classic.png",
       "2": ".github/images/lcars-stardate/previews/tactical/classic.png",
-      "3": ".github/images/lcars-stardate/previews/tactical-mirrored/classic.png"
+      "3": ".github/images/lcars-stardate/previews/tactical-mirrored/classic.png",
+      "4": ".github/images/lcars-stardate/previews/engineering/classic.png",
+      "5": ".github/images/lcars-stardate/previews/engineering-mirrored/classic.png"
     }
   },
   "mapsByKey": {
@@ -13,7 +15,9 @@
         "0": "stardate",
         "1": "stardate-mirrored",
         "2": "tactical",
-        "3": "tactical-mirrored"
+        "3": "tactical-mirrored",
+        "4": "engineering",
+        "5": "engineering-mirrored"
       },
       "previews": {
         "0": ".github/images/lcars-stardate/previews/{key}/classic.png",

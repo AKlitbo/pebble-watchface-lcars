@@ -10,9 +10,9 @@
  * so switching the picker redraws the grid without touching the other layout's picks.
  */
 
-import { ID_EMPTY, LAYOUT_TACTICAL, LAYOUT_STARDATE, UNIQUE_IDS, areaOf, cellCount, colOf, gridFor, layoutOfPick, owners, railRightOfPick, rowOf, shapeOf, spanOf } from './geometry';
+import { ID_EMPTY, LAYOUT_TACTICAL, LAYOUT_STARDATE, LIST_LAYOUTS, UNIQUE_IDS, areaOf, cellCount, colOf, fitsGrid, gridFor, layoutOfPick, owners, railRightOfPick, rowOf, shapeOf, spanOf } from './geometry';
 import type { Grid } from './geometry';
-import { formatId, moveUnique, readTactical, readSlots, sanitize, writeTactical, writeStores } from './codec';
+import { formatId, moveUnique, readList, readSlots, sanitize, writeList, writeStores } from './codec';
 import { presetFor } from './presets';
 import { PALETTE_GROUPS, PALETTE_SIZES, sizeKeyOf, warningName } from './panels';
 import { buildReadoutList, fillVisual, readoutById, thumbFor } from './visuals';
@@ -57,7 +57,9 @@ export function init(this: ClayContext): void {
   const picks: Record<number, number[]> = {};
 
   picks[LAYOUT_STARDATE] = readSlots(root, hidden.value);
-  picks[LAYOUT_TACTICAL] = readTactical(root);
+  LIST_LAYOUTS.forEach(function (list) {
+    picks[list] = readList(root, list);
+  });
 
   function grid(): Grid {
     return gridFor(layout);
@@ -92,6 +94,7 @@ export function init(this: ClayContext): void {
     slotsEl.innerHTML = '';
     slotEls.length = 0;
     slotsEl.style.gridTemplateRows = rows.join(' ');
+    slotsEl.style.gridTemplateColumns = 'repeat(' + grid().cols + ', minmax(0, var(--sb-slot-w)))';
     faceEl.classList.toggle('sb-tactical', layout === LAYOUT_TACTICAL);
 
     for (let slot = 0; slot < cellCount(grid()); slot++) {
@@ -138,8 +141,15 @@ export function init(this: ClayContext): void {
       }
     }
 
-    // the clock and the date dim on a layout that keeps them in their own places, since they cannot go there
-    palette.markPlaced(grid().placesClock ? placed : placed.concat(UNIQUE_IDS));
+    // the clock and the date dim on a layout that keeps them in their own places, and so does a panel
+    // too big for the layout's grid, since neither can go there
+    const unfit = READOUTS.map(function (readout) {
+      return readout.value;
+    }).filter(function (value) {
+      return !fitsGrid(value, grid());
+    });
+
+    palette.markPlaced((grid().placesClock ? placed : placed.concat(UNIQUE_IDS)).concat(unfit));
     warnings.update(placed.map(function (value) {
       const readout = readoutById(READOUTS, value);
 
@@ -150,8 +160,8 @@ export function init(this: ClayContext): void {
 
   /**
    * Hand the values to Clay: the Stardate layout's upper left through this component's own value
-   * and the rest through their stores, and Tactical's twelve through its one store. Both go out on
-   * every render whichever layout is on show, and only a value that moved fires a change, so opening
+   * and the rest through their stores, and each list layout's picks through its one store. All of
+   * them go out on every render whichever layout is on show, and only a value that moved fires a change, so opening
    * the page does not mark the settings dirty on its own.
    */
   function publish(): void {
@@ -163,7 +173,9 @@ export function init(this: ClayContext): void {
     }
 
     writeStores(root, picks[LAYOUT_STARDATE]);
-    writeTactical(root, picks[LAYOUT_TACTICAL]);
+    LIST_LAYOUTS.forEach(function (list) {
+      writeList(root, list, picks[list]);
+    });
   }
 
   /** Takes new picks for the layout on show. A clock or date dropped somewhere moves there. */
@@ -219,7 +231,7 @@ export function init(this: ClayContext): void {
 
   /** Puts a layout on show: its grid and its picks. */
   function showLayout(next: number): void {
-    layout = next === LAYOUT_TACTICAL ? LAYOUT_TACTICAL : LAYOUT_STARDATE;
+    layout = next;
     buildSlots();
     render();
   }
@@ -292,15 +304,22 @@ export function init(this: ClayContext): void {
   // the stores may be built after this component and then the reads above saw nothing. pick them up
   // once the page has finished. the mosaic builder keeps the same safety net
   setTimeout(function () {
-    const stardate = readSlots(root, hidden.value);
-    const tactical = readTactical(root);
-    const moved = function (late: number[], kept: number[]): boolean {
-      return late.some(function (id, slot) { return id !== kept[slot]; });
+    const late: Record<number, number[]> = {};
+    const moved = function (layoutId: number): boolean {
+      return late[layoutId].some(function (id, slot) { return id !== picks[layoutId][slot]; });
     };
 
-    if (moved(stardate, picks[LAYOUT_STARDATE]) || moved(tactical, picks[LAYOUT_TACTICAL])) {
-      picks[LAYOUT_STARDATE] = stardate;
-      picks[LAYOUT_TACTICAL] = tactical;
+    late[LAYOUT_STARDATE] = readSlots(root, hidden.value);
+    LIST_LAYOUTS.forEach(function (list) {
+      late[list] = readList(root, list);
+    });
+
+    const layouts = [LAYOUT_STARDATE].concat(LIST_LAYOUTS);
+
+    if (layouts.some(moved)) {
+      layouts.forEach(function (layoutId) {
+        picks[layoutId] = late[layoutId];
+      });
       render();
     }
   }, 0);

@@ -6,6 +6,9 @@
  */
 import buildConfig from '../../paf/ts/pkjs/config-builder';
 import type { ClayConfigItem } from '../../paf/ts/clay/types';
+import { allItems } from '../../paf/ts/clay/rows';
+import tacticalPresets from '../data/tactical-presets.json';
+import engineeringPresets from '../data/engineering-presets.json';
 import moduleThumbnails from './clay/module-thumbnails.g';
 import moduleMeta from './clay/module-meta';
 import themePreviews from './clay/theme-previews-layout-theme.g';
@@ -147,7 +150,7 @@ const config = buildConfig({
       'type': 'themePreview',
       'messageKey': 'APPEARANCE_LAYOUT',
       'label': 'Layout',
-      'description': 'Tactical has panels in all three frames, with the clock and date as panels you can move. Mirrored runs the rail down the right.',
+      'description': 'Tactical has panels in all three frames, with the clock and date as panels you can move. Engineering stacks the clock beside six panels. Mirrored runs the rail down the right.',
       'defaultValue': 0,
       // each mirrored pick saves as its layout plus one, which is how the watch tells the rail's side
       'options': [
@@ -155,6 +158,8 @@ const config = buildConfig({
         { 'label': 'Stardate Mirrored', 'value': 1 },
         { 'label': 'Tactical', 'value': 2 },
         { 'label': 'Tactical Mirrored', 'value': 3 },
+        { 'label': 'Engineering', 'value': 4 },
+        { 'label': 'Engineering Mirrored', 'value': 5 },
       ],
       'previews': layoutPreviews,
     },
@@ -234,12 +239,12 @@ const config = buildConfig({
         },
         {
           'type': 'text',
-          'defaultValue': 'The panels of the layout picked above, four on Stardate and up to twelve on Tactical. Each layout keeps its own. The sun and weather readouts need a weather source set up below.',
+          'defaultValue': 'The panels of the layout picked above, four on Stardate, up to twelve on Tactical, and six on Engineering. Each layout keeps its own. The sun and weather readouts need a weather source set up below.',
         },
         // the panels the builder does not own outright. a Clay component carries one message key,
         // so the Stardate layout's other three ride hidden stores it writes to by class, and the watch
-        // reads all four as plain enum settings. Tactical's twelve ride one more store as a list the
-        // watch reads a cell at a time. the stores sit above the builder, since Clay has not built a
+        // reads all four as plain enum settings. Tactical's twelve and Engineering's six each ride one
+        // more store as a list the watch reads a cell at a time. the stores sit above the builder, since Clay has not built a
         // row below it yet when the builder reads them
         {
           'type': 'hiddenStore',
@@ -261,9 +266,15 @@ const config = buildConfig({
         },
         {
           'type': 'hiddenStore',
+          'messageKey': 'APPEARANCE_SLOTS_ENGINEERING',
+          'storeClass': 'sb-eng',
+          'defaultValue': engineeringPresets.default.join(','),
+        },
+        {
+          'type': 'hiddenStore',
           'messageKey': 'APPEARANCE_SLOTS_TACTICAL',
           'storeClass': 'sb-tac',
-          'defaultValue': '84,20,20,20,23,20,0,1,85,20,20,20',
+          'defaultValue': tacticalPresets.default.join(','),
         },
         {
           'type': 'slotBuilder',
@@ -297,27 +308,23 @@ const config = buildConfig({
 });
 
 // the two glyph toggles only drive the Stardate layout's glyphs. Tactical reads the phone link and
-// Quiet Time in its pills whatever they say, so they hide while it is picked
+// Quiet Time in its pills and Engineering in its rail whatever they say, so they hide while either is picked
 const STARDATE_ONLY = ['CONNECTION_BLUETOOTH_ICON', 'APPEARANCE_QUIET_TIME_ICON'];
 
 /**
- * Hides the Stardate-only toggles while Tactical is picked. The framework builds those rows, so the
+ * Hides the Stardate-only toggles while Tactical or Engineering is picked. The framework builds those rows, so the
  * rule is added to them here once the page is built.
  *
  * @param items The page's rows, searched down through every section.
  */
-function hideOnTactical(items: ClayConfigItem[]): void {
-  items.forEach(function (item) {
+function hideOffStardate(items: ClayConfigItem[]): void {
+  allItems(items).forEach(function (item) {
     if (item.messageKey && STARDATE_ONLY.indexOf(item.messageKey) >= 0) {
       item.visibleWhen = { 'key': 'APPEARANCE_LAYOUT', 'in': [0, 1] };
-    }
-
-    if (item.items) {
-      hideOnTactical(item.items);
     }
   });
 }
 
-hideOnTactical(config);
+hideOffStardate(config);
 
 export default config;

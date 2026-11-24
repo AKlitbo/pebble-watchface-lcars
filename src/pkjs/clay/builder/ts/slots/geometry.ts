@@ -22,12 +22,16 @@ export interface Grid {
 }
 
 /**
- * The two layouts, as layoutOfPick returns them. APPEARANCE_LAYOUT saves a pick, 0 to 3, which is
+ * The three layouts, as layoutOfPick returns them. APPEARANCE_LAYOUT saves a pick, 0 to 5, which is
  * the layout times two plus one for its mirrored version, so read it through layoutOfPick rather
  * than comparing it with these.
  */
 export const LAYOUT_STARDATE = 0;
 export const LAYOUT_TACTICAL = 1;
+export const LAYOUT_ENGINEERING = 2;
+
+/** How many layouts the Layout picker offers, each with a mirrored pick. */
+export const LAYOUT_COUNT = 3;
 
 /** The Stardate layout's panels: two columns of two under the clock. */
 export const STARDATE_GRID: Grid = { cols: 2, rows: 2, areas: 1, placesClock: false };
@@ -39,32 +43,37 @@ export const TACTICAL_GRID: Grid = { cols: 2, rows: 2, areas: 3, placesClock: tr
  * The layout a Layout pick draws. Each layout saves as twice its number and its mirrored pick as one
  * more, and a mirrored pick's panels are the same as the layout's own.
  *
- * @param pick The saved Layout pick, 0 to 3.
- * @return LAYOUT_STARDATE or LAYOUT_TACTICAL.
+ * @param pick The saved Layout pick, 0 to 5.
+ * @return LAYOUT_STARDATE, LAYOUT_TACTICAL, or LAYOUT_ENGINEERING.
  */
 export function layoutOfPick(pick: number): number {
-  // a pick past the four the picker offers reads as Stardate, the same as the watch
-  return pick === 2 || pick === 3 ? LAYOUT_TACTICAL : LAYOUT_STARDATE;
+  // a pick past the ones the picker offers reads as Stardate, the same as the watch
+  return pick >= 0 && pick < LAYOUT_COUNT * 2 ? Math.floor(pick / 2) : LAYOUT_STARDATE;
 }
 
 /**
  * Whether a Layout pick runs the rail down the right.
  *
- * @param pick The saved Layout pick, 0 to 3.
+ * @param pick The saved Layout pick, 0 to 5.
  * @return True for a mirrored pick.
  */
 export function railRightOfPick(pick: number): boolean {
-  return pick === 1 || pick === 3;
+  return pick >= 0 && pick < LAYOUT_COUNT * 2 && pick % 2 === 1;
 }
 
+/** Engineering's panels: one column of six down the right of the screen. */
+export const ENGINEERING_GRID: Grid = { cols: 1, rows: 6, areas: 1, placesClock: false };
+
 /**
- * A layout's grid. Anything but Tactical reads as the Stardate layout, the same as on the watch.
+ * A layout's grid. Anything but Tactical and Engineering reads as the Stardate layout, the same as on the watch.
  *
  * @param layout The saved layout.
  * @return Its grid.
  */
 export function gridFor(layout: number): Grid {
-  return layout === LAYOUT_TACTICAL ? TACTICAL_GRID : STARDATE_GRID;
+  const grids = [STARDATE_GRID, TACTICAL_GRID, ENGINEERING_GRID];
+
+  return grids[layout] || STARDATE_GRID;
 }
 
 /**
@@ -163,7 +172,9 @@ export const ID_COUNT = 88;
 export const ONCE_GROUPS = [[ID_CLOCK, ID_CLOCK_COMPACT], [ID_STARDATE, ID_STARDATE_COMPACT]];
 
 /** Every panel in ONCE_GROUPS. */
-export const UNIQUE_IDS = [ID_CLOCK, ID_CLOCK_COMPACT, ID_STARDATE, ID_STARDATE_COMPACT];
+export const UNIQUE_IDS = ONCE_GROUPS.reduce(function (all, group) {
+  return all.concat(group);
+}, [] as number[]);
 
 /**
  * Which of the clock or the date a readout is, in either size.
@@ -261,6 +272,18 @@ export const SLOT_STORE_CLASS = [null, 'sb-lb', 'sb-rt', 'sb-rb'];
 /** The hidden-store class Tactical's twelve picks are found by, all in one text value. */
 export const TACTICAL_STORE_CLASS = 'sb-tac';
 
+/** The hidden-store class Engineering's six picks are found by, all in one text value. */
+export const ENGINEERING_STORE_CLASS = 'sb-eng';
+
+/** The layouts that save their picks as one list, each with the hidden-store class its list rides in. */
+export const LIST_STORES: Record<number, string> = {
+  [LAYOUT_TACTICAL]: TACTICAL_STORE_CLASS,
+  [LAYOUT_ENGINEERING]: ENGINEERING_STORE_CLASS,
+};
+
+/** The layouts in LIST_STORES, in order. */
+export const LIST_LAYOUTS = [LAYOUT_TACTICAL, LAYOUT_ENGINEERING];
+
 /** The area a cell sits in, 0 for the top. */
 export function areaOf(slot: number, grid: Grid): number {
   return Math.floor(slot / areaCellCount(grid));
@@ -288,6 +311,20 @@ export function slotAt(col: number, row: number, grid: Grid, area = 0): number {
 /** How much of the grid a readout fills. */
 export function shapeOf(id: number): Shape {
   return SHAPES[id] || SHAPE_SINGLE;
+}
+
+/**
+ * Whether a readout fits a grid at all, so the palette can dim one that cannot go anywhere on it,
+ * such as a wide panel on Engineering's single column.
+ *
+ * @param id The readout.
+ * @param grid The layout's grid.
+ * @return True when the grid has the columns and rows its shape spans.
+ */
+export function fitsGrid(id: number, grid: Grid): boolean {
+  const span = spanOf(shapeOf(id));
+
+  return span.cols <= grid.cols && span.rows <= grid.rows;
 }
 
 /** How many columns and rows a shape spans. */

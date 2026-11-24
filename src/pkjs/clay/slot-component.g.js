@@ -69,6 +69,8 @@ module.exports = {
       // src/pkjs/clay/builder/ts/slots/geometry.ts
       var geometry_exports = {};
       __export(geometry_exports, {
+        ENGINEERING_GRID: () => ENGINEERING_GRID,
+        ENGINEERING_STORE_CLASS: () => ENGINEERING_STORE_CLASS,
         ID_BATTERY: () => ID_BATTERY,
         ID_CLOCK: () => ID_CLOCK,
         ID_CLOCK_COMPACT: () => ID_CLOCK_COMPACT,
@@ -127,8 +129,12 @@ module.exports = {
         ID_WIDE_UV: () => ID_WIDE_UV,
         ID_WIDE_WEEK_PROGRESS: () => ID_WIDE_WEEK_PROGRESS,
         ID_WIDE_YEAR_PROGRESS: () => ID_WIDE_YEAR_PROGRESS,
+        LAYOUT_COUNT: () => LAYOUT_COUNT,
+        LAYOUT_ENGINEERING: () => LAYOUT_ENGINEERING,
         LAYOUT_STARDATE: () => LAYOUT_STARDATE,
         LAYOUT_TACTICAL: () => LAYOUT_TACTICAL,
+        LIST_LAYOUTS: () => LIST_LAYOUTS,
+        LIST_STORES: () => LIST_STORES,
         ONCE_GROUPS: () => ONCE_GROUPS,
         SHAPE_FULL: () => SHAPE_FULL,
         SHAPE_SINGLE: () => SHAPE_SINGLE,
@@ -151,6 +157,7 @@ module.exports = {
         cellCount: () => cellCount,
         cellsFor: () => cellsFor,
         colOf: () => colOf,
+        fitsGrid: () => fitsGrid,
         gridFor: () => gridFor,
         layoutOfPick: () => layoutOfPick,
         onceGroup: () => onceGroup,
@@ -162,13 +169,14 @@ module.exports = {
         spanOf: () => spanOf
       });
       function layoutOfPick(pick) {
-        return pick === 2 || pick === 3 ? LAYOUT_TACTICAL : LAYOUT_STARDATE;
+        return pick >= 0 && pick < LAYOUT_COUNT * 2 ? Math.floor(pick / 2) : LAYOUT_STARDATE;
       }
       function railRightOfPick(pick) {
-        return pick === 1 || pick === 3;
+        return pick >= 0 && pick < LAYOUT_COUNT * 2 && pick % 2 === 1;
       }
       function gridFor(layout) {
-        return layout === LAYOUT_TACTICAL ? TACTICAL_GRID : STARDATE_GRID;
+        const grids = [STARDATE_GRID, TACTICAL_GRID, ENGINEERING_GRID];
+        return grids[layout] || STARDATE_GRID;
       }
       function areaCellCount(grid) {
         return grid.cols * grid.rows;
@@ -201,6 +209,10 @@ module.exports = {
       }
       function shapeOf(id) {
         return SHAPES[id] || SHAPE_SINGLE;
+      }
+      function fitsGrid(id, grid) {
+        const span = spanOf(shapeOf(id));
+        return span.cols <= grid.cols && span.rows <= grid.rows;
       }
       function spanOf(shape) {
         return {
@@ -252,13 +264,16 @@ module.exports = {
         }
         return owner;
       }
-      var LAYOUT_STARDATE, LAYOUT_TACTICAL, STARDATE_GRID, TACTICAL_GRID, SLOT_LT, SLOT_LB, SLOT_RT, SLOT_RB, SLOT_COUNT, ID_HEART, ID_STEPS, ID_BATTERY, ID_MOON_PCT, ID_SUNRISE, ID_SUNSET, ID_EMPTY, ID_SENSORS, ID_WIDE_DAYLIGHT, ID_WIDE_STEPS, ID_FULL_HEART, ID_FULL_STEPS, ID_WIDE_HEART, ID_WIDE_MUSIC, ID_FULL_MUSIC, ID_FULL_AGENDA, ID_WIDE_EVENT, ID_WIDE_HOUR_PROGRESS, ID_WIDE_DAY_PROGRESS, ID_WIDE_WEEK_PROGRESS, ID_WIDE_YEAR_PROGRESS, ID_FULL_FORECAST_HOURLY, ID_FULL_FORECAST_DAILY, ID_WIDE_UV, ID_WIDE_MOON, ID_WIDE_ALARM, ID_WIDE_BEATS, ID_WIDE_STEP_GOAL, ID_WIDE_DISTANCE_GOAL, ID_WIDE_CALORIE_GOAL, ID_WIDE_ACTIVE_GOAL, ID_WIDE_SLEEP_GOAL, ID_WIDE_SUN_NEXT, ID_TALL_STEP_GOAL, ID_TALL_DISTANCE_GOAL, ID_TALL_CALORIE_GOAL, ID_TALL_ACTIVE_GOAL, ID_TALL_SLEEP_GOAL, ID_TALL_HEART, ID_TALL_STEPS_HOURS, ID_TALL_HEART_HOURS, ID_TALL_BATTERY, ID_TALL_ALARM, ID_TALL_BEATS, ID_TALL_SUN_NEXT, ID_TALL_DAYLIGHT, ID_TALL_MOON, ID_TALL_UV, ID_TALL_HOUR_PROGRESS, ID_TALL_DAY_PROGRESS, ID_TALL_WEEK_PROGRESS, ID_TALL_YEAR_PROGRESS, ID_TALL_EVENT, ID_CLOCK, ID_STARDATE, ID_CLOCK_COMPACT, ID_STARDATE_COMPACT, ID_COUNT, ONCE_GROUPS, UNIQUE_IDS, SHAPE_SINGLE, SHAPE_TALL, SHAPE_WIDE, SHAPE_FULL, SHAPES, SLOT_KEYS, SLOT_STORE_CLASS, TACTICAL_STORE_CLASS;
+      var LAYOUT_STARDATE, LAYOUT_TACTICAL, LAYOUT_ENGINEERING, LAYOUT_COUNT, STARDATE_GRID, TACTICAL_GRID, ENGINEERING_GRID, SLOT_LT, SLOT_LB, SLOT_RT, SLOT_RB, SLOT_COUNT, ID_HEART, ID_STEPS, ID_BATTERY, ID_MOON_PCT, ID_SUNRISE, ID_SUNSET, ID_EMPTY, ID_SENSORS, ID_WIDE_DAYLIGHT, ID_WIDE_STEPS, ID_FULL_HEART, ID_FULL_STEPS, ID_WIDE_HEART, ID_WIDE_MUSIC, ID_FULL_MUSIC, ID_FULL_AGENDA, ID_WIDE_EVENT, ID_WIDE_HOUR_PROGRESS, ID_WIDE_DAY_PROGRESS, ID_WIDE_WEEK_PROGRESS, ID_WIDE_YEAR_PROGRESS, ID_FULL_FORECAST_HOURLY, ID_FULL_FORECAST_DAILY, ID_WIDE_UV, ID_WIDE_MOON, ID_WIDE_ALARM, ID_WIDE_BEATS, ID_WIDE_STEP_GOAL, ID_WIDE_DISTANCE_GOAL, ID_WIDE_CALORIE_GOAL, ID_WIDE_ACTIVE_GOAL, ID_WIDE_SLEEP_GOAL, ID_WIDE_SUN_NEXT, ID_TALL_STEP_GOAL, ID_TALL_DISTANCE_GOAL, ID_TALL_CALORIE_GOAL, ID_TALL_ACTIVE_GOAL, ID_TALL_SLEEP_GOAL, ID_TALL_HEART, ID_TALL_STEPS_HOURS, ID_TALL_HEART_HOURS, ID_TALL_BATTERY, ID_TALL_ALARM, ID_TALL_BEATS, ID_TALL_SUN_NEXT, ID_TALL_DAYLIGHT, ID_TALL_MOON, ID_TALL_UV, ID_TALL_HOUR_PROGRESS, ID_TALL_DAY_PROGRESS, ID_TALL_WEEK_PROGRESS, ID_TALL_YEAR_PROGRESS, ID_TALL_EVENT, ID_CLOCK, ID_STARDATE, ID_CLOCK_COMPACT, ID_STARDATE_COMPACT, ID_COUNT, ONCE_GROUPS, UNIQUE_IDS, SHAPE_SINGLE, SHAPE_TALL, SHAPE_WIDE, SHAPE_FULL, SHAPES, SLOT_KEYS, SLOT_STORE_CLASS, TACTICAL_STORE_CLASS, ENGINEERING_STORE_CLASS, LIST_STORES, LIST_LAYOUTS;
       var init_geometry = __esm({
         "src/pkjs/clay/builder/ts/slots/geometry.ts"() {
           LAYOUT_STARDATE = 0;
           LAYOUT_TACTICAL = 1;
+          LAYOUT_ENGINEERING = 2;
+          LAYOUT_COUNT = 3;
           STARDATE_GRID = { cols: 2, rows: 2, areas: 1, placesClock: false };
           TACTICAL_GRID = { cols: 2, rows: 2, areas: 3, placesClock: true };
+          ENGINEERING_GRID = { cols: 1, rows: 6, areas: 1, placesClock: false };
           SLOT_LT = 0;
           SLOT_LB = 1;
           SLOT_RT = 2;
@@ -323,7 +338,9 @@ module.exports = {
           ID_STARDATE_COMPACT = 87;
           ID_COUNT = 88;
           ONCE_GROUPS = [[ID_CLOCK, ID_CLOCK_COMPACT], [ID_STARDATE, ID_STARDATE_COMPACT]];
-          UNIQUE_IDS = [ID_CLOCK, ID_CLOCK_COMPACT, ID_STARDATE, ID_STARDATE_COMPACT];
+          UNIQUE_IDS = ONCE_GROUPS.reduce(function(all, group) {
+            return all.concat(group);
+          }, []);
           SHAPE_SINGLE = "single";
           SHAPE_TALL = "tall";
           SHAPE_WIDE = "wide";
@@ -388,6 +405,12 @@ module.exports = {
           ];
           SLOT_STORE_CLASS = [null, "sb-lb", "sb-rt", "sb-rb"];
           TACTICAL_STORE_CLASS = "sb-tac";
+          ENGINEERING_STORE_CLASS = "sb-eng";
+          LIST_STORES = {
+            [LAYOUT_TACTICAL]: TACTICAL_STORE_CLASS,
+            [LAYOUT_ENGINEERING]: ENGINEERING_STORE_CLASS
+          };
+          LIST_LAYOUTS = [LAYOUT_TACTICAL, LAYOUT_ENGINEERING];
         }
       });
 
@@ -395,16 +418,16 @@ module.exports = {
       var codec_exports = {};
       __export(codec_exports, {
         formatId: () => formatId,
-        formatTactical: () => formatTactical,
+        formatList: () => formatList,
         moveUnique: () => moveUnique,
         parseId: () => parseId,
-        parseTactical: () => parseTactical,
+        parseList: () => parseList,
+        readList: () => readList,
         readSlots: () => readSlots,
-        readTactical: () => readTactical,
         sanitize: () => sanitize,
         storeFor: () => storeFor,
-        writeStores: () => writeStores,
-        writeTactical: () => writeTactical
+        writeList: () => writeList,
+        writeStores: () => writeStores
       });
       function parseId(text) {
         const n = parseInt(text || "", 10);
@@ -440,12 +463,12 @@ module.exports = {
           writeStore(storeFor(root, slot), formatId(slots[slot]));
         }
       }
-      function parseTactical(text) {
+      function parseList(text, grid) {
         const source = text || "";
         const picks = [];
         let cursor = 0;
         let readable = true;
-        for (let cell = 0; cell < cellCount(TACTICAL_GRID); cell++) {
+        for (let cell = 0; cell < cellCount(grid); cell++) {
           const digits = readable ? /^[0-9]+/.exec(source.slice(cursor)) : null;
           if (!digits) {
             readable = false;
@@ -460,17 +483,17 @@ module.exports = {
           }
           cursor++;
         }
-        return sanitize(picks, TACTICAL_GRID);
+        return sanitize(picks, grid);
       }
-      function formatTactical(picks) {
+      function formatList(picks) {
         return picks.map(formatId).join(",");
       }
-      function readTactical(root) {
-        const store = storeByClass(root, TACTICAL_STORE_CLASS);
-        return parseTactical(store ? store.value : "");
+      function readList(root, layout) {
+        const store = storeByClass(root, LIST_STORES[layout]);
+        return parseList(store ? store.value : "", gridFor(layout));
       }
-      function writeTactical(root, picks) {
-        writeStore(storeByClass(root, TACTICAL_STORE_CLASS), formatTactical(picks));
+      function writeList(root, layout, picks) {
+        writeStore(storeByClass(root, LIST_STORES[layout]), formatList(picks));
       }
       function moveUnique(before, after) {
         const out = after.slice();
@@ -500,11 +523,6 @@ module.exports = {
         const out = slots.slice(0, count);
         while (out.length < count) {
           out.push(ID_EMPTY);
-        }
-        for (let slot = 0; slot < count; slot++) {
-          if (!grid.placesClock && UNIQUE_IDS.indexOf(out[slot]) >= 0) {
-            out[slot] = ID_EMPTY;
-          }
         }
         const kept = owners(out, grid);
         const seen = [];
@@ -552,24 +570,42 @@ module.exports = {
         }
       });
 
+      // src/data/engineering-presets.json
+      var engineering_presets_default;
+      var init_engineering_presets = __esm({
+        "src/data/engineering-presets.json"() {
+          engineering_presets_default = {
+            default: [23, 20, 0, 1, 9, 10]
+          };
+        }
+      });
+
       // src/pkjs/clay/builder/ts/slots/presets.ts
       var presets_exports = {};
       __export(presets_exports, {
+        ENGINEERING_PRESETS: () => ENGINEERING_PRESETS,
         SLOT_PRESETS: () => SLOT_PRESETS,
         TACTICAL_PRESETS: () => TACTICAL_PRESETS,
         presetFor: () => presetFor
       });
       function presetFor(layout, id) {
-        return (layout === LAYOUT_TACTICAL ? TACTICAL_PRESETS : SLOT_PRESETS)[id];
+        const presets = {
+          [LAYOUT_STARDATE]: SLOT_PRESETS,
+          [LAYOUT_TACTICAL]: TACTICAL_PRESETS,
+          [LAYOUT_ENGINEERING]: ENGINEERING_PRESETS
+        };
+        return (presets[layout] || SLOT_PRESETS)[id];
       }
-      var SLOT_PRESETS, TACTICAL_PRESETS;
+      var SLOT_PRESETS, TACTICAL_PRESETS, ENGINEERING_PRESETS;
       var init_presets = __esm({
         "src/pkjs/clay/builder/ts/slots/presets.ts"() {
           init_slot_presets();
           init_tactical_presets();
+          init_engineering_presets();
           init_geometry();
           SLOT_PRESETS = slot_presets_default;
           TACTICAL_PRESETS = tactical_presets_default;
+          ENGINEERING_PRESETS = engineering_presets_default;
         }
       });
 
@@ -1294,7 +1330,9 @@ module.exports = {
         let layout = LAYOUT_STARDATE;
         const picks = {};
         picks[LAYOUT_STARDATE] = readSlots(root, hidden.value);
-        picks[LAYOUT_TACTICAL] = readTactical(root);
+        LIST_LAYOUTS.forEach(function(list) {
+          picks[list] = readList(root, list);
+        });
         function grid() {
           return gridFor(layout);
         }
@@ -1317,6 +1355,7 @@ module.exports = {
           slotsEl.innerHTML = "";
           slotEls.length = 0;
           slotsEl.style.gridTemplateRows = rows.join(" ");
+          slotsEl.style.gridTemplateColumns = "repeat(" + grid().cols + ", minmax(0, var(--sb-slot-w)))";
           faceEl.classList.toggle("sb-tactical", layout === LAYOUT_TACTICAL);
           for (let slot = 0; slot < cellCount(grid()); slot++) {
             const el = root.ownerDocument.createElement("div");
@@ -1348,7 +1387,12 @@ module.exports = {
               placed.push(readout.value);
             }
           }
-          palette.markPlaced(grid().placesClock ? placed : placed.concat(UNIQUE_IDS));
+          const unfit = READOUTS.map(function(readout) {
+            return readout.value;
+          }).filter(function(value) {
+            return !fitsGrid(value, grid());
+          });
+          palette.markPlaced((grid().placesClock ? placed : placed.concat(UNIQUE_IDS)).concat(unfit));
           warnings.update(placed.map(function(value) {
             const readout = readoutById(READOUTS, value);
             return readout ? warningName(readout.label) : "";
@@ -1362,7 +1406,9 @@ module.exports = {
             fireChange("change");
           }
           writeStores(root, picks[LAYOUT_STARDATE]);
-          writeTactical(root, picks[LAYOUT_TACTICAL]);
+          LIST_LAYOUTS.forEach(function(list) {
+            writeList(root, list, picks[list]);
+          });
         }
         function setSlots(next) {
           picks[layout] = sanitize(moveUnique(current(), next), grid());
@@ -1406,7 +1452,7 @@ module.exports = {
           panelKinds
         });
         function showLayout(next) {
-          layout = next === LAYOUT_TACTICAL ? LAYOUT_TACTICAL : LAYOUT_STARDATE;
+          layout = next;
           buildSlots();
           render();
         }
@@ -1448,16 +1494,21 @@ module.exports = {
         };
         showLayout(LAYOUT_STARDATE);
         setTimeout(function() {
-          const stardate = readSlots(root, hidden.value);
-          const tactical = readTactical(root);
-          const moved = function(late, kept) {
-            return late.some(function(id, slot) {
-              return id !== kept[slot];
+          const late = {};
+          const moved = function(layoutId) {
+            return late[layoutId].some(function(id, slot) {
+              return id !== picks[layoutId][slot];
             });
           };
-          if (moved(stardate, picks[LAYOUT_STARDATE]) || moved(tactical, picks[LAYOUT_TACTICAL])) {
-            picks[LAYOUT_STARDATE] = stardate;
-            picks[LAYOUT_TACTICAL] = tactical;
+          late[LAYOUT_STARDATE] = readSlots(root, hidden.value);
+          LIST_LAYOUTS.forEach(function(list) {
+            late[list] = readList(root, list);
+          });
+          const layouts = [LAYOUT_STARDATE].concat(LIST_LAYOUTS);
+          if (layouts.some(moved)) {
+            layouts.forEach(function(layoutId) {
+              picks[layoutId] = late[layoutId];
+            });
             render();
           }
         }, 0);

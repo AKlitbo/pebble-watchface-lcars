@@ -7,8 +7,10 @@
  * correction is silent.
  */
 
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { describe, test, expect } from 'vitest';
-import { SLOT_PRESETS } from './presets';
+import { ENGINEERING_PRESETS, SLOT_PRESETS, TACTICAL_PRESETS } from './presets';
 import { sanitize } from './codec';
 import { STARDATE_GRID, SLOT_COUNT, canPlace } from './geometry';
 
@@ -41,5 +43,25 @@ describe('SLOT_PRESETS', () => {
 
       expect(result).toEqual(SLOT_PRESETS[presetId]);
     });
+  });
+});
+
+describe('the watch defaults', () => {
+  const schema = readFileSync(fileURLToPath(new URL('../../../../../c/settings_schema.c', import.meta.url)), 'utf8');
+
+  /**
+   * A fresh watch draws the default the C code spells out, and the settings page offers the preset
+   * JSON. Editing one without the other leaves a new install showing panels the Default button would
+   * not put back.
+   */
+  test.each([
+    ['TACTICAL_SLOTS_DEFAULT', TACTICAL_PRESETS],
+    ['ENGINEERING_SLOTS_DEFAULT', ENGINEERING_PRESETS],
+  ])('%s matches the default preset', (name, presets) => {
+    const match = new RegExp('#define ' + name + ' "([0-9,]*)"').exec(schema);
+
+    const result = match ? match[1] : null;
+
+    expect(result).toBe(presets.default.join(','));
   });
 });

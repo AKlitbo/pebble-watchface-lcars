@@ -2,15 +2,15 @@
 
 <img src=".github/images/lcars-stardate/ops_body.png" width="100" title="Body"> <img src=".github/images/lcars-stardate/ops_weather.png" width="100" title="Weather"> <img src=".github/images/lcars-stardate/ops_sun.png" width="100" title="Sun"> <img src=".github/images/lcars-stardate/ops_moon.png" width="100" title="Moon"> <img src=".github/images/lcars-stardate/ops_calendar.png" width="100" title="Calendar"> <img src=".github/images/lcars-stardate/ops_alt-time.png" width="100" title="Alternate Time">
 
-An LCARS watchface for the Pebble Time 2. The time sits inside a *Star Trek* computer frame, with four ops panels below it for the readouts you pick, or up to twelve on the Tactical layout.
+An LCARS watchface for the Pebble Time 2. The time sits inside a *Star Trek* computer frame, with four ops panels below it for the readouts you pick, up to twelve on the Tactical layout, or six beside a stacked clock on Engineering.
 
 ## Features
 
 - The time in 12-hour, 24-hour, or Swatch Internet Time (.beats), and a stardate-style date on the STARDATE banner.
-- Two layouts: Stardate, with the big clock over four ops panels, and Tactical, with the clock, the panels, and the date in three frames you can rearrange.
+- Three layouts: Stardate, with the big clock over four ops panels, Tactical, with the clock, the panels, and the date in three frames you can rearrange, and Engineering, with the hours over the minutes beside six panels.
 - Ops panels, filled by dragging readouts onto a picture of the face.
 - Readouts for your health, the battery, the sun, the moon, the weather, day counts, .beats, the Unix time, a second time zone, and your next alarm.
-- Your coordinates, a bluetooth glyph, and an optional Quiet Time glyph on the rail, or pills reading LINK and QUIET on Tactical, and a battery gauge in the top corner.
+- Your coordinates, a bluetooth glyph, and an optional Quiet Time glyph on the rail, and a battery gauge in the top corner. Tactical shows the phone link and Quiet Time as LINK and QUIET pills that light up, and Engineering as blocks in its rail, with the battery as a power core.
 - Nine frame themes, with an optional swap after dark or during Quiet Time, and the rail on either side.
 - Optional buzzes on the hour and when the phone connects or drops.
 
@@ -30,7 +30,7 @@ Open LCARS Stardate's settings in the Pebble app.
 
 | Setting | What It Does |
 | :-- | :-- |
-| Layout | Stardate, the default, draws the big clock over four panels. Tactical puts the clock in the top frame, four panels between the elbows, and the date in the bottom frame, and the clock and the date can move or give way to panels. Its two pills read LINK, or NO LINK when the phone drops, and QUIET during Quiet Time, in place of the glyphs, so Show Connection Icon and Show Quiet Time Icon hide while it is picked. Each layout also comes mirrored, with the rail down the right, and your panels keep their places. |
+| Layout | Stardate, the default, draws the big clock over four panels. Tactical puts the clock in the top frame, four panels between the elbows, and the date in the bottom frame, and the clock and the date can move or give way to panels. Its two pills, LINK and QUIET, light up when the phone is connected and during Quiet Time, in place of the glyphs. Engineering stacks the hours over the minutes beside a column of six panels, and its rail is a power core whose cells light with the battery, over LINK and QUIET blocks that light when the phone is connected and during Quiet Time. Show Connection Icon and Show Quiet Time Icon only drive Stardate's glyphs, so they hide on the other two. Each layout also comes mirrored, with the rail down the right, and your panels keep their places. |
 | Bar Labels | Left, the default, or Right, for which end of each bar its word sits at. |
 | Frame Theme | The frame's colour scheme, from nine. Classic by default. |
 | Theme Mode | Fixed, the default, keeps the Frame Theme. Day / Night / Quiet can swap in another after dark or during Quiet Time. |

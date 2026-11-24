@@ -74,12 +74,13 @@ typedef enum
 {
     LCARS_LAYOUT_STARDATE, ///< The default: the big clock over a 2x2 ops grid
     LCARS_LAYOUT_TACTICAL,   ///< Tactical: three 2x2 grids, top, middle, and bottom, with the clock and date placed as panels
+    LCARS_LAYOUT_ENGINEERING,     ///< Engineering: the rail is a power core sweeping into both strips, the clock stacked, and six panels in one column
     LCARS_LAYOUT_COUNT
 } LcarsLayout;
 
 /// How many picks the Layout picker offers. Each layout saves as twice its LcarsLayout, and its
 /// mirrored frame, with the rail down the right, as one more, so Stardate is 0, Stardate Mirrored 1,
-/// Tactical 2, and Tactical Mirrored 3
+/// Tactical 2, Tactical Mirrored 3, Engineering 4, and Engineering Mirrored 5
 #define LCARS_LAYOUT_PICKS (LCARS_LAYOUT_COUNT * 2)
 
 /// How many frame themes the picker offers. The night and Quiet Time overrides count the same set,
@@ -132,6 +133,17 @@ uint8_t lcars_layout(void);
  * @return An OpsId, OPS_EMPTY for a cell the saved list leaves out or holds no number for.
  */
 uint8_t lcars_slot_tactical(int cell);
+
+/// How many cells Engineering holds, one column of six
+#define LCARS_ENGINEERING_CELLS 6
+
+/**
+ * @brief What one cell of Engineering is set to show, read from its saved list the same way as Tactical's.
+ *
+ * @param cell The cell, 0 to 5, top to bottom.
+ * @return An OpsId, OPS_EMPTY for a cell the saved list leaves out or holds no number for.
+ */
+uint8_t lcars_slot_engineering(int cell);
 
 /**
  * @brief What the upper left slot is set to show.
