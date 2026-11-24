@@ -230,15 +230,24 @@ export function init(this: ClayContext): void {
   });
 
   /** Puts a layout on show: its grid and its picks. */
+  const presetBtns = root.querySelectorAll('.sb-preset');
+
   function showLayout(next: number): void {
     layout = next;
+
+    // a layout shows only the preset buttons it has an arrangement for, so the Stardate layout's
+    // short face keeps just Default and Clear beside it
+    for (let i = 0; i < presetBtns.length; i++) {
+      const btn = presetBtns[i] as HTMLElement;
+
+      btn.style.display = presetFor(layout, btn.getAttribute('data-preset') || '') ? '' : 'none';
+    }
+
     buildSlots();
     render();
   }
 
   // --- actions ---
-
-  const presetBtns = root.querySelectorAll('.sb-preset');
 
   for (let i = 0; i < presetBtns.length; i++) {
     presetBtns[i].addEventListener('click', function (event) {

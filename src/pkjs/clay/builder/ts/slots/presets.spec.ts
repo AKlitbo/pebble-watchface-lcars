@@ -12,7 +12,7 @@ import { fileURLToPath } from 'node:url';
 import { describe, test, expect } from 'vitest';
 import { ENGINEERING_PRESETS, SLOT_PRESETS, TACTICAL_PRESETS } from './presets';
 import { sanitize } from './codec';
-import { STARDATE_GRID, SLOT_COUNT, canPlace } from './geometry';
+import { ENGINEERING_GRID, STARDATE_GRID, SLOT_COUNT, TACTICAL_GRID, canPlace, cellCount } from './geometry';
 
 describe('SLOT_PRESETS', () => {
   /** esbuild inlines the JSON at bundle time, so a table that arrived empty leaves the preset buttons doing nothing. */
@@ -63,5 +63,31 @@ describe('the watch defaults', () => {
     const result = match ? match[1] : null;
 
     expect(result).toBe(presets.default.join(','));
+  });
+});
+
+describe('the presets of every layout', () => {
+  const layouts: [string, Record<string, number[]>, typeof STARDATE_GRID][] = [
+    ['Stardate', SLOT_PRESETS, STARDATE_GRID],
+    ['Tactical', TACTICAL_PRESETS, TACTICAL_GRID],
+    ['Engineering', ENGINEERING_PRESETS, ENGINEERING_GRID],
+  ];
+
+  /** Tactical and Engineering show the same preset buttons, so one missing a preset hides a button the other offers. */
+  test('Tactical and Engineering offer the same presets', () => {
+    const result = Object.keys(ENGINEERING_PRESETS).sort();
+
+    expect(result).toEqual(Object.keys(TACTICAL_PRESETS).sort());
+  });
+
+  /** A preset the shape rules correct would hand the wearer a different face from the one the button promised. */
+  test.each(layouts)('%s presets fill every cell and need no correcting', (name, presets, grid) => {
+    const result = Object.keys(presets).filter(function (presetId) {
+      const slots = presets[presetId];
+
+      return slots.length !== cellCount(grid) || JSON.stringify(sanitize(slots, grid)) !== JSON.stringify(slots);
+    });
+
+    expect(result).toEqual([]);
   });
 });

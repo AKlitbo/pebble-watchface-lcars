@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Added the clock and the date as panels on Tactical, full size or a compact row, so either can sit at the top, middle, or bottom, or give way to more panels, for up to twelve. Each layout keeps its own panels.
 - Added a mirrored version of each layout, with the rail down the right, and a Bar Labels setting that moves each bar's word to its right end.
 - Added an Engineering layout, with the hours over the minutes beside six panels. Its rail is a power core that lights with the battery, with LINK and QUIET blocks for the phone link and Quiet Time.
+- Added Activity, Weather, Data, Sleep, and Creator presets beside Default in the panel builder on Tactical and Engineering.
 
 ## [1.16.2] - 2026-11-20
 

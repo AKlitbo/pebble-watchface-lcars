@@ -42,7 +42,7 @@ Open LCARS Stardate's settings in the Pebble app.
 
 | Setting | What It Does |
 | :-- | :-- |
-| The Panel Builder | Drag a readout onto a panel, or one panel onto another to swap them. It shows the panels of the layout picked above, and each layout keeps its own. Default puts back the layout's starting panels, and Clear empties them. A panel that needs a plugin your phone cannot use says so under the face. |
+| The Panel Builder | Drag a readout onto a panel, or one panel onto another to swap them. It shows the panels of the layout picked above, and each layout keeps its own. Default puts back the layout's starting panels, and on Tactical and Engineering the Activity, Weather, Data, Sleep, and Creator buttons fill them with a ready-made arrangement. Clear empties them. A panel that needs a plugin your phone cannot use says so under the face. |
 
 ### Bluetooth
 
