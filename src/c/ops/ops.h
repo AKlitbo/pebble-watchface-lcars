@@ -130,6 +130,8 @@ typedef enum
     // clock or date, so the face only ever shows one of each
     OPS_CLOCK_COMPACT,
     OPS_STARDATE_COMPACT,
+    // the phone's battery, as the Pebble app's Phone plugin reports it
+    OPS_PHONE_BATTERY,
     OPS_COUNT
 } OpsId;
 

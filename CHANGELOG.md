@@ -4,6 +4,20 @@ All notable changes to the LCARS Stardate watchface are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- Added a Transporter layout, with the clock in a frame of its own over eight panels, between two rails that each fill as a gauge of the reading you pick.
+- Added a Power Core setting, so Engineering's rail can fill with another reading than the battery, with a word over it saying which.
+- Added a Phone Battery readout, for a panel or a rail gauge. It needs plugins turned on in the Pebble app, and reads OFF while they are off.
+
+### Changed
+
+- Changed Mirrored from its own entries in the Layout list to a switch in each layout's settings. A mirrored face stays mirrored.
+- Changed the Layout picker to a plain list, since the Frame Theme picker under it already shows each layout.
+- Moved Show Connection Icon and Show Quiet Time Icon into Stardate Settings, since only Stardate draws them.
+
 ## [1.17.0] - 2026-11-24
 
 ### Added

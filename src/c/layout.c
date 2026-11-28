@@ -30,7 +30,7 @@
 #include "system/settings/setting_values.h"
 
 // --- Zone Table ---
-// the clock, the date, the coordinates, and Engineering's minutes and battery level. readouts are
+// the clock, the date, the coordinates, and Engineering's minutes and its core's word and reading. readouts are
 // white on the black field, and the words on the rail are black like its numerals
 //
 // only what every layout shares is set here. each layout's place function below puts the rest, its
@@ -43,6 +43,7 @@ static Zone s_zones[ZONE_COUNT] = {
     [ZONE_LON]      = {.font_id = FONT_ANTONIO_12, .color = COORD_TEXT_COLOR},
     [ZONE_MINUTES]  = {.font_id = FONT_ANTONIO_100, .align = GTextAlignmentCenter},
     [ZONE_POWER]    = {.font_id = FONT_ANTONIO_12, .color = COORD_TEXT_COLOR},
+    [ZONE_CORE_WORD] = {.font_id = FONT_ANTONIO_12, .color = COORD_TEXT_COLOR},
 };
 
 /**
@@ -116,13 +117,15 @@ static void engineering_meridiem_text(char *out, size_t size)
 // next rebuild with nothing to invalidate. dev_ops_pick hands back the saved value in any build
 // that is not running the screenshot walk
 //
-// the Stardate layout has one grid of four cells, Tactical three, and Engineering one column of six.
-// each grid's cells run down each column in turn, so left top then left bottom then right top then
-// right bottom, and Tactical's grids follow each other from the top, so its cells run 0 to 11
+// the Stardate layout has one grid of four cells, Tactical three, Engineering one column of six, and
+// Transporter two. each grid's cells run down each column in turn, so left top then left bottom then
+// right top then right bottom, and a layout's grids follow each other from the top, so Tactical's cells
+// run 0 to 11
 #define CELLS_MAX LCARS_TACTICAL_CELLS
 #define AREAS_MAX 3
 
 _Static_assert(LCARS_ENGINEERING_CELLS <= CELLS_MAX, "the cell arrays have to hold Engineering's column");
+_Static_assert(LCARS_TRANSPORTER_CELLS <= CELLS_MAX, "the cell arrays have to hold Transporter's two grids");
 
 // a grid of two columns of two rows from its first bar, as the Stardate layout and each of
 // Tactical's frames hold. the columns are placed on each build, since they follow the rail
@@ -150,6 +153,18 @@ static OpsGrid s_tactical_grids[AREAS_MAX] = {
     TACTICAL_GRID(TACTICAL_ROW_TOP),
     TACTICAL_GRID(TACTICAL_ROW_MID),
     TACTICAL_GRID(TACTICAL_ROW_BOTTOM),
+};
+
+// Transporter's two grids between its rails, one straight under the other. it has no mirrored frame,
+// so these stay where they are rather than being placed on each build
+#define TRANSPORTER_GRID(y)                                                                  \
+    {.cols = 2, .rows = 2, .col_x = {TRANSPORTER_COL_L, TRANSPORTER_COL_R},                  \
+     .col_right = {TRANSPORTER_R_L, TRANSPORTER_R_R}, .row_y = {(y), (y) + TRANSPORTER_ROW_PITCH}, \
+     .bottom = (y) + 2 * TRANSPORTER_ROW_PITCH}
+
+static OpsGrid s_transporter_grids[2] = {
+    TRANSPORTER_GRID(TRANSPORTER_ROW_TOP),
+    TRANSPORTER_GRID(TRANSPORTER_ROW_BOTTOM),
 };
 
 /** @brief How far what sits inside the frame moves left: the rail's width with the rail down the right. */
@@ -227,6 +242,7 @@ typedef struct
     bool places_clock;             ///< the clock and the date are panels the wearer places once each
     bool big_clock;                ///< it draws the clock in Antonio 100, which only loads while it is on show
     bool theme_text;               ///< a text zone takes the theme's colour, so a theme switch rebuilds
+    bool (*shows_gauge)(uint8_t id); ///< whether one of its rail gauges is set to a pick, or NULL for a layout with none
     void (*chrome)(GContext *ctx); ///< draws what it adds over its frame besides the panels
     void (*place)(int clock_cell, int date_cell); ///< puts its clock, date, and rail words
     uint8_t (*build)(EngineSlot *out, uint8_t i, bool clock, bool date); ///< adds its text slots after the overlays
@@ -525,11 +541,18 @@ bool stardate_shows_date(void)
     return shows_once(ONCE_DATE);
 }
 
+bool stardate_gauge_shows(uint8_t id)
+{
+    return layout()->shows_gauge && layout()->shows_gauge(id);
+}
+
 bool stardate_ops_shows_beats(void)
 {
     // the single panel and the wide and tall bars all count beats, and a slot another panel covers
-    // reads as empty, so a covered pick never turns the ticker on
-    return stardate_ops_shows(OPS_BEATS) || stardate_ops_shows(OPS_WIDE_BEATS) || stardate_ops_shows(OPS_TALL_BEATS);
+    // reads as empty, so a covered pick never turns the ticker on. a rail gauge set to the beat day
+    // counts them too
+    return stardate_gauge_shows(OPS_TALL_BEATS) || stardate_ops_shows(OPS_BEATS) ||
+           stardate_ops_shows(OPS_WIDE_BEATS) || stardate_ops_shows(OPS_TALL_BEATS);
 }
 
 // one ops cell's Zone in its normal and no-glyph widths. a catalogue entry can hand a cell a
@@ -809,24 +832,110 @@ static void tactical_chrome(GContext *ctx)
 }
 
 /**
- * @brief Engineering's chrome: the date on its top strip, the battery as its power core, and the
- * LINK and QUIET blocks in its rail. With the rail down the right everything turns with it, and the
- * date starts from the rail's sweep.
+ * @brief Draw the date's word on a strip or bar, as STARDATE and the date.
  *
  * @param ctx The graphics context.
+ * @param area How far its holder box may run along the strip or bar.
+ * @param right Whether the box starts from the area's right end.
  */
-static void engineering_chrome(GContext *ctx)
+static void draw_strip_date(GContext *ctx, GRect area, bool right)
 {
     char date[24];
     char word[40];
     readout_date(date, sizeof(date));
     snprintf(word, sizeof(word), "STARDATE %s", date);
-    widgets_draw_word(ctx, on_rail(ENGINEERING_DATE), word, fonts_get(FONT_ANTONIO_12), lcars_rail_right());
+    widgets_draw_word(ctx, area, word, fonts_get(FONT_ANTONIO_12), right);
+}
 
-    int lit = widgets_lit_cells(system_store_battery(), ENGINEERING_CELLS);
+/**
+ * @brief Engineering's chrome: the date on its top strip, the power core lit by whatever it is set to
+ * show, and the LINK and QUIET blocks in its rail. With the rail down the right everything turns with
+ * it, and the date starts from the rail's sweep.
+ *
+ * @param ctx The graphics context.
+ */
+static void engineering_chrome(GContext *ctx)
+{
+    draw_strip_date(ctx, on_rail(ENGINEERING_DATE), lcars_rail_right());
+
+    PanelGauge gauge;
+    panels_gauge(lcars_engineering_core(), false, &gauge);
+    int lit = widgets_lit_cells(gauge.pct, ENGINEERING_CELLS);
     widgets_draw_core(ctx, on_rail(ENGINEERING_CELL), ENGINEERING_CELL_PITCH, ENGINEERING_CELLS, lit);
 
     draw_link_and_quiet(ctx, ENGINEERING_LINK, ENGINEERING_QUIET, ENGINEERING_RAIL_WORD_DROP, 0);
+}
+
+/**
+ * @brief Draw one of Transporter's rail gauges: its word, its cells, and its reading.
+ *
+ * @param ctx The graphics context.
+ * @param id The OpsId the gauge is set to.
+ * @param right Whether it is the right rail's.
+ */
+static void draw_transporter_gauge(GContext *ctx, uint8_t id, bool right)
+{
+    PanelGauge gauge;
+    panels_gauge(id, true, &gauge);
+
+    GFont font = fonts_get(FONT_ANTONIO_10);
+    GRect word = TRANSPORTER_WORD;
+    GRect cell = TRANSPORTER_CELL;
+    GRect reading = TRANSPORTER_READING;
+
+    if (right)
+    {
+        word = transporter_right(word);
+        cell = transporter_right(cell);
+        reading = transporter_right(reading);
+    }
+
+    // the words sit on the rail's own colour, so each is drawn the way a lit block's would be
+    widgets_draw_rail_word(ctx, word, gauge.word, font, 0, 0, true);
+    widgets_draw_core(ctx, cell, TRANSPORTER_CELL_PITCH, TRANSPORTER_CELLS,
+                      widgets_lit_cells(gauge.pct, TRANSPORTER_CELLS));
+    widgets_draw_rail_word(ctx, reading, gauge.text, font, TRANSPORTER_BLOCK_DROP, 0, true);
+}
+
+/**
+ * @brief Transporter's chrome: the date as the title on the clock's frame, the nub cut back when there
+ * is no AM/PM to hold, a gauge down each rail, and the phone link and Quiet Time in the rails' last blocks.
+ *
+ * @param ctx The graphics context.
+ */
+static void transporter_chrome(GContext *ctx)
+{
+    draw_strip_date(ctx, TRANSPORTER_DATE, true);
+
+    // the nub only stands out to hold an AM/PM, so with none it is cut back flush with the frame's side
+    char meridiem[4];
+    readout_meridiem(meridiem, sizeof(meridiem));
+
+    if (!meridiem[0])
+    {
+        graphics_context_set_fill_color(ctx, GColorBlack);
+        graphics_fill_rect(ctx, TRANSPORTER_NUB_OVERHANG, 0, GCornerNone);
+    }
+
+    draw_transporter_gauge(ctx, lcars_gauge_left(), false);
+    draw_transporter_gauge(ctx, lcars_gauge_right(), true);
+
+    GFont font = fonts_get(FONT_ANTONIO_10);
+    widgets_draw_rail_word(ctx, TRANSPORTER_STATE, "LINK", font, TRANSPORTER_BLOCK_DROP, 0, system_store_bluetooth());
+    widgets_draw_rail_word(ctx, transporter_right(TRANSPORTER_STATE), "QUIET", font, TRANSPORTER_BLOCK_DROP, 0,
+                           quiet_time_is_active());
+}
+
+/** @brief Whether Engineering's core is set to a pick. */
+static bool engineering_shows_gauge(uint8_t id)
+{
+    return lcars_engineering_core() == id;
+}
+
+/** @brief Whether either of Transporter's gauges is set to a pick. */
+static bool transporter_shows_gauge(uint8_t id)
+{
+    return lcars_gauge_left() == id || lcars_gauge_right() == id;
 }
 
 /**
@@ -966,8 +1075,8 @@ static void place_tactical(int clock_cell, int date_cell)
 }
 
 /**
- * @brief Engineering's places: the hours over the minutes, the AM or PM between them, and the battery
- * level in the rail. The minutes take the theme's word colour.
+ * @brief Engineering's places: the hours over the minutes, the AM or PM between them, and the core's
+ * word and reading in the rail. The minutes take the theme's word colour.
  *
  * @param clock_cell Unused, since its clock has its own place.
  * @param date_cell Unused, since its date is drawn on its strip.
@@ -988,7 +1097,26 @@ static void place_engineering(int clock_cell, int date_cell)
 
     s_zones[ZONE_MINUTES].rect = on_rail(ENGINEERING_MINUTES);
     s_zones[ZONE_MINUTES].color = label_color_for_theme(stardate_active_theme());
+    // the core's word and reading are centred across the rail, the way Transporter's rails set theirs
     s_zones[ZONE_POWER].rect = on_rail(ENGINEERING_POWER);
+    s_zones[ZONE_POWER].align = GTextAlignmentCenter;
+    s_zones[ZONE_CORE_WORD].rect = on_rail(ENGINEERING_CORE_WORD);
+    s_zones[ZONE_CORE_WORD].align = GTextAlignmentCenter;
+}
+
+/**
+ * @brief Transporter's places: the clock inside its frame, with any AM/PM on the nub on its side. Its
+ * date and the gauges are drawn with its chrome, and it has no rail blocks for the coordinates.
+ *
+ * @param clock_cell Unused, since its clock has its own place.
+ * @param date_cell Unused, since its date is drawn on its strip.
+ */
+static void place_transporter(int clock_cell, int date_cell)
+{
+    // the AM/PM sits on the nub on the frame's side, so it is black and centred like the rails' words
+    s_zones[ZONE_MERIDIEM].color = GColorBlack;
+    s_zones[ZONE_MERIDIEM].align = GTextAlignmentCenter;
+    set_clock(TRANSPORTER_TIME, FONT_ANTONIO_62, TRANSPORTER_MERIDIEM);
 }
 
 /**
@@ -1001,16 +1129,17 @@ static void place_zones(int clock_cell, int date_cell)
 {
     // the words on the rail sit against its edge nearest the panels, so they turn with it
     GTextAlignment rail_align = lcars_rail_right() ? GTextAlignmentLeft : GTextAlignmentRight;
-    int zones_on_rail[] = {ZONE_LAT, ZONE_LON, ZONE_POWER};
+    int zones_on_rail[] = {ZONE_LAT, ZONE_LON};
 
     for (size_t index = 0; index < ARRAY_LENGTH(zones_on_rail); index++)
     {
         s_zones[zones_on_rail[index]].align = rail_align;
     }
 
-    // the AM or PM is a small word tucked against the clock unless the layout moves it
+    // the AM or PM is a small white word tucked against the clock unless the layout moves it
     s_zones[ZONE_MERIDIEM].font_id = FONT_ANTONIO_10;
     s_zones[ZONE_MERIDIEM].align = GTextAlignmentRight;
+    s_zones[ZONE_MERIDIEM].color = GColorWhite;
 
     layout()->place(clock_cell, date_cell);
 }
@@ -1068,8 +1197,34 @@ static uint8_t build_framed(EngineSlot *out, uint8_t i, bool clock, bool date)
 }
 
 /**
- * @brief Engineering's text slots: the stacked clock, the cells, and the battery level. Its date is
- * drawn on its strip, and it has no rail blocks for the coordinates.
+ * @brief What Engineering's core reads, such as 64%.
+ *
+ * @param out The buffer.
+ * @param size Its size.
+ */
+static void core_text(char *out, size_t size)
+{
+    PanelGauge gauge;
+    panels_gauge(lcars_engineering_core(), false, &gauge);
+    snprintf(out, size, "%s", gauge.text);
+}
+
+/**
+ * @brief The word over Engineering's core reading, such as PWR, which says what the core shows.
+ *
+ * @param out The buffer.
+ * @param size Its size.
+ */
+static void core_word_text(char *out, size_t size)
+{
+    PanelGauge gauge;
+    panels_gauge(lcars_engineering_core(), false, &gauge);
+    snprintf(out, size, "%s", gauge.word);
+}
+
+/**
+ * @brief Engineering's text slots: the stacked clock, the cells, and the core's word and reading. Its
+ * date is drawn on its strip, and it has no rail blocks for the coordinates.
  *
  * @param out The slots.
  * @param i The next free slot.
@@ -1083,8 +1238,26 @@ static uint8_t build_engineering(EngineSlot *out, uint8_t i, bool clock, bool da
     out[i++] = (EngineSlot){.zone = &s_zones[ZONE_MINUTES],  .text = minutes_text};
     out[i++] = (EngineSlot){.zone = &s_zones[ZONE_MERIDIEM], .text = engineering_meridiem_text};
     i = add_cells(out, i);
-    out[i++] = (EngineSlot){.zone = &s_zones[ZONE_POWER],    .text = ops_text_battery};
+    out[i++] = (EngineSlot){.zone = &s_zones[ZONE_CORE_WORD], .text = core_word_text};
+    out[i++] = (EngineSlot){.zone = &s_zones[ZONE_POWER],    .text = core_text};
     return i;
+}
+
+/**
+ * @brief Transporter's text slots: the clock and the cells. Its date and the gauges are part of its
+ * chrome.
+ *
+ * @param out The slots.
+ * @param i The next free slot.
+ * @param clock Unused, since its clock always shows.
+ * @param date Unused, since its date is part of its chrome.
+ * @return The next free slot.
+ */
+static uint8_t build_transporter(EngineSlot *out, uint8_t i, bool clock, bool date)
+{
+    out[i++] = (EngineSlot){.zone = &s_zones[ZONE_TIME],     .text = readout_time};
+    out[i++] = (EngineSlot){.zone = &s_zones[ZONE_MERIDIEM], .text = readout_meridiem};
+    return add_cells(out, i);
 }
 
 static const LayoutSpec s_layouts[LCARS_LAYOUT_COUNT] = {
@@ -1098,7 +1271,13 @@ static const LayoutSpec s_layouts[LCARS_LAYOUT_COUNT] = {
     },
     [LCARS_LAYOUT_ENGINEERING] = {
         .grids = &s_engineering_grid, .areas = 1, .pick = lcars_slot_engineering, .big_clock = true,
-        .theme_text = true, .chrome = engineering_chrome, .place = place_engineering, .build = build_engineering,
+        .theme_text = true, .shows_gauge = engineering_shows_gauge, .chrome = engineering_chrome,
+        .place = place_engineering, .build = build_engineering,
+    },
+    [LCARS_LAYOUT_TRANSPORTER] = {
+        .grids = s_transporter_grids, .areas = 2, .pick = lcars_slot_transporter,
+        .shows_gauge = transporter_shows_gauge, .chrome = transporter_chrome, .place = place_transporter,
+        .build = build_transporter,
     },
 };
 

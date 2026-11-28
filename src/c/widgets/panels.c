@@ -31,6 +31,7 @@
 #include "io/stores/calendar_store.h"
 #include "io/stores/music_store.h"
 #include "io/stores/system_store.h"
+#include "io/stores/phone_store.h"
 #include "math/pct.h"
 #include "system/settings/settings.h"
 #include "system/settings/setting_values.h"
@@ -1987,6 +1988,179 @@ static void draw_tall_event(GContext *ctx, GRect body, uint8_t theme)
     }
 
     put_text(ctx, title, FONT_ANTONIO_12, room, GTextAlignmentCenter, label);
+}
+
+// --- the rail gauges ---
+
+/**
+ * @brief Write a gauge's percent short enough for its rail. On a narrow rail a full gauge drops its
+ * percent sign, since 100% is wider than the rail.
+ *
+ * @param out The buffer.
+ * @param n Its size.
+ * @param pct The percent, 0 to 100.
+ * @param narrow Whether the rail is too narrow for 100%.
+ */
+static void write_gauge_pct(char *out, size_t n, int pct, bool narrow)
+{
+    snprintf(out, n, narrow && pct >= 100 ? "%d" : "%d%%", pct);
+}
+
+/**
+ * @brief How long until the next alarm, cut to its biggest unit, such as 4H or 35M.
+ *
+ * @param out The buffer.
+ * @param n Its size.
+ * @param minutes Minutes until it rings, below zero for no alarm.
+ */
+static void write_gauge_alarm(char *out, size_t n, int minutes)
+{
+    if (minutes < 0)
+    {
+        snprintf(out, n, "--");
+    }
+    else if (minutes < 60)
+    {
+        snprintf(out, n, "%dM", minutes);
+    }
+    else
+    {
+        snprintf(out, n, "%dH", minutes / 60);
+    }
+}
+
+void panels_gauge(uint8_t id, bool narrow, PanelGauge *out)
+{
+    // each gauge fills the way its tall panel's bar does, asked for in hundredths of one segment so
+    // the answer comes back as a percent
+    char scratch[16];
+    GColor unused;
+    GoalReading goal;
+
+    switch (id)
+    {
+        case OPS_TALL_STEP_GOAL:
+        case OPS_TALL_DISTANCE_GOAL:
+        case OPS_TALL_CALORIE_GOAL:
+        case OPS_TALL_ACTIVE_GOAL:
+        case OPS_TALL_SLEEP_GOAL:
+        {
+            static const char *const words[] = {"STEP", "DIST", "KCAL", "ACT", "SLP"};
+
+            goal_reading(id, &goal);
+            out->word = words[id - OPS_TALL_STEP_GOAL];
+            out->pct = pct_of(goal.value, goal.goal);
+
+            if (goal.value < 0)
+            {
+                snprintf(out->text, sizeof(out->text), "--");
+            }
+            else
+            {
+                write_gauge_pct(out->text, sizeof(out->text), out->pct, narrow);
+            }
+
+            return;
+        }
+        case OPS_TALL_HOUR_PROGRESS:
+        case OPS_TALL_DAY_PROGRESS:
+        case OPS_TALL_WEEK_PROGRESS:
+        case OPS_TALL_YEAR_PROGRESS:
+        {
+            static const char *const words[] = {"HOUR", "DAY", "WEEK", "YEAR"};
+            static const OpsPeriod periods[] = {OPS_PERIOD_HOUR, OPS_PERIOD_DAY, OPS_PERIOD_WEEK, OPS_PERIOD_YEAR};
+            int index = id - OPS_TALL_HOUR_PROGRESS;
+
+            out->word = words[index];
+            out->pct = ops_progress_pct(periods[index]);
+            write_gauge_pct(out->text, sizeof(out->text), out->pct, narrow);
+            return;
+        }
+        case OPS_TALL_DAYLIGHT:
+        {
+            // after sunset the bar counts through the night towards sunrise, so the word says so
+            // with no sun times yet the word stays SUN, over the two dashes below
+            int now = hour_now() * 60 + time_store_tm()->tm_min;
+            int rise = weather_store_sunrise();
+            int set = weather_store_sunset();
+            bool day = rise < 0 || set < 0 || solar_day_progress(rise, set, now) >= 0;
+
+            out->word = day ? "SUN" : "DARK";
+            out->pct = daylight_lit(stardate_active_theme(), 100, &unused);
+
+            if (weather_store_sunrise() < 0 || weather_store_sunset() < 0)
+            {
+                snprintf(out->text, sizeof(out->text), "--");
+            }
+            else
+            {
+                write_gauge_pct(out->text, sizeof(out->text), out->pct, narrow);
+            }
+
+            return;
+        }
+        case OPS_TALL_MOON:
+            out->word = "MOON";
+            out->pct = moon_lit(scratch, sizeof(scratch), 1);
+            write_gauge_pct(out->text, sizeof(out->text), out->pct, narrow);
+            return;
+        case OPS_TALL_UV:
+        {
+            int uv = weather_store_uv();
+            int steps = uv < 0 ? 0 : (uv > UV_SEGMENTS ? UV_SEGMENTS : uv);
+
+            out->word = "UV";
+            out->pct = steps * 100 / UV_SEGMENTS;
+            write_number(out->text, sizeof(out->text), uv);
+            return;
+        }
+        case OPS_TALL_BEATS:
+        {
+            // a thousand beats to the day, so ten beats is a percent. read once, so the fill and the
+            // number never land either side of a beat
+            int beats = units_swatch_beats();
+
+            out->word = "BEAT";
+            out->pct = beats / 10;
+            snprintf(out->text, sizeof(out->text), "%03d", beats);
+            return;
+        }
+        case OPS_TALL_ALARM:
+            out->word = "ALRM";
+            out->pct = alarm_lit(scratch, sizeof(scratch), 1);
+            write_gauge_alarm(out->text, sizeof(out->text), ops_alarm_minutes());
+            return;
+        case OPS_PHONE_BATTERY:
+        {
+            // PHONE is a pixel short of the narrow rail, so the word there is PHN
+            int level = phone_store_battery();
+
+            out->word = narrow ? "PHN" : "PHONE";
+            out->pct = level < 0 ? 0 : level;
+
+            if (phone_store_no_plugin())
+            {
+                snprintf(out->text, sizeof(out->text), "OFF");
+            }
+            else if (level < 0)
+            {
+                snprintf(out->text, sizeof(out->text), "--");
+            }
+            else
+            {
+                write_gauge_pct(out->text, sizeof(out->text), out->pct, narrow);
+            }
+
+            return;
+        }
+        default:
+            // the battery, and anything else a saved value holds, since a stray number still reads as
+            // a working gauge
+            out->word = "PWR";
+            out->pct = system_store_battery();
+            write_gauge_pct(out->text, sizeof(out->text), out->pct, narrow);
+            return;
+    }
 }
 
 bool panels_paints(uint8_t id)

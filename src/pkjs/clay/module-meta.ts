@@ -24,7 +24,7 @@ import type { ModuleMeta } from '../../../paf/ts/clay/types';
 /** One readout's row: the framework's fields, plus where the palette files it and what it reads. */
 export interface LcarsModuleMeta extends ModuleMeta {
   group: string;
-  plugin?: 'weather' | 'calendar' | 'music';
+  plugin?: 'weather' | 'calendar' | 'music' | 'phone';
 }
 
 const moduleMeta: Record<string, LcarsModuleMeta> = {
@@ -36,6 +36,7 @@ const moduleMeta: Record<string, LcarsModuleMeta> = {
   'Heart Rate (VITALS)':            { icon: '❤️', blockColor: '#e74c3c', slug: 'heart', group: 'Health' },
   'Steps / Distance (TRAVERSAL)':   { icon: '👟', blockColor: '#2ecc71', slug: 'steps', group: 'Health' },
   'Battery (POWER)':                { icon: '🔋', blockColor: '#f0a500', slug: 'battery', group: 'Status' },
+  'Phone Battery (PHONE)':          { icon: '📱', blockColor: '#f0a500', slug: 'phone-battery', group: 'Status', plugin: 'phone' },
   'Next Alarm (ALARM)':             { icon: '🔔', blockColor: '#ef5350', slug: 'alarm', group: 'Status' },
   'Calories (METABOLIC)':           { icon: '🔥', blockColor: '#e67e22', slug: 'calories', group: 'Health' },
   'Sleep (REGEN)':                  { icon: '😴', blockColor: '#4a5568', slug: 'sleep', group: 'Health' },

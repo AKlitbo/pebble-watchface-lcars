@@ -10,9 +10,9 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { describe, test, expect } from 'vitest';
-import { ENGINEERING_PRESETS, SLOT_PRESETS, TACTICAL_PRESETS } from './presets';
+import { ENGINEERING_PRESETS, SLOT_PRESETS, TACTICAL_PRESETS, TRANSPORTER_PRESETS } from './presets';
 import { sanitize } from './codec';
-import { ENGINEERING_GRID, STARDATE_GRID, SLOT_COUNT, TACTICAL_GRID, canPlace, cellCount } from './geometry';
+import { ENGINEERING_GRID, STARDATE_GRID, SLOT_COUNT, TACTICAL_GRID, TRANSPORTER_GRID, canPlace, cellCount } from './geometry';
 
 describe('SLOT_PRESETS', () => {
   /** esbuild inlines the JSON at bundle time, so a table that arrived empty leaves the preset buttons doing nothing. */
@@ -57,6 +57,7 @@ describe('the watch defaults', () => {
   test.each([
     ['TACTICAL_SLOTS_DEFAULT', TACTICAL_PRESETS],
     ['ENGINEERING_SLOTS_DEFAULT', ENGINEERING_PRESETS],
+    ['TRANSPORTER_SLOTS_DEFAULT', TRANSPORTER_PRESETS],
   ])('%s matches the default preset', (name, presets) => {
     const match = new RegExp('#define ' + name + ' "([0-9,]*)"').exec(schema);
 
@@ -71,11 +72,15 @@ describe('the presets of every layout', () => {
     ['Stardate', SLOT_PRESETS, STARDATE_GRID],
     ['Tactical', TACTICAL_PRESETS, TACTICAL_GRID],
     ['Engineering', ENGINEERING_PRESETS, ENGINEERING_GRID],
+    ['Transporter', TRANSPORTER_PRESETS, TRANSPORTER_GRID],
   ];
 
-  /** Tactical and Engineering show the same preset buttons, so one missing a preset hides a button the other offers. */
-  test('Tactical and Engineering offer the same presets', () => {
-    const result = Object.keys(ENGINEERING_PRESETS).sort();
+  /** Tactical, Engineering, and Transporter show the same preset buttons, so one missing a preset hides a button the others offer. */
+  test.each([
+    ['Engineering', ENGINEERING_PRESETS],
+    ['Transporter', TRANSPORTER_PRESETS],
+  ])('%s offers the same presets as Tactical', (name, presets) => {
+    const result = Object.keys(presets).sort();
 
     expect(result).toEqual(Object.keys(TACTICAL_PRESETS).sort());
   });

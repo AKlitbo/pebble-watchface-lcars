@@ -83,6 +83,20 @@
   background: #ffaa55;
 }
 
+/* the far rail only shows on Transporter, which has a gauge rail down each side. the rule names the
+   rail twice so it outranks Tactical's own rail rule below */
+.sb-face:not(.sb-transporter) .sb-rail.sb-rail-far {
+  display: none;
+}
+
+.sb-face.sb-transporter {
+  max-width: calc(var(--sb-slot-w) * 2 + var(--sb-gap) * 3 + 52px);
+}
+
+.sb-face.sb-transporter .sb-rail-far {
+  display: flex;
+}
+
 /* a mirrored pick runs the rail down the right. the panels keep their places, as on the watch */
 .sb-face.sb-mirror {
   flex-direction: row-reverse;

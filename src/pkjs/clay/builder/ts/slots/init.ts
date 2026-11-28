@@ -10,7 +10,7 @@
  * so switching the picker redraws the grid without touching the other layout's picks.
  */
 
-import { ID_EMPTY, LAYOUT_TACTICAL, LAYOUT_STARDATE, LIST_LAYOUTS, UNIQUE_IDS, areaOf, cellCount, colOf, fitsGrid, gridFor, layoutOfPick, owners, railRightOfPick, rowOf, shapeOf, spanOf } from './geometry';
+import { ID_EMPTY, LAYOUT_TACTICAL, LAYOUT_STARDATE, LAYOUT_TRANSPORTER, LIST_LAYOUTS, UNIQUE_IDS, areaOf, cellCount, colOf, fitsGrid, gridFor, layoutOfPick, owners, railRightOfPick, rowOf, shapeOf, spanOf } from './geometry';
 import type { Grid } from './geometry';
 import { formatId, moveUnique, readList, readSlots, sanitize, writeList, writeStores } from './codec';
 import { presetFor } from './presets';
@@ -96,6 +96,7 @@ export function init(this: ClayContext): void {
     slotsEl.style.gridTemplateRows = rows.join(' ');
     slotsEl.style.gridTemplateColumns = 'repeat(' + grid().cols + ', minmax(0, var(--sb-slot-w)))';
     faceEl.classList.toggle('sb-tactical', layout === LAYOUT_TACTICAL);
+    faceEl.classList.toggle('sb-transporter', layout === LAYOUT_TRANSPORTER);
 
     for (let slot = 0; slot < cellCount(grid()); slot++) {
       const el = root.ownerDocument.createElement('div');

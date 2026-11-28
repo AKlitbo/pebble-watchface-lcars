@@ -17,6 +17,7 @@ static const OpsReadout s_catalog[OPS_COUNT] = {
     [OPS_HEART]       = {.label = "VITALS",    .icon = RESOURCE_ID_ICON_HEART,       .text = readout_hr},
     [OPS_STEPS]       = {.label = "TRAVERSAL", .icon = RESOURCE_ID_ICON_FEET,        .text = readout_steps},
     [OPS_BATTERY]     = {.label = "POWER",     .icon = RESOURCE_ID_ICON_POWER,       .text = ops_text_battery},
+    [OPS_PHONE_BATTERY] = {.label = "PHONE",   .icon = RESOURCE_ID_ICON_PHONE,       .text = ops_text_phone_battery},
     [OPS_CALORIES]    = {.label = "METABOLIC", .icon = RESOURCE_ID_ICON_CALORIES,    .text = ops_text_calories},
     [OPS_SLEEP]       = {.label = "REGEN",     .icon = RESOURCE_ID_ICON_SLEEP,       .text = ops_text_sleep},
     [OPS_ACTIVE]      = {.label = "EXERTION",  .icon = RESOURCE_ID_ICON_ACTIVE,      .text = ops_text_active},

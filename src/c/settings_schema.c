@@ -21,7 +21,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define LCARS_SETTINGS_VERSION 8
+#define LCARS_SETTINGS_VERSION 9
 // smallest versioned blob accepted. fields are append-only so this never changes
 #define LCARS_SETTINGS_V1_SIZE 21
 
@@ -66,9 +66,19 @@ typedef struct LcarsSettings
     char    slots_tactical[48];  // Tactical's twelve picks as "84,20,20,20,...", in cell order
     uint8_t bar_labels;          // a LcarsSide, which end of each bar its word sits at
     char    slots_engineering[24];    // Engineering's six picks as "23,20,0,1,9,10", top to bottom
+    // --- added in v9 ---
+    char    slots_transporter[32];    // Transporter's eight picks as "23,20,0,1,...", in cell order
+    uint8_t gauge_left;               // the OpsId Transporter's left rail gauge shows
+    uint8_t gauge_right;              // the OpsId its right rail gauge shows
+    uint8_t engineering_core;         // the OpsId Engineering's power core shows
+    bool    mirror_stardate;          // the Stardate layout runs its rail down the right
+    bool    mirror_tactical;          // Tactical does
+    bool    mirror_engineering;       // Engineering does
 } LcarsSettings;
 
-_Static_assert(sizeof(LcarsSettings) == 141, "lcars blob size is frozen at 141 bytes (v8)");
+_Static_assert(sizeof(LcarsSettings) == 179, "lcars blob size is frozen at 179 bytes (v9)");
+_Static_assert(sizeof(((LcarsSettings *)0)->slots_transporter) >= 8 * 3 + 7 + 1,
+               "slots_transporter has to hold eight three-digit picks");
 _Static_assert(sizeof(((LcarsSettings *)0)->slots_engineering) >= 6 * 3 + 5 + 1,
                "slots_engineering has to hold six three-digit picks");
 
@@ -105,6 +115,16 @@ static LcarsSettings s_settings;
 // the bar words' end, also this face's own
 #define SETTING_BAR_LABELS     ((SettingId)(SETTING_COUNT + 10))
 
+// the rail gauges, Transporter's two and Engineering's core, also this face's own
+#define SETTING_GAUGE_LEFT       ((SettingId)(SETTING_COUNT + 11))
+#define SETTING_GAUGE_RIGHT      ((SettingId)(SETTING_COUNT + 12))
+#define SETTING_ENGINEERING_CORE ((SettingId)(SETTING_COUNT + 13))
+
+// each layout's Mirrored switch, also this face's own
+#define SETTING_MIRROR_STARDATE    ((SettingId)(SETTING_COUNT + 14))
+#define SETTING_MIRROR_TACTICAL    ((SettingId)(SETTING_COUNT + 15))
+#define SETTING_MIRROR_ENGINEERING ((SettingId)(SETTING_COUNT + 16))
+
 // Tactical's picks on a fresh install: the clock across the top, the Sensors Block beside the heart
 // rate and steps in the middle, as the Stardate layout starts, and the date across the bottom
 #define TACTICAL_SLOTS_DEFAULT "84,20,20,20,23,20,0,1,85,20,20,20"
@@ -112,6 +132,10 @@ static LcarsSettings s_settings;
 // Engineering's picks on a fresh install: the Sensors Block over two rows, then the heart rate, the steps,
 // and the dawn and dusk times
 #define ENGINEERING_SLOTS_DEFAULT "23,20,0,1,9,10"
+
+// Transporter's picks on a fresh install: the Sensors Block beside the heart rate and steps, as the
+// Stardate layout starts, over the hourly forecast, which needs the same weather source as the block
+#define TRANSPORTER_SLOTS_DEFAULT "23,20,0,1,52,20,20,20"
 
 // lcars subscribes to every known setting in its frozen struct order. every KNOWN_ entry takes
 // its default from the settings page, so the date opens on the numeric stardate-style "%Y.%m%d"
@@ -180,6 +204,30 @@ static const SettingField s_fields[] = {
       .offset = offsetof(LcarsSettings, slots_engineering),
       .size = sizeof(s_settings.slots_engineering),
       .default_str = ENGINEERING_SLOTS_DEFAULT },
+    { .id = SETTING_COUNT, .message_key = &MESSAGE_KEY_APPEARANCE_SLOTS_TRANSPORTER, .type = SETTING_CSTRING,
+      .offset = offsetof(LcarsSettings, slots_transporter),
+      .size = sizeof(s_settings.slots_transporter),
+      .default_str = TRANSPORTER_SLOTS_DEFAULT },
+
+    // the gauges take an OpsId of the tall panel each stands for. Transporter starts on the battery
+    // and the step goal, and Engineering's core starts on the battery
+    { .id = SETTING_GAUGE_LEFT, .message_key = &MESSAGE_KEY_APPEARANCE_GAUGE_LEFT,
+      .type = SETTING_ENUM_U8, .offset = offsetof(LcarsSettings, gauge_left),
+      .enum_count = OPS_COUNT, .default_num = OPS_TALL_BATTERY },
+    { .id = SETTING_GAUGE_RIGHT, .message_key = &MESSAGE_KEY_APPEARANCE_GAUGE_RIGHT,
+      .type = SETTING_ENUM_U8, .offset = offsetof(LcarsSettings, gauge_right),
+      .enum_count = OPS_COUNT, .default_num = OPS_TALL_STEP_GOAL },
+    { .id = SETTING_ENGINEERING_CORE, .message_key = &MESSAGE_KEY_APPEARANCE_ENGINEERING_CORE,
+      .type = SETTING_ENUM_U8, .offset = offsetof(LcarsSettings, engineering_core),
+      .enum_count = OPS_COUNT, .default_num = OPS_TALL_BATTERY },
+
+    // each layout keeps its own Mirrored switch, off to start
+    { .id = SETTING_MIRROR_STARDATE, .message_key = &MESSAGE_KEY_APPEARANCE_MIRROR_STARDATE,
+      .type = SETTING_BOOL, .offset = offsetof(LcarsSettings, mirror_stardate), .default_num = 0 },
+    { .id = SETTING_MIRROR_TACTICAL, .message_key = &MESSAGE_KEY_APPEARANCE_MIRROR_TACTICAL,
+      .type = SETTING_BOOL, .offset = offsetof(LcarsSettings, mirror_tactical), .default_num = 0 },
+    { .id = SETTING_MIRROR_ENGINEERING, .message_key = &MESSAGE_KEY_APPEARANCE_MIRROR_ENGINEERING,
+      .type = SETTING_BOOL, .offset = offsetof(LcarsSettings, mirror_engineering), .default_num = 0 },
 
     // the ZONE 1 readout's zone. the id is SETTING_COUNT because nothing reads this through the
     // library's typed accessors, only the two helpers at the bottom of this file
@@ -345,7 +393,22 @@ uint8_t lcars_layout(void)
 
 bool lcars_rail_right(void)
 {
-    return s_settings.layout % 2 == 1;
+    // an odd Layout pick reads as that layout mirrored, the same as its switch. the settings page
+    // turns one into the plain layout with the switch on
+    bool odd = s_settings.layout % 2 == 1;
+
+    switch (lcars_layout())
+    {
+        case LCARS_LAYOUT_STARDATE:
+            return odd || s_settings.mirror_stardate;
+        case LCARS_LAYOUT_TACTICAL:
+            return odd || s_settings.mirror_tactical;
+        case LCARS_LAYOUT_ENGINEERING:
+            return odd || s_settings.mirror_engineering;
+        default:
+            // Transporter has a rail down each side, so it has no mirrored frame to turn to
+            return false;
+    }
 }
 
 bool lcars_labels_right(void)
@@ -400,6 +463,26 @@ uint8_t lcars_slot_tactical(int cell)
 uint8_t lcars_slot_engineering(int cell)
 {
     return pick_from_list(s_settings.slots_engineering, cell);
+}
+
+uint8_t lcars_slot_transporter(int cell)
+{
+    return pick_from_list(s_settings.slots_transporter, cell);
+}
+
+uint8_t lcars_gauge_left(void)
+{
+    return s_settings.gauge_left;
+}
+
+uint8_t lcars_gauge_right(void)
+{
+    return s_settings.gauge_right;
+}
+
+uint8_t lcars_engineering_core(void)
+{
+    return s_settings.engineering_core;
 }
 
 bool lcars_zone_1_is_set(void)

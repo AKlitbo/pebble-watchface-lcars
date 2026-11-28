@@ -75,12 +75,14 @@ typedef enum
     LCARS_LAYOUT_STARDATE, ///< The default: the big clock over a 2x2 ops grid
     LCARS_LAYOUT_TACTICAL,   ///< Tactical: three 2x2 grids, top, middle, and bottom, with the clock and date placed as panels
     LCARS_LAYOUT_ENGINEERING,     ///< Engineering: the rail is a power core sweeping into both strips, the clock stacked, and six panels in one column
+    LCARS_LAYOUT_TRANSPORTER,     ///< Transporter: a gauge rail down each side, the clock across the top, and eight panels between
     LCARS_LAYOUT_COUNT
 } LcarsLayout;
 
-/// How many picks the Layout picker offers. Each layout saves as twice its LcarsLayout, and its
-/// mirrored frame, with the rail down the right, as one more, so Stardate is 0, Stardate Mirrored 1,
-/// Tactical 2, Tactical Mirrored 3, Engineering 4, and Engineering Mirrored 5
+/// How many values the Layout pick can hold. Each layout saves as twice its LcarsLayout, so Stardate
+/// is 0, Tactical 2, Engineering 4, and Transporter 6. One more than a layout's number reads as that
+/// layout mirrored, the same as its Mirrored switch. Transporter has a rail down each side and no
+/// mirrored frame, so a 7 draws as a 6
 #define LCARS_LAYOUT_PICKS (LCARS_LAYOUT_COUNT * 2)
 
 /// How many frame themes the picker offers. The night and Quiet Time overrides count the same set,
@@ -99,8 +101,8 @@ typedef enum
 } LcarsSide;
 
 /**
- * @brief Whether the frame is mirrored, with its rail down the right. The Layout picker offers this
- * as a mirrored version of each layout.
+ * @brief Whether the frame is mirrored, with its rail down the right. Each layout but Transporter,
+ * which has a rail down each side, has its own Mirrored switch, and an odd Layout pick counts too.
  *
  * @return True for the right.
  */
@@ -144,6 +146,38 @@ uint8_t lcars_slot_tactical(int cell);
  * @return An OpsId, OPS_EMPTY for a cell the saved list leaves out or holds no number for.
  */
 uint8_t lcars_slot_engineering(int cell);
+
+/// How many cells Transporter holds, two grids of four
+#define LCARS_TRANSPORTER_CELLS 8
+
+/**
+ * @brief What one cell of Transporter is set to show, read from its saved list the same way as Tactical's.
+ *
+ * @param cell The cell, 0 to 7. Each grid's four run down each column, top grid first.
+ * @return An OpsId, OPS_EMPTY for a cell the saved list leaves out or holds no number for.
+ */
+uint8_t lcars_slot_transporter(int cell);
+
+/**
+ * @brief What Transporter's left rail gauge is set to show.
+ *
+ * @return An OpsId, one of the tall panels with a bar, such as OPS_TALL_BATTERY.
+ */
+uint8_t lcars_gauge_left(void);
+
+/**
+ * @brief What Transporter's right rail gauge is set to show.
+ *
+ * @return An OpsId, one of the tall panels with a bar.
+ */
+uint8_t lcars_gauge_right(void);
+
+/**
+ * @brief What Engineering's power core is set to show.
+ *
+ * @return An OpsId, one of the tall panels with a bar.
+ */
+uint8_t lcars_engineering_core(void);
 
 /**
  * @brief What the upper left slot is set to show.

@@ -11,6 +11,7 @@
 #include "io/stores/calendar_store.h"
 #include "io/stores/health_store.h"
 #include "io/stores/music_store.h"
+#include "io/stores/phone_store.h"
 #include "io/stores/location_store.h"
 #include "io/stores/system_store.h"
 #include "io/stores/time_store.h"
@@ -37,9 +38,10 @@ static Window *s_window;
 static HealthConfig s_health;
 static bool s_health_live;
 
-// whether the calendar and music stores were last started live
+// whether the calendar, music, and phone stores were last started live
 static bool s_calendar_live;
 static bool s_music_live;
+static bool s_phone_live;
 
 /** @brief Whether a panel that shows the calendar is placed. */
 static bool calendar_shown(void)
@@ -53,13 +55,20 @@ static bool music_shown(void)
     return stardate_ops_shows(OPS_WIDE_MUSIC) || stardate_ops_shows(OPS_FULL_MUSIC);
 }
 
+/** @brief Whether a panel or a rail gauge shows the phone's battery. */
+static bool phone_shown(void)
+{
+    return stardate_ops_shows(OPS_PHONE_BATTERY) || stardate_gauge_shows(OPS_PHONE_BATTERY);
+}
+
 /**
- * @brief Starts the calendar and music stores live only while a panel shows them, and again when a
- * save adds the first one or takes the last one off.
+ * @brief Starts the calendar, music, and phone stores live only while something on the face shows
+ * them, and again when a save adds the first one or takes the last one off.
  *
- * A live calendar store asks the phone for the agenda every half hour, and a live music store has
- * the phone send every change of track. With no panel showing either, both would only wake the
- * watch for nothing. A music store started not live tells the phone so, and the phone stops sending.
+ * A live calendar store asks the phone for the agenda every half hour, a live music store has the
+ * phone send every change of track, and a live phone store has it send the phone's battery as it
+ * moves. With nothing showing them, each would only wake the watch for nothing. A music store started
+ * not live tells the phone so, and the phone stops sending.
  *
  * @param first True at launch, when both start whatever they were before.
  */
@@ -83,6 +92,13 @@ static void apply_phone_feeds(bool first)
     {
         s_music_live = music_live;
         music_store_init((MusicConfig){.live = music_live}, NULL);
+    }
+
+    bool phone_live = phone_shown();
+    if (first || phone_live != s_phone_live)
+    {
+        s_phone_live = phone_live;
+        phone_store_init((PhoneConfig){.live = phone_live}, NULL);
     }
 }
 
@@ -235,6 +251,7 @@ static void init(void)
     health_store_subscribe(on_health_changed);
     calendar_store_subscribe(engine_mark_dirty);
     music_store_subscribe(engine_mark_dirty);
+    phone_store_subscribe(engine_mark_dirty);
     weather_store_subscribe(engine_mark_dirty);
     location_store_subscribe(engine_mark_dirty);
     system_store_subscribe(engine_mark_dirty);

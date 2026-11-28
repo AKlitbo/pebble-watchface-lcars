@@ -30,6 +30,7 @@ enum
     ZONE_LON,
     ZONE_MINUTES,
     ZONE_POWER,
+    ZONE_CORE_WORD,
     ZONE_COUNT
 };
 
@@ -190,12 +191,14 @@ enum
 // capitals sit 2 rows into their box, so they land on rows 2 to 11, the middle of the strip
 #define ENGINEERING_DATE GRect(40, 0, 158, 14)
 
-// the core: thirteen cells six rows tall, eight rows apart from row 61, across the rail. the battery
-// level sits in the rail just above them
+// the core: thirteen cells six rows tall, eight rows apart from row 61, across the rail. its reading
+// sits in a block of its own just above them, rows 43 to 58, centred like the words on Transporter's
+// rails. Antonio 12's capitals sit 2 rows into their box, so they land on rows 46 to 55, 3 rows clear
+// of each edge
 #define ENGINEERING_CELL GRect(0, 61, 30, 6)
 #define ENGINEERING_CELL_PITCH 8
 #define ENGINEERING_CELLS 13
-#define ENGINEERING_POWER GRect(0, 45, 28, 16)
+#define ENGINEERING_POWER GRect(0, 44, 30, 16)
 
 // the phone link and Quiet Time are two blocks in the rail's tail under the cells, cut out by seams
 // in the frame. each is 16 rows. Antonio 12's capitals are 10 rows and sit 2 rows into their box, so
@@ -203,6 +206,79 @@ enum
 #define ENGINEERING_LINK GRect(0, 165, 30, 16)
 #define ENGINEERING_QUIET GRect(0, 183, 30, 16)
 #define ENGINEERING_RAIL_WORD_DROP 1
+
+// the core's word sits on the rail over the reading's block, saying what the core shows. Antonio 12's
+// capitals sit 2 rows into their box, which lands them on rows 29 to 38, clear of the seam on row 41
+#define ENGINEERING_CORE_WORD GRect(0, 27, 30, 14)
+
+// --- Transporter ---
+// a rail down each side, 24 wide, joined by a strip across the top and one along the foot, with the
+// clock in a frame of its own between them. every place here matches frame/<theme>-transporter~emery.html.
+// the frame has no mirrored version, so nothing here turns with the rail
+#define TRANSPORTER_RAIL_W 24
+#define TRANSPORTER_RAIL_RIGHT 176
+
+// the clock in Antonio 62 inside its frame, between the frame's left side and the right rail. its
+// digits sit 8 rows into their box, so on rows 24 to 79, between the frame's top bar and its foot
+#define TRANSPORTER_TIME GRect(38, 16, 138, 74)
+
+// a 12 hour time with a leading zero is about 121 wide, which leaves no room beside it for the AM/PM.
+// so the AM/PM goes in black on the nub on the frame's left side, rows 46 to 57 from x=28 to x=43, the
+// way the rails' words sit on their blocks. Antonio 10's capitals are 8 rows and sit a row into their
+// box, which puts them on rows 48 to 55, 2 rows clear of each edge. on a 24 hour clock the nub is bare
+#define TRANSPORTER_MERIDIEM GRect(28, 47, 16, 12)
+
+// the part of the nub that stands out past the frame's side, which a clock with no AM/PM paints over so
+// the nub sits flush with the side
+#define TRANSPORTER_NUB_OVERHANG GRect(38, 46, 6, 12)
+
+// the date is the frame's title, in a black box at the right end of its top bar, rows 9 to 20, just
+// before the round cap at x=167. a long date grows the box to the left along the bar. the word is
+// drawn from the box's top, and Antonio 12's capitals sit 2 rows into it, so the box starts a row
+// above the bar to leave the capitals on rows 10 to 19, a row clear of each edge
+#define TRANSPORTER_DATE GRect(46, 8, 120, 13)
+
+// two grids of two columns of two, one straight under the other from row 92, 4 rows under the clock
+// frame's foot. the four rows sit 32 apart, a row looser than the other layouts', so the last row's
+// body ends on row 219, just above the foot's strip. the columns are 69 wide bars from x=28 and x=102,
+// which leaves 4 or 5 pixels to each rail
+#define TRANSPORTER_COL_L 28
+#define TRANSPORTER_COL_R 102
+#define TRANSPORTER_ROW_TOP 92
+#define TRANSPORTER_ROW_PITCH 32
+#define TRANSPORTER_ROW_BOTTOM (TRANSPORTER_ROW_TOP + 2 * TRANSPORTER_ROW_PITCH)
+
+// a reading in the left column stops 3 short of the right column's bar, and one in the right column
+// 3 short of the right rail
+#define TRANSPORTER_R_L (TRANSPORTER_COL_R - 3)
+#define TRANSPORTER_R_R (TRANSPORTER_RAIL_RIGHT - 3)
+
+// each rail's gauge: its word on the rail's head between the top sweep and the cells, thirteen cells
+// eight rows tall and ten apart from row 32, then the reading in its block on rows 162 to 177. all of
+// it is set in Antonio 10, the size that fits the widest word, MOON, and a full 100 in the 24 wide
+// rail. the drops lower the words to sit in the middle of their blocks
+#define TRANSPORTER_WORD GRect(0, 17, 24, 14)
+#define TRANSPORTER_CELL GRect(0, 32, 24, 8)
+#define TRANSPORTER_CELL_PITCH 10
+#define TRANSPORTER_CELLS 13
+#define TRANSPORTER_READING GRect(0, 162, 24, 16)
+
+// the phone link on the left rail's last block and Quiet Time on the right's, rows 180 to 195, lit or
+// dark the way Engineering's are
+#define TRANSPORTER_STATE GRect(0, 180, 24, 16)
+#define TRANSPORTER_BLOCK_DROP 2
+
+/**
+ * @brief Where something on Transporter's right rail sits, given its place on the left rail.
+ *
+ * @param box Its place on the left rail.
+ * @return The same place on the right rail.
+ */
+static inline GRect transporter_right(GRect box)
+{
+    box.origin.x += TRANSPORTER_RAIL_RIGHT;
+    return box;
+}
 
 // the pills run rows 88 to 110 and 119 to 141, from x=2 to the rail's edge, and light for the phone
 // link and Quiet Time in place of the glyphs the Stardate layout draws. Antonio 12's capitals are 10
@@ -256,6 +332,17 @@ bool stardate_shows_clock(void);
  * @return True when the date is drawn.
  */
 bool stardate_shows_date(void);
+
+/**
+ * @brief Whether a rail gauge of the layout on show is set to a pick, such as Engineering's core or
+ * either of Transporter's rails.
+ *
+ * main asks this, beside stardate_ops_shows, to start only the stores a gauge on screen reads.
+ *
+ * @param id The OpsId.
+ * @return True when a gauge shows it.
+ */
+bool stardate_gauge_shows(uint8_t id);
 
 /**
  * @brief Whether any drawn ops slot is showing the .beats reading.

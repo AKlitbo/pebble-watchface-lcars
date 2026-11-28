@@ -1,16 +1,16 @@
 # LCARS Stardate
 
-<img src=".github/images/lcars-stardate/ops_body.png" width="100" title="Body"> <img src=".github/images/lcars-stardate/ops_weather.png" width="100" title="Weather"> <img src=".github/images/lcars-stardate/ops_sun.png" width="100" title="Sun"> <img src=".github/images/lcars-stardate/ops_moon.png" width="100" title="Moon"> <img src=".github/images/lcars-stardate/ops_calendar.png" width="100" title="Calendar"> <img src=".github/images/lcars-stardate/ops_alt-time.png" width="100" title="Alternate Time">
+<img src=".github/images/lcars-stardate/previews/stardate/classic.png" width="100" title="Stardate, Classic"> <img src=".github/images/lcars-stardate/previews/tactical/nemesis-blue.png" width="100" title="Tactical, Nemesis Blue"> <img src=".github/images/lcars-stardate/previews/engineering/lower-decks.png" width="100" title="Engineering, Lower Decks"> <img src=".github/images/lcars-stardate/previews/transporter/voyager.png" width="100" title="Transporter, Voyager">
 
-An LCARS watchface for the Pebble Time 2. The time sits inside a *Star Trek* computer frame, with four ops panels below it for the readouts you pick, up to twelve on the Tactical layout, or six beside a stacked clock on Engineering.
+An LCARS watchface for the Pebble Time 2. The time sits inside a *Star Trek* computer frame, with four ops panels below it for the readouts you pick, up to twelve on the Tactical layout, six beside a stacked clock on Engineering, or eight between two gauge rails on Transporter.
 
 ## Features
 
 - The time in 12-hour, 24-hour, or Swatch Internet Time (.beats), and a stardate-style date on the STARDATE banner.
-- Three layouts: Stardate, with the big clock over four ops panels, Tactical, with the clock, the panels, and the date in three frames you can rearrange, and Engineering, with the hours over the minutes beside six panels.
+- Four layouts: Stardate, with the big clock over four ops panels, Tactical, with the clock, the panels, and the date in three frames you can rearrange, Engineering, with the hours over the minutes beside six panels, and Transporter, with the clock over eight panels between two gauge rails.
 - Ops panels, filled by dragging readouts onto a picture of the face.
-- Readouts for your health, the battery, the sun, the moon, the weather, day counts, .beats, the Unix time, a second time zone, and your next alarm.
-- Your coordinates, a bluetooth glyph, and an optional Quiet Time glyph on the rail, and a battery gauge in the top corner. Tactical shows the phone link and Quiet Time as LINK and QUIET pills that light up, and Engineering as blocks in its rail, with the battery as a power core.
+- Readouts for your health, the watch and phone batteries, the sun, the moon, the weather, day counts, .beats, the Unix time, a second time zone, and your next alarm.
+- Your coordinates, a bluetooth glyph, and an optional Quiet Time glyph on the rail, and a battery gauge in the top corner. Tactical shows the phone link and Quiet Time as LINK and QUIET pills that light up, and Engineering and Transporter as blocks in their rails, whose cells fill with a reading you pick.
 - Nine frame themes, with an optional swap after dark or during Quiet Time, and the rail on either side.
 - Optional buzzes on the hour and when the phone connects or drops.
 
@@ -19,7 +19,7 @@ An LCARS watchface for the Pebble Time 2. The time sits inside a *Star Trek* com
 1. **Install LCARS Stardate.** Download `lcars-stardate-emery-<version>.pbw` from [Releases](https://github.com/AKlitbo/pebble-watchface-lcars/releases) and open it with the Pebble app on your phone. It runs on the Pebble Time 2 (Emery) only, with watch firmware 4.44.3 or later.
 2. **Allow Its Permissions** when the Pebble app asks, as [Permissions](#permissions) covers.
 3. **Set Up the Weather.** Enable Phone GPS is off on a new install, so pick a Manual Location or turn GPS on.
-4. **Turn Plugins On** to use a weather plugin. In the Pebble app, go to Settings, Plugins, and turn on Plugins / permissions preview, then pick Pebble App: Preferred Source as the Data Source. Everything else works with plugins off.
+4. **Turn Plugins On** to use a weather plugin or the Phone Battery readout. In the Pebble app, go to Settings, Plugins, and turn on Plugins / permissions preview, then pick Pebble App: Preferred Source as the Data Source. Everything else works with plugins off.
 5. **Pick Your Readouts** under Ops Panels on the settings page.
 
 ## Configuration
@@ -30,25 +30,35 @@ Open LCARS Stardate's settings in the Pebble app.
 
 | Setting | What It Does |
 | :-- | :-- |
-| Layout | Stardate, the default, draws the big clock over four panels. Tactical puts the clock in the top frame, four panels between the elbows, and the date in the bottom frame, and the clock and the date can move or give way to panels. Its two pills, LINK and QUIET, light up when the phone is connected and during Quiet Time, in place of the glyphs. Engineering stacks the hours over the minutes beside a column of six panels, and its rail is a power core whose cells light with the battery, over LINK and QUIET blocks that light when the phone is connected and during Quiet Time. Show Connection Icon and Show Quiet Time Icon only drive Stardate's glyphs, so they hide on the other two. Each layout also comes mirrored, with the rail down the right, and your panels keep their places. |
+| Layout | Stardate, the default, draws the big clock over four panels. Tactical puts the clock in the top frame, four panels between the elbows, and the date in the bottom frame, and the clock and the date can move or give way to panels. Its two pills, LINK and QUIET, light up when the phone is connected and during Quiet Time, in place of the glyphs. Engineering stacks the hours over the minutes beside a column of six panels, and its rail is a power core whose cells light with the battery or another reading, over LINK and QUIET blocks that light when the phone is connected and during Quiet Time. Transporter puts the clock in a frame of its own, with the date as its title, over eight panels between two rails, each a gauge of its own, with LINK and QUIET blocks at their feet. |
 | Bar Labels | Left, the default, or Right, for which end of each bar its word sits at. |
 | Frame Theme | The frame's colour scheme, from nine. Classic by default. |
 | Theme Mode | Fixed, the default, keeps the Frame Theme. Day / Night / Quiet can swap in another after dark or during Quiet Time. |
 | Use Night Theme and Night Theme | Wears the Night Theme from sunset to sunrise. Off by default. |
 | Use Quiet Time Theme and Quiet Time Theme | Wears the Quiet Time Theme during Quiet Time, even at night. Off by default. |
-| Show Quiet Time Icon | A muted speaker on the rail during Quiet Time. Off by default. |
+
+### Layout Settings
+
+Each layout has a section of its own, which shows while that layout is picked.
+
+| Setting | What It Does |
+| :-- | :-- |
+| Mirrored | Runs the rail down the right, and your panels keep their places. Stardate, Tactical, and Engineering each have their own. Off by default. |
+| Show Connection Icon | Stardate only. The bluetooth glyph on the rail, slashed when the phone drops. On by default. |
+| Show Quiet Time Icon | Stardate only. A muted speaker on the rail during Quiet Time. Off by default. |
+| Power Core | What Engineering's rail fills with. The battery by default, or the phone's battery, a daily goal, the hour, day, week, or year, the daylight, the moon, the UV index, .beats, or the next alarm. A word over the core's reading says which. |
+| Left Gauge and Right Gauge | What each of Transporter's rails fills with, from the same list. The battery and the step goal by default. |
 
 ### Ops Panels
 
 | Setting | What It Does |
 | :-- | :-- |
-| The Panel Builder | Drag a readout onto a panel, or one panel onto another to swap them. It shows the panels of the layout picked above, and each layout keeps its own. Default puts back the layout's starting panels, and on Tactical and Engineering the Activity, Weather, Data, Sleep, and Creator buttons fill them with a ready-made arrangement. Clear empties them. A panel that needs a plugin your phone cannot use says so under the face. |
+| The Panel Builder | Drag a readout onto a panel, or one panel onto another to swap them. It shows the panels of the layout picked above, and each layout keeps its own. Default puts back the layout's starting panels, and on Tactical, Engineering, and Transporter the Activity, Weather, Data, Sleep, and Creator buttons fill them with a ready-made arrangement. Clear empties them. A panel that needs a plugin your phone cannot use says so under the face. |
 
 ### Bluetooth
 
 | Setting | What It Does |
 | :-- | :-- |
-| Show Connection Icon | The bluetooth glyph on the rail, slashed when the phone drops. On by default. |
 | Vibrate on Connect and Vibrate on Disconnect | A Short, Long, or Double buzz when the phone reconnects or drops. None by default. |
 
 ### Clock
@@ -111,7 +121,7 @@ Any of these can go in any panel.
 | **Wind**<br>![](resources/thumbnails/wind-slot.png) | **UV Index**<br>![](resources/thumbnails/uv-slot.png) | **High / Low Temperature**<br>![](resources/thumbnails/hilo-slot.png) | **Julian Date**<br>![](resources/thumbnails/julian-slot.png) | **Day of Year**<br>![](resources/thumbnails/day-of-year-slot.png) | **Week Number**<br>![](resources/thumbnails/week-slot.png) | **Temperature**<br>![](resources/thumbnails/temp-slot.png) |
 | **Conditions**<br>![](resources/thumbnails/conditions-slot.png) | **Epoch Clock**<br>![](resources/thumbnails/epoch-slot.png) | **Swatch Beats**<br>![](resources/thumbnails/beats-slot.png) | **Alternate Time Zone**<br>![](resources/thumbnails/zone1-slot.png) | **Next Alarm**<br>![](resources/thumbnails/alarm-slot.png) | **Hour Progress**<br>![](resources/thumbnails/hour-progress-slot.png) | **Day Progress**<br>![](resources/thumbnails/day-progress-slot.png) |
 | **Week Progress**<br>![](resources/thumbnails/week-progress-slot.png) | **Year Progress**<br>![](resources/thumbnails/year-progress-slot.png) | **Precipitation**<br>![](resources/thumbnails/precip-slot.png) | **Feels Like**<br>![](resources/thumbnails/feels-like-slot.png) | **Pressure**<br>![](resources/thumbnails/pressure-slot.png) | **Dew Point**<br>![](resources/thumbnails/dew-point-slot.png) | **Days Left**<br>![](resources/thumbnails/days-left-slot.png) |
-| **Weeks Left**<br>![](resources/thumbnails/weeks-left-slot.png) | **Weekday Dots**<br>![](resources/thumbnails/weekday-dots-slot.png) | | | | | |
+| **Weeks Left**<br>![](resources/thumbnails/weeks-left-slot.png) | **Weekday Dots**<br>![](resources/thumbnails/weekday-dots-slot.png) | **Phone Battery**<br>![](resources/thumbnails/phone-battery-slot.png) | | | | |
 
 Alternate Time Zone labels its bar with the city you pick, and reads ZONE 1 until you pick one. The week readouts start the week on Monday. Weekday Dots lights today among the seven days.
 

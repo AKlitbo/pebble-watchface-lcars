@@ -5,8 +5,9 @@
  *
  * Each layout has its panels in areas, each area a grid two columns wide and two rows tall. The
  * Stardate layout has one area under the clock. Tactical has three, one in the top frame, one
- * between the two elbows, and one in the bottom frame. The cells are numbered down each column of
- * an area, and the areas follow each other from the top, so on Tactical the cells run 0 to 11.
+ * between the two elbows, and one in the bottom frame. Transporter has two, one under the other
+ * between its rails. The cells are numbered down each column of an area, and the areas follow each
+ * other from the top, so on Tactical the cells run 0 to 11.
  * Most readouts fill one cell. The bigger ones fill two cells of a column, a row, or a whole area,
  * and each is saved in the cell it starts from, with the cells it covers saved as empty. A panel
  * never runs from one area into the next. The watch reads the values back the same way.
@@ -22,16 +23,20 @@ export interface Grid {
 }
 
 /**
- * The three layouts, as layoutOfPick returns them. APPEARANCE_LAYOUT saves a pick, 0 to 5, which is
- * the layout times two plus one for its mirrored version, so read it through layoutOfPick rather
- * than comparing it with these.
+ * The four layouts, as layoutOfPick returns them. The Layout picker saves the layout times two, and
+ * the builder is handed that plus one while the layout's Mirrored switch is on, so read a pick through
+ * layoutOfPick rather than comparing it with these.
  */
 export const LAYOUT_STARDATE = 0;
 export const LAYOUT_TACTICAL = 1;
 export const LAYOUT_ENGINEERING = 2;
+export const LAYOUT_TRANSPORTER = 3;
 
-/** How many layouts the Layout picker offers, each with a mirrored pick. */
-export const LAYOUT_COUNT = 3;
+/**
+ * How many layouts the Layout picker offers. Each has a Mirrored switch but Transporter, whose rails
+ * run down both sides.
+ */
+export const LAYOUT_COUNT = 4;
 
 /** The Stardate layout's panels: two columns of two under the clock. */
 export const STARDATE_GRID: Grid = { cols: 2, rows: 2, areas: 1, placesClock: false };
@@ -43,8 +48,8 @@ export const TACTICAL_GRID: Grid = { cols: 2, rows: 2, areas: 3, placesClock: tr
  * The layout a Layout pick draws. Each layout saves as twice its number and its mirrored pick as one
  * more, and a mirrored pick's panels are the same as the layout's own.
  *
- * @param pick The saved Layout pick, 0 to 5.
- * @return LAYOUT_STARDATE, LAYOUT_TACTICAL, or LAYOUT_ENGINEERING.
+ * @param pick The saved Layout pick, 0 to 6.
+ * @return One of the LAYOUT_ numbers.
  */
 export function layoutOfPick(pick: number): number {
   // a pick past the ones the picker offers reads as Stardate, the same as the watch
@@ -54,24 +59,27 @@ export function layoutOfPick(pick: number): number {
 /**
  * Whether a Layout pick runs the rail down the right.
  *
- * @param pick The saved Layout pick, 0 to 5.
- * @return True for a mirrored pick.
+ * @param pick The saved Layout pick, 0 to 6.
+ * @return True for a mirrored pick. Transporter is never mirrored, the same as on the watch.
  */
 export function railRightOfPick(pick: number): boolean {
-  return pick >= 0 && pick < LAYOUT_COUNT * 2 && pick % 2 === 1;
+  return pick >= 0 && pick < LAYOUT_COUNT * 2 && pick % 2 === 1 && layoutOfPick(pick) !== LAYOUT_TRANSPORTER;
 }
 
 /** Engineering's panels: one column of six down the right of the screen. */
 export const ENGINEERING_GRID: Grid = { cols: 1, rows: 6, areas: 1, placesClock: false };
 
+/** Transporter's panels: two areas of two columns of two, between its rails and under the clock. */
+export const TRANSPORTER_GRID: Grid = { cols: 2, rows: 2, areas: 2, placesClock: false };
+
 /**
- * A layout's grid. Anything but Tactical and Engineering reads as the Stardate layout, the same as on the watch.
+ * A layout's grid. A layout past the known ones reads as the Stardate layout, the same as on the watch.
  *
  * @param layout The saved layout.
  * @return Its grid.
  */
 export function gridFor(layout: number): Grid {
-  const grids = [STARDATE_GRID, TACTICAL_GRID, ENGINEERING_GRID];
+  const grids = [STARDATE_GRID, TACTICAL_GRID, ENGINEERING_GRID, TRANSPORTER_GRID];
 
   return grids[layout] || STARDATE_GRID;
 }
@@ -163,7 +171,7 @@ export const ID_CLOCK_COMPACT = 86;
 export const ID_STARDATE_COMPACT = 87;
 
 /** How many readouts the catalogue has, the watch's OPS_COUNT. A pick at or past it reads as empty. */
-export const ID_COUNT = 88;
+export const ID_COUNT = 89;
 
 /**
  * The clock and the date, each in its two sizes. A group goes on the face once at most, so a compact
@@ -275,14 +283,18 @@ export const TACTICAL_STORE_CLASS = 'sb-tac';
 /** The hidden-store class Engineering's six picks are found by, all in one text value. */
 export const ENGINEERING_STORE_CLASS = 'sb-eng';
 
+/** The hidden-store class Transporter's eight picks are found by, all in one text value. */
+export const TRANSPORTER_STORE_CLASS = 'sb-trn';
+
 /** The layouts that save their picks as one list, each with the hidden-store class its list rides in. */
 export const LIST_STORES: Record<number, string> = {
   [LAYOUT_TACTICAL]: TACTICAL_STORE_CLASS,
   [LAYOUT_ENGINEERING]: ENGINEERING_STORE_CLASS,
+  [LAYOUT_TRANSPORTER]: TRANSPORTER_STORE_CLASS,
 };
 
 /** The layouts in LIST_STORES, in order. */
-export const LIST_LAYOUTS = [LAYOUT_TACTICAL, LAYOUT_ENGINEERING];
+export const LIST_LAYOUTS = [LAYOUT_TACTICAL, LAYOUT_ENGINEERING, LAYOUT_TRANSPORTER];
 
 /** The area a cell sits in, 0 for the top. */
 export function areaOf(slot: number, grid: Grid): number {

@@ -21,6 +21,15 @@
 
 // --- system ---
 void ops_text_battery(char *out, size_t n);
+
+/**
+ * @brief The phone's battery, such as 80%. Two dashes with no reading, such as with the phone away,
+ * and OFF while no plugin on the phone serves it, such as with plugins off in the Pebble app.
+ *
+ * @param out Output buffer.
+ * @param n Buffer size.
+ */
+void ops_text_phone_battery(char *out, size_t n);
 void ops_text_next_alarm(char *out, size_t n);
 
 /**

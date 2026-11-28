@@ -9,6 +9,7 @@ import app from '../../paf/ts/pkjs/app';
 import weather from '../../paf/ts/weather/feature';
 import calendar from '../../paf/ts/calendar/feature';
 import music from '../../paf/ts/music/feature';
+import phone from '../../paf/ts/phone/feature';
 import type { WeatherResult } from '../../paf/ts/weather/util';
 import hiddenStoreComponent from '../../paf/ts/clay/hidden-store-component';
 import clayConfig from './config';
@@ -45,6 +46,8 @@ app.startPebbleApp({
     calendar,
     // the art fills the full Now Playing panel's square
     music.withArtwork({ w: 48, h: 48 }),
+    // the phone's battery, for its panel and the rail gauges
+    phone,
     // a Distance Unit never saved starts on the Steps Readout unit, so the Distance Goal Bar matches the steps
     distanceUnit,
   ],

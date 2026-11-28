@@ -6,13 +6,13 @@
  */
 import buildConfig from '../../paf/ts/pkjs/config-builder';
 import type { ClayConfigItem } from '../../paf/ts/clay/types';
-import { allItems } from '../../paf/ts/clay/rows';
+import { allItems, findRow, listHolding } from '../../paf/ts/clay/rows';
 import tacticalPresets from '../data/tactical-presets.json';
 import engineeringPresets from '../data/engineering-presets.json';
+import transporterPresets from '../data/transporter-presets.json';
 import moduleThumbnails from './clay/module-thumbnails.g';
 import moduleMeta from './clay/module-meta';
 import themePreviews from './clay/theme-previews-layout-theme.g';
-import layoutPreviews from './clay/theme-previews-layout.g';
 
 // what one panel can show. the value is the C OpsId, so these numbers are the
 // contract with src/c/ops/ops.h and are only ever appended to, never reordered
@@ -20,6 +20,7 @@ const OPS_OPTIONS = [
   { label: 'Heart Rate (VITALS)', value: 0 },
   { label: 'Steps / Distance (TRAVERSAL)', value: 1 },
   { label: 'Battery (POWER)', value: 2 },
+  { label: 'Phone Battery (PHONE)', value: 88 },
   { label: 'Calories (METABOLIC)', value: 3 },
   { label: 'Sleep (REGEN)', value: 4 },
   { label: 'Active Minutes (EXERTION)', value: 5 },
@@ -126,6 +127,58 @@ const BUILDER_OPTIONS = [...BIG_PANELS, ...OPS_OPTIONS].map(function (option) {
   return merged;
 });
 
+// what a rail gauge can show. each value is the OpsId of the tall panel the gauge stands for, and
+// the watch fills the gauge the way that panel fills its bar. the word in brackets is the one the
+// rail shows over it
+const GAUGE_OPTIONS = [
+  { label: 'Battery (PWR)', value: 72 },
+  { label: 'Phone Battery (PHN)', value: 88 },
+  { label: 'Step Goal (STEP)', value: 64 },
+  { label: 'Distance Goal (DIST)', value: 65 },
+  { label: 'Calorie Goal (KCAL)', value: 66 },
+  { label: 'Active Minutes Goal (ACT)', value: 67 },
+  { label: 'Sleep Goal (SLP)', value: 68 },
+  { label: 'Hour Progress (HOUR)', value: 79 },
+  { label: 'Day Progress (DAY)', value: 80 },
+  { label: 'Week Progress (WEEK)', value: 81 },
+  { label: 'Year Progress (YEAR)', value: 82 },
+  { label: 'Daylight (SUN)', value: 76 },
+  { label: 'Moon (MOON)', value: 77 },
+  { label: 'UV Index (UV)', value: 78 },
+  { label: 'Swatch Beats (BEAT)', value: 74 },
+  { label: 'Next Alarm (ALRM)', value: 73 },
+];
+
+/**
+ * A section of settings that only one layout has, titled and shown while one of the Layout picks
+ * given is picked, and hidden whole otherwise.
+ */
+function layoutSettings(title: string, picks: number[], items: ClayConfigItem[]): ClayConfigItem {
+  const shown = { 'key': 'APPEARANCE_LAYOUT', 'in': picks };
+  const heading: ClayConfigItem = { 'type': 'heading', 'defaultValue': title };
+  const rows = [heading].concat(items).map(function (item) {
+    return Object.assign({}, item, { 'visibleWhen': shown });
+  });
+
+  return {
+    'type': 'section',
+    // the framework hides a marked section's card once every row in it is hidden
+    'hideWhenEmpty': true,
+    'items': rows,
+  };
+}
+
+/** A layout's Mirrored switch, which runs its rail down the right while its panels keep their places. */
+function mirrorRow(messageKey: string): ClayConfigItem {
+  return {
+    'type': 'toggle',
+    'messageKey': messageKey,
+    'label': 'Mirrored',
+    'description': 'Runs the rail down the right. Your panels keep their places.',
+    'defaultValue': false,
+  };
+}
+
 // the nine frame themes, shared by the Frame Theme picker and the night and Quiet Time pickers
 const THEME_OPTIONS = [
   { label: 'Classic', value: 0 },
@@ -146,13 +199,16 @@ const config = buildConfig({
   // the Layout picker leads, then the frame theme with a shot of each. the theme picker is spelled
   // out here rather than handed to buildConfig's theme shorthand, since that puts it first
   appearanceItems: [
+    // a plain list, since the Frame Theme picker under it already shows the picked layout in each theme.
+    // each layout saves as twice its number, and the watch reads an odd pick as that layout mirrored.
+    // the mirrored picks stay listed so Clay can fill in one a watch already has saved, and
+    // slot-layout-fn turns it into the layout's own Mirrored switch and then takes them off the list
     {
-      'type': 'themePreview',
+      'type': 'select',
       'messageKey': 'APPEARANCE_LAYOUT',
       'label': 'Layout',
-      'description': 'Tactical has panels in all three frames, with the clock and date as panels you can move. Engineering stacks the clock beside six panels. Mirrored runs the rail down the right.',
+      'description': 'Tactical has panels in all three frames, with the clock and date as panels you can move. Engineering stacks the clock beside six panels. Transporter puts the clock over eight panels between two gauge rails.',
       'defaultValue': 0,
-      // each mirrored pick saves as its layout plus one, which is how the watch tells the rail's side
       'options': [
         { 'label': 'Stardate (Default)', 'value': 0 },
         { 'label': 'Stardate Mirrored', 'value': 1 },
@@ -160,8 +216,8 @@ const config = buildConfig({
         { 'label': 'Tactical Mirrored', 'value': 3 },
         { 'label': 'Engineering', 'value': 4 },
         { 'label': 'Engineering Mirrored', 'value': 5 },
+        { 'label': 'Transporter', 'value': 6 },
       ],
-      'previews': layoutPreviews,
     },
     {
       'type': 'themePreview',
@@ -230,6 +286,37 @@ const config = buildConfig({
     },
   ],
   layoutSections: [
+    layoutSettings('Stardate Settings', [0, 1], [mirrorRow('APPEARANCE_MIRROR_STARDATE')]),
+    layoutSettings('Tactical Settings', [2, 3], [mirrorRow('APPEARANCE_MIRROR_TACTICAL')]),
+    layoutSettings('Engineering Settings', [4, 5], [
+      mirrorRow('APPEARANCE_MIRROR_ENGINEERING'),
+      {
+        'type': 'select',
+        'messageKey': 'APPEARANCE_ENGINEERING_CORE',
+        'label': 'Power Core',
+        'description': 'What the cells down the rail fill with. The word over its reading says which.',
+        'defaultValue': 72,
+        'options': GAUGE_OPTIONS,
+      },
+    ]),
+    layoutSettings('Transporter Settings', [6, 7], [
+      {
+        'type': 'select',
+        'messageKey': 'APPEARANCE_GAUGE_LEFT',
+        'label': 'Left Gauge',
+        'description': 'What the cells down the left rail fill with. The word on top of the rail says which.',
+        'defaultValue': 72,
+        'options': GAUGE_OPTIONS,
+      },
+      {
+        'type': 'select',
+        'messageKey': 'APPEARANCE_GAUGE_RIGHT',
+        'label': 'Right Gauge',
+        'description': 'What the cells down the right rail fill with.',
+        'defaultValue': 64,
+        'options': GAUGE_OPTIONS,
+      },
+    ]),
     {
       'type': 'section',
       'items': [
@@ -239,12 +326,12 @@ const config = buildConfig({
         },
         {
           'type': 'text',
-          'defaultValue': 'The panels of the layout picked above, four on Stardate, up to twelve on Tactical, and six on Engineering. Each layout keeps its own. The sun and weather readouts need a weather source set up below.',
+          'defaultValue': 'The panels of the layout picked above, four on Stardate, up to twelve on Tactical, six on Engineering, and eight on Transporter. Each layout keeps its own. The sun and weather readouts need a weather source set up below.',
         },
         // the panels the builder does not own outright. a Clay component carries one message key,
         // so the Stardate layout's other three ride hidden stores it writes to by class, and the watch
-        // reads all four as plain enum settings. Tactical's twelve and Engineering's six each ride one
-        // more store as a list the watch reads a cell at a time. the stores sit above the builder, since Clay has not built a
+        // reads all four as plain enum settings. Tactical's twelve, Engineering's six, and Transporter's
+        // eight each ride one more store as a list the watch reads a cell at a time. the stores sit above the builder, since Clay has not built a
         // row below it yet when the builder reads them
         {
           'type': 'hiddenStore',
@@ -269,6 +356,12 @@ const config = buildConfig({
           'messageKey': 'APPEARANCE_SLOTS_ENGINEERING',
           'storeClass': 'sb-eng',
           'defaultValue': engineeringPresets.default.join(','),
+        },
+        {
+          'type': 'hiddenStore',
+          'messageKey': 'APPEARANCE_SLOTS_TRANSPORTER',
+          'storeClass': 'sb-trn',
+          'defaultValue': transporterPresets.default.join(','),
         },
         {
           'type': 'hiddenStore',
@@ -308,11 +401,12 @@ const config = buildConfig({
 });
 
 // the two glyph toggles only drive the Stardate layout's glyphs. Tactical reads the phone link and
-// Quiet Time in its pills and Engineering in its rail whatever they say, so they hide while either is picked
+// Quiet Time in its pills, and Engineering and Transporter in their rails, whatever they say, so they
+// hide while any of those is picked
 const STARDATE_ONLY = ['CONNECTION_BLUETOOTH_ICON', 'APPEARANCE_QUIET_TIME_ICON'];
 
 /**
- * Hides the Stardate-only toggles while Tactical or Engineering is picked. The framework builds those rows, so the
+ * Hides the Stardate-only toggles while any other layout is picked. The framework builds those rows, so the
  * rule is added to them here once the page is built.
  *
  * @param items The page's rows, searched down through every section.
@@ -325,6 +419,29 @@ function hideOffStardate(items: ClayConfigItem[]): void {
   });
 }
 
+/**
+ * Moves the Stardate-only toggles into Stardate Settings, under Mirrored, in the order STARDATE_ONLY
+ * lists them. The framework builds them in Bluetooth and Appearance, so they are moved here once the
+ * page is built, and they keep the rule above that hides them off Stardate.
+ *
+ * @param items The page's rows, changed in place.
+ */
+function glyphTogglesToStardate(items: ClayConfigItem[]): void {
+  const stardate = listHolding(items, (item) => item.messageKey === 'APPEARANCE_MIRROR_STARDATE');
+
+  STARDATE_ONLY.forEach(function (key) {
+    const found = findRow(items, (item) => item.messageKey === key);
+
+    if (!found || !stardate) {
+      return;
+    }
+
+    found.list.splice(found.list.indexOf(found.row), 1);
+    stardate.push(found.row);
+  });
+}
+
 hideOffStardate(config);
+glyphTogglesToStardate(config);
 
 export default config;

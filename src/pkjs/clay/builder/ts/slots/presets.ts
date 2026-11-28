@@ -10,7 +10,8 @@
 import slotPresets from '../../../../../data/slot-presets.json';
 import tacticalPresets from '../../../../../data/tactical-presets.json';
 import engineeringPresets from '../../../../../data/engineering-presets.json';
-import { LAYOUT_ENGINEERING, LAYOUT_STARDATE, LAYOUT_TACTICAL } from './geometry';
+import transporterPresets from '../../../../../data/transporter-presets.json';
+import { LAYOUT_ENGINEERING, LAYOUT_STARDATE, LAYOUT_TACTICAL, LAYOUT_TRANSPORTER } from './geometry';
 
 /** preset id -> the Stardate layout's four slot ids, in slot order. */
 export const SLOT_PRESETS: Record<string, number[]> = slotPresets;
@@ -20,6 +21,9 @@ export const TACTICAL_PRESETS: Record<string, number[]> = tacticalPresets;
 
 /** preset id -> Engineering's six slot ids, top to bottom. */
 export const ENGINEERING_PRESETS: Record<string, number[]> = engineeringPresets;
+
+/** preset id -> Transporter's eight slot ids, in cell order. */
+export const TRANSPORTER_PRESETS: Record<string, number[]> = transporterPresets;
 
 /**
  * A layout's preset.
@@ -33,6 +37,7 @@ export function presetFor(layout: number, id: string): number[] | undefined {
     [LAYOUT_STARDATE]: SLOT_PRESETS,
     [LAYOUT_TACTICAL]: TACTICAL_PRESETS,
     [LAYOUT_ENGINEERING]: ENGINEERING_PRESETS,
+    [LAYOUT_TRANSPORTER]: TRANSPORTER_PRESETS,
   };
 
   return (presets[layout] || SLOT_PRESETS)[id];

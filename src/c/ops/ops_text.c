@@ -18,6 +18,7 @@
 #include "clock/progress.h"
 #include "clock/solar.h"
 #include "io/stores/health_store.h"
+#include "io/stores/phone_store.h"
 #include "io/stores/system_store.h"
 #include "io/stores/time_store.h"
 #include "io/stores/weather_store.h"
@@ -25,6 +26,7 @@
 #include "system/settings/settings.h"
 #include "system/units/units.h"
 #include "text/text_case.h"
+#include "ui/readouts.h"
 #include "weather/wx_cond.h"
 
 // the eight phase glyphs in cycle order (0 new, 4 full, wrapping back round). the index comes
@@ -103,6 +105,18 @@ static bool moon_next_is_full(void)
 void ops_text_battery(char *out, size_t n)
 {
     snprintf(out, n, "%d%%", system_store_battery());
+}
+
+void ops_text_phone_battery(char *out, size_t n)
+{
+    // PLUGINS OFF has no room in one slot, so the word says OFF
+    if (phone_store_no_plugin())
+    {
+        snprintf(out, n, "OFF");
+        return;
+    }
+
+    readout_phone_battery(out, n);
 }
 
 /**

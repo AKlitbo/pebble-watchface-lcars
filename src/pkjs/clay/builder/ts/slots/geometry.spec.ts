@@ -13,7 +13,7 @@ import { describe, test, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import {
   canPlace, cellsFor, owners, shapeOf, slotAt, STARDATE_GRID, ID_COUNT,
-  LAYOUT_STARDATE, LAYOUT_ENGINEERING, LAYOUT_TACTICAL, layoutOfPick, railRightOfPick,
+  LAYOUT_STARDATE, LAYOUT_ENGINEERING, LAYOUT_TACTICAL, LAYOUT_TRANSPORTER, layoutOfPick, railRightOfPick,
   SLOT_LT, SLOT_LB, SLOT_RT, SLOT_RB, SLOT_COUNT,
   SLOT_KEYS, SLOT_STORE_CLASS,
   ID_HEART, ID_STEPS, ID_EMPTY, ID_SENSORS,
@@ -262,10 +262,21 @@ describe('the Layout pick', () => {
     [2, LAYOUT_TACTICAL, false],
     [3, LAYOUT_TACTICAL, true],
     [4, LAYOUT_ENGINEERING, false],
-    [6, LAYOUT_STARDATE, false],
+    [6, LAYOUT_TRANSPORTER, false],
+    [8, LAYOUT_STARDATE, false],
   ])('reads pick %i as its layout and rail side', (pick, layout, railRight) => {
     const result = { layout: layoutOfPick(pick), railRight: railRightOfPick(pick) };
 
     expect(result).toEqual({ layout: layout, railRight: railRight });
+  });
+
+  /**
+   * Transporter has a rail down each side and no mirrored frame. A 7 saved by hand still draws it
+   * unmirrored on the watch, so the sketch has to keep its rails where they are too.
+   */
+  test('reads a mirrored Transporter pick as plain Transporter', () => {
+    const result = { layout: layoutOfPick(7), railRight: railRightOfPick(7) };
+
+    expect(result).toEqual({ layout: LAYOUT_TRANSPORTER, railRight: false });
   });
 });
