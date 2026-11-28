@@ -1,0 +1,308 @@
+@charset "utf-8";
+/*
+	Transporter's frame, linked after the theme sheet by each *-transporter page
+	a rail down each side, joined by a strip across the top and a thinner one along the foot, so the
+	clock and the panels sit inside one arch. each rail is a gauge: a word on its head, thirteen cells
+	the watch paints lit or dim with the reading, a block for the reading, and a block the watch labels
+	LINK on the left and QUIET on the right
+
+	the vendor elbows only come with the rail on the left, so this draws its own from plain blocks in
+	the theme's colours. both rails and the pieces of strip that meet them take the rail's colour, so
+	the arch reads as one piece
+
+	inside the arch the clock sits in a frame of its own, after the LCARS image frame: a bar across the
+	top with the date at its right end and a round cap after it, a side down the left cut by one block,
+	and an elbow into a row of segments along the foot. its right side stays open
+
+	every size here is the watch's pixel times 4.8. the rails are 24 wide, the widest that leaves room
+	for two columns of 69 wide panels between them. the arch's strips are 6 rows across the top and 8
+	along the foot, which leaves the clock's frame the rows it needs above the panels
+*/
+
+.watch.transporter {
+  --u: 4.8px;
+  --rail: var(--left-frame-top-color);
+  --rail-w: calc(24 * var(--u));
+  --elbow: calc(18 * var(--u));
+  --fillet: calc(8 * var(--u));
+  position: relative;
+}
+
+.watch.transporter > div {
+  position: absolute;
+}
+
+/* the two rails, rounded where they sweep into the strips */
+.watch.transporter .rail {
+  top: 0;
+  width: var(--rail-w);
+  height: calc(228 * var(--u));
+  background-color: var(--rail);
+}
+
+.watch.transporter .rail-left {
+  left: 0;
+  border-radius: var(--elbow) 0 0 var(--elbow);
+}
+
+.watch.transporter .rail-right {
+  left: calc(176 * var(--u));
+  border-radius: 0 var(--elbow) var(--elbow) 0;
+}
+
+/* the top strip, rows 0 to 5. the rail's colour, then a short piece in the theme's accent, then the
+   rail's colour again into the right elbow */
+.watch.transporter .strip-top {
+  top: 0;
+  height: calc(6 * var(--u));
+}
+
+.watch.transporter .strip-top-a {
+  left: calc(24 * var(--u));
+  width: calc(116 * var(--u));
+  background-color: var(--rail);
+}
+
+.watch.transporter .strip-top-b {
+  left: calc(142 * var(--u));
+  width: calc(20 * var(--u));
+  background-color: var(--bar-2-color);
+}
+
+.watch.transporter .strip-top-c {
+  left: calc(164 * var(--u));
+  width: calc(12 * var(--u));
+  background-color: var(--rail);
+}
+
+/* the foot's strip, rows 220 to 227, the rail's colour at each end and an accent between */
+.watch.transporter .strip-foot {
+  top: calc(220 * var(--u));
+  height: calc(8 * var(--u));
+}
+
+.watch.transporter .strip-foot-a {
+  left: calc(24 * var(--u));
+  width: calc(38 * var(--u));
+  background-color: var(--rail);
+}
+
+.watch.transporter .strip-foot-b {
+  left: calc(64 * var(--u));
+  width: calc(72 * var(--u));
+  background-color: var(--bar-3-color);
+}
+
+.watch.transporter .strip-foot-c {
+  left: calc(138 * var(--u));
+  width: calc(38 * var(--u));
+  background-color: var(--rail);
+}
+
+/* the inside curve where each rail meets a strip, the rail's colour outside a black quarter circle */
+.watch.transporter .fillet {
+  width: var(--fillet);
+  height: var(--fillet);
+}
+
+.watch.transporter .fillet-tl {
+  left: calc(24 * var(--u));
+  top: calc(6 * var(--u));
+  background: radial-gradient(circle at 100% 100%, #000 var(--fillet), var(--rail) var(--fillet));
+}
+
+.watch.transporter .fillet-tr {
+  left: calc(168 * var(--u));
+  top: calc(6 * var(--u));
+  background: radial-gradient(circle at 0% 100%, #000 var(--fillet), var(--rail) var(--fillet));
+}
+
+.watch.transporter .fillet-bl {
+  left: calc(24 * var(--u));
+  top: calc(212 * var(--u));
+  background: radial-gradient(circle at 100% 0%, #000 var(--fillet), var(--rail) var(--fillet));
+}
+
+.watch.transporter .fillet-br {
+  left: calc(168 * var(--u));
+  top: calc(212 * var(--u));
+  background: radial-gradient(circle at 0% 0%, #000 var(--fillet), var(--rail) var(--fillet));
+}
+
+/* the cells: black seams across each rail, two rows each. the first tops the cells on row 30, then one
+   closes each of the thirteen cells, eight rows tall and ten apart from row 32. the last closes the
+   cells on row 160, just above the reading block */
+.watch.transporter .cells {
+  top: calc(30 * var(--u));
+  width: var(--rail-w);
+  display: flex;
+  flex-direction: column;
+  gap: calc(8 * var(--u));
+}
+
+.watch.transporter .cells-left {
+  left: 0;
+}
+
+.watch.transporter .cells-right {
+  left: calc(176 * var(--u));
+}
+
+.watch.transporter .cells .seam-line {
+  height: calc(2 * var(--u));
+  background-color: #000;
+}
+
+/* under the cells each rail holds the reading, rows 162 to 177, and the LINK or QUIET block, rows 180
+   to 195. a seam closes each one */
+.watch.transporter .block {
+  width: var(--rail-w);
+  height: calc(16 * var(--u));
+}
+
+.watch.transporter .block-left {
+  left: 0;
+}
+
+.watch.transporter .block-right {
+  left: calc(176 * var(--u));
+}
+
+.watch.transporter .block-reading {
+  top: calc(162 * var(--u));
+  background-color: var(--panel-6-color);
+}
+
+.watch.transporter .block-state {
+  top: calc(180 * var(--u));
+}
+
+.watch.transporter .seam {
+  width: var(--rail-w);
+  height: calc(2 * var(--u));
+  background-color: #000;
+  border: 0;
+}
+
+.watch.transporter .seam-reading {
+  top: calc(178 * var(--u));
+}
+
+.watch.transporter .seam-state {
+  top: calc(196 * var(--u));
+}
+
+/* the clock's frame. its top bar runs rows 9 to 20 from x=28 to x=165, and the watch writes the date
+   in a black box at its right end. the round cap after it runs to x=172 */
+.watch.transporter .cf {
+  /* bar colours rather than panel ones, since every theme's sheet sets these. Voyager leaves its fifth
+     bar on Classic's red, which Voyager Mono never greys, so the mark takes the second */
+  --cf-top: var(--bar-7-color);
+  --cf-low: var(--bar-3-color);
+  --cf-mark: var(--bar-2-color);
+}
+
+.watch.transporter .cf-bar {
+  left: calc(28 * var(--u));
+  top: calc(9 * var(--u));
+  width: calc(138 * var(--u));
+  height: calc(12 * var(--u));
+  background-color: var(--cf-top);
+  border-top-left-radius: calc(14 * var(--u));
+}
+
+.watch.transporter .cf-cap {
+  left: calc(167 * var(--u));
+  top: calc(9 * var(--u));
+  width: calc(6 * var(--u));
+  height: calc(12 * var(--u));
+  background-color: var(--cf-mark);
+  border-radius: 0 calc(6 * var(--u)) calc(6 * var(--u)) 0;
+}
+
+/* the left side, 10 wide: the top bar's colour down to row 43, a nub on rows 46 to 57, then the
+   lower colour from row 60 round the elbow into the foot. the nub is 16 wide, so it stands out past
+   the side, and the watch writes AM or PM on it in black. it wears the colour of the rails' LINK and
+   QUIET blocks, which each theme sets for black words */
+.watch.transporter .cf-side {
+  left: calc(28 * var(--u));
+  width: calc(10 * var(--u));
+}
+
+.watch.transporter .cf-side-top {
+  top: calc(21 * var(--u));
+  height: calc(23 * var(--u));
+  background-color: var(--cf-top);
+}
+
+.watch.transporter .cf-side-mark {
+  top: calc(46 * var(--u));
+  width: calc(16 * var(--u));
+  height: calc(12 * var(--u));
+}
+
+.watch.transporter .cf-side-low {
+  top: calc(60 * var(--u));
+  height: calc(28 * var(--u));
+  background-color: var(--cf-low);
+  border-bottom-left-radius: calc(14 * var(--u));
+}
+
+/* the inside curves where the side meets the top bar and the foot */
+.watch.transporter .cf-fillet-top {
+  left: calc(38 * var(--u));
+  top: calc(21 * var(--u));
+  width: var(--fillet);
+  height: var(--fillet);
+  background: radial-gradient(circle at 100% 100%, #000 var(--fillet), var(--cf-top) var(--fillet));
+}
+
+.watch.transporter .cf-fillet-low {
+  left: calc(38 * var(--u));
+  top: calc(74 * var(--u));
+  width: var(--fillet);
+  height: var(--fillet);
+  background: radial-gradient(circle at 100% 0%, #000 var(--fillet), var(--cf-low) var(--fillet));
+}
+
+/* the foot, rows 82 to 87: the elbow's end, then the segments with black between them */
+.watch.transporter .cf-foot {
+  top: calc(82 * var(--u));
+  height: calc(6 * var(--u));
+}
+
+.watch.transporter .cf-foot-elbow {
+  left: calc(38 * var(--u));
+  width: calc(8 * var(--u));
+  background-color: var(--cf-low);
+}
+
+.watch.transporter .cf-foot-1 {
+  left: calc(49 * var(--u));
+  width: calc(28 * var(--u));
+  background-color: var(--cf-mark);
+}
+
+.watch.transporter .cf-foot-2 {
+  left: calc(80 * var(--u));
+  width: calc(18 * var(--u));
+  background-color: var(--cf-low);
+}
+
+.watch.transporter .cf-foot-3 {
+  left: calc(101 * var(--u));
+  width: calc(3 * var(--u));
+  background-color: var(--cf-mark);
+}
+
+.watch.transporter .cf-foot-4 {
+  left: calc(107 * var(--u));
+  width: calc(3 * var(--u));
+  background-color: var(--cf-low);
+}
+
+.watch.transporter .cf-foot-5 {
+  left: calc(113 * var(--u));
+  width: calc(22 * var(--u));
+  background-color: var(--cf-low);
+}
