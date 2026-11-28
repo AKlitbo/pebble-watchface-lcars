@@ -64,6 +64,26 @@
   background-color: #000;
 }
 
+/* the core's reading sits in a block of its own on rows 43 to 58, just over the cells. a seam on rows
+   41 and 42 tops it and the core's first seam closes it, and it wears the QUIET block's colour. the
+   word saying what the core shows sits on the rail above it */
+.watch.engineering .reading-block {
+  position: absolute;
+  left: 0;
+  top: calc(43 * 4.8px);
+  width: var(--lfw);
+  height: calc(16 * 4.8px);
+}
+
+.watch.engineering .reading-seam {
+  position: absolute;
+  left: 0;
+  top: calc(41 * 4.8px);
+  width: var(--lfw);
+  height: calc(2 * 4.8px);
+  background-color: #000;
+}
+
 /* the rail's tail under the core holds two blocks the watch labels LINK and QUIET, rows 165 to 180
    and 183 to 198. the core's last seam tops the first, and these seams close each one. LINK wears
    the accent of Stardate's upper coordinate block. QUIET wears the lower block's second accent on a
